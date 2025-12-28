@@ -2298,8 +2298,9 @@
               const dr = meshResources.find(r => r.type === 'destinationrule' && r.host === svc.name);
               const vs = meshResources.filter(r => r.type === 'virtualservice' && (r.host === svc.name || r.name?.includes(svc.name.split('-')[0])));
               const gateways = meshResources.filter(r => ['ingress', 'egress'].includes(r.type) && vs.some(v => v.gateway === r.name));
-              const hasIstioFeatures = filters.length > 0 || dr || vs.length > 0 || gateways.length > 0;
-              return { svc, filters, dr, vs, gateways, hasIstioFeatures };
+              const authPolicies = meshResources.filter(r => r.type === 'authpolicy' && r.namespace === svc.namespace);
+              const hasIstioFeatures = filters.length > 0 || dr || vs.length > 0 || gateways.length > 0 || authPolicies.length > 0;
+              return { svc, filters, dr, vs, gateways, authPolicies, hasIstioFeatures };
             });
 
             return (
@@ -2319,9 +2320,9 @@
                 </div>
               ) : (
               <div className="space-y-2">
-                {servicesWithPolicies.map(({ svc, filters, dr, vs, gateways }) => {
+                {servicesWithPolicies.map(({ svc, filters, dr, vs, gateways, authPolicies }) => {
                   const isExpanded = expandedServices.includes(svc.name);
-                  const featureCount = filters.length + (dr ? 1 : 0) + vs.length + gateways.length;
+                  const featureCount = filters.length + (dr ? 1 : 0) + vs.length + gateways.length + authPolicies.length;
                   return (
                     <div key={svc.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
                       {/* Service Header Row */}
@@ -2351,6 +2352,7 @@
                             {dr && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-xs flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
                             {vs.length > 0 && <span className="px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded text-xs flex items-center gap-1"><Icon name="git-branch" size={12} />{vs.length} VS</span>}
                             {gateways.length > 0 && <span className="px-2 py-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded text-xs flex items-center gap-1"><Icon name="log-in" size={12} />{gateways.length} GW</span>}
+                            {authPolicies.length > 0 && <span className="px-2 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded text-xs flex items-center gap-1"><Icon name="shield" size={12} />{authPolicies.length} AuthZ</span>}
                           </div>
                           <StatusBadge status={svc.status} size="sm" />
                         </div>
@@ -2358,7 +2360,7 @@
                       {/* Expanded Details */}
                       {isExpanded && (
                         <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             {/* Filters Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
                               <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="filter" size={12} className="text-cyan-400" />Filters ({filters.length})</div>
@@ -2428,6 +2430,23 @@
                                   ))}
                                 </div>
                               ) : <span className="text-xs text-gray-600">Not exposed</span>}
+                            </div>
+                            {/* Auth Policies Column */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})</div>
+                              {authPolicies.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {authPolicies.map((ap, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <Icon name={ap.action === 'ALLOW' ? 'check-circle' : 'x-circle'} size={12} className={ap.action === 'ALLOW' ? 'text-emerald-400' : 'text-red-400'} />
+                                        <span className="text-gray-300">{ap.name}</span>
+                                      </div>
+                                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${ap.action === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>{ap.action}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">No auth policies</span>}
                             </div>
                           </div>
                           {/* Actions Row */}
@@ -4567,13 +4586,13 @@
                     <label className="text-xs text-gray-500 mb-2 block">Resource Type</label>
                     <div className="flex flex-wrap gap-2">
                       {[
+                        { type: 'service', label: 'Service', icon: 'server', color: 'emerald' },
                         { type: 'virtualservice', label: 'VirtualService', icon: 'git-branch', color: 'violet' },
                         { type: 'destinationrule', label: 'DestinationRule', icon: 'sliders', color: 'violet' },
                         { type: 'ingress', label: 'Ingress GW', icon: 'log-in', color: 'cyan' },
                         { type: 'egress', label: 'Egress GW', icon: 'log-out', color: 'orange' },
                         { type: 'eastwest', label: 'East-West GW', icon: 'repeat', color: 'teal' },
                         { type: 'serviceentry', label: 'ServiceEntry', icon: 'external-link', color: 'amber' },
-                        { type: 'authpolicy', label: 'AuthPolicy', icon: 'shield', color: 'rose' },
                       ].map(rt => (
                         <button key={rt.type} onClick={() => setNewResourceType(rt.type)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors ${newResourceType === rt.type ? `bg-${rt.color}-500/20 text-${rt.color}-300 border border-${rt.color}-500` : 'bg-gray-800 text-gray-400 border border-gray-600 hover:border-gray-500'}`}>
@@ -6049,7 +6068,7 @@
                     if (activeNav === 'mom') { setNewMomData({ name: '', type: 'ec2', size: '', region: 'us-east-1', owner: '', description: '' }); setShowNewMomResource(true); }
                     else if (activeNav === 'uncle') { setNewDatastoreData({ name: '', type: 'postgresql', engine: '', region: 'us-east-1', owner: '', description: '' }); setShowNewDatastore(true); }
                     else if (activeNav === 'dad') {
-                      if (dadActiveTab === 'services') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('virtualservice'); setNewResourceData({ name: '', namespace: 'default' }); }
+                      if (dadActiveTab === 'services') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('service'); setNewResourceData({ name: '', namespace: 'default' }); }
                       else if (dadActiveTab === 'resources') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('virtualservice'); setNewResourceData({ name: '', namespace: 'default' }); }
                       else if (dadActiveTab === 'patterns') { setShowPatternWizard(true); setPatternWizardStep(0); }
                       else if (dadActiveTab === 'security') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('authpolicy'); setNewResourceData({ name: '', namespace: 'default' }); }
