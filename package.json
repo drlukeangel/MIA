@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "browser-sync": "^3.0.4"
+  }
+}
