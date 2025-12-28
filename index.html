@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIA - Make Infrastructure Awesome</title>
+  <!-- Inter Font - Clean Sans-Serif for Technical UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,8 +18,502 @@
   <!-- Dagre for auto-layout -->
   <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
   <style>
+    /* =============================================
+       MIA DESIGN SYSTEM: "Slate & Electric"
+       For Technical/Engineering Audiences
+       WCAG 2.1 AA Compliant
+       ============================================= */
+
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===================
+       MIA DASHBOARD - M.O.M. PIXEL EXTRACTION
+       Extracted from M.O.M./Infrastructure screenshot
+       =================== */
+    :root {
+      /* --- SIDEBAR --- */
+      --sidebar-bg: #0F172A;           /* Dark Navy (Slate-900) */
+      --sidebar-bg-dark: #020617;      /* Gradient end */
+      --sidebar-hover: #1E293B;        /* Slate-800 */
+      --sidebar-active: #134E4A;       /* Dark Teal - active row highlight */
+      --sidebar-text: #F1F5F9;
+      --sidebar-text-muted: #94A3B8;
+
+      /* --- PRIMARY ACTION (+ New button) --- */
+      --action-primary: #10B981;       /* Emerald-500 - Teal button */
+      --action-primary-hover: #059669; /* Emerald-600 */
+
+      /* --- FILTER CHIP ACTIVE --- */
+      --filter-active: #EC4899;        /* Pink-500 - "All 16" chip */
+      --filter-active-light: #F472B6;  /* Pink-400 */
+
+      /* --- ICON HIGHLIGHTS (Lambda/ECS) --- */
+      --icon-highlight: #F59E0B;       /* Amber-500 - Orange/Gold icons */
+      --icon-highlight-bg: #FEF3C7;    /* Amber-100 */
+
+      /* --- LOGO GRADIENT --- */
+      --logo-from: #EC4899;            /* Pink */
+      --logo-to: #06B6D4;              /* Cyan */
+
+      /* --- SURFACES --- */
+      --bg-page: #F1F5F9;              /* Slate-100 */
+      --bg-card: #FFFFFF;
+      --border-subtle: #E2E8F0;        /* Slate-200 */
+
+      /* --- CARD BACKGROUNDS (Contextual) --- */
+      --bg-card-success: #ECFDF5;      /* Emerald-50 - Monthly Spend */
+      --bg-card-info: #EFF6FF;         /* Blue-50 - Total Resources */
+      --bg-card-health: #ECFDF5;       /* Emerald-50 - Health Score */
+      --bg-card-alert: #FEF2F2;        /* Red-50 - Active Alerts */
+
+      /* --- STATUS BADGES (Traffic Light) --- */
+      --status-healthy: #10B981;       /* Emerald-500 - Green */
+      --status-healthy-bg: #D1FAE5;    /* Emerald-100 */
+      --status-warning: #F59E0B;       /* Amber-500 - Yellow/Orange */
+      --status-warning-bg: #FEF3C7;    /* Amber-100 */
+      --status-error: #EF4444;         /* Red-500 */
+      --status-error-bg: #FEE2E2;      /* Red-100 */
+
+      /* --- TEXT --- */
+      --text-primary: #1E293B;         /* Slate-800 */
+      --text-secondary: #475569;       /* Slate-600 */
+      --text-muted: #64748B;           /* Slate-500 */
+      --text-value: #10B981;           /* Teal - $6,000, 100% */
+      --text-alert: #EC4899;           /* Pink - alert count */
+
+      /* --- TYPOGRAPHY --- */
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* --- SHAPES --- */
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      /* --- SHADOWS --- */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    /* ===================
+       LIGHT MODE - M.O.M. PIXEL EXTRACTION
+       Emerald buttons, Pink filters, Amber icons
+       =================== */
+    .theme-light {
+      /* Surfaces */
+      --bg-page: #F1F5F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F8FAFC;
+      --bg-elevated: #FFFFFF;
+      --bg-sidebar: var(--sidebar-bg);
+      --bg-sidebar-hover: var(--sidebar-hover);
+      --bg-sidebar-active: var(--sidebar-active);
+      --bg-input: #FFFFFF;
+      --bg-header: #FFFFFF;
+
+      /* Text */
+      --text-primary: #1E293B;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+      --text-sidebar: #F1F5F9;
+      --text-sidebar-muted: #94A3B8;
+
+      /* Borders */
+      --border-subtle: #E2E8F0;
+      --border-default: #CBD5E1;
+      --border-strong: #94A3B8;
+
+      /* Primary Action - EMERALD (+ New button) */
+      --btn-primary: var(--action-primary);
+      --btn-primary-hover: var(--action-primary-hover);
+
+      /* Filter Active - PINK */
+      --chip-active: var(--filter-active);
+      --chip-active-light: var(--filter-active-light);
+
+      /* Icon Highlight - AMBER */
+      --icon-accent: var(--icon-highlight);
+
+      /* Status - Traffic Light */
+      --status-healthy: var(--status-healthy);
+      --status-warning: var(--status-warning);
+      --status-error: var(--status-error);
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    /* ===================
+       DARK MODE
+       Deep Charcoal (NOT pure black)
+       Elevated surfaces = lighter
+       =================== */
+    .theme-dark {
+      /* Backgrounds - layered elevation */
+      --bg-page: var(--slate-950);
+      --bg-card: var(--slate-900);
+      --bg-card-hover: var(--slate-800);
+      --bg-elevated: var(--slate-800);
+      --bg-sidebar: var(--slate-950);
+      --bg-sidebar-hover: var(--slate-800);
+      --bg-input: var(--slate-800);
+      --bg-header: var(--slate-900);
+
+      /* Text - WCAG AA compliant */
+      --text-primary: var(--slate-50);      /* 15.3:1 on slate-900 */
+      --text-secondary: var(--slate-300);   /* 7.5:1 on slate-900 */
+      --text-muted: var(--slate-400);       /* 4.5:1 on slate-900 */
+      --text-inverse: var(--slate-900);
+      --text-sidebar: var(--slate-200);
+      --text-sidebar-muted: var(--slate-500);
+
+      /* Borders */
+      --border-subtle: var(--slate-800);
+      --border-default: var(--slate-700);
+      --border-strong: var(--slate-600);
+
+      /* Actions - slightly desaturated for dark mode */
+      --action-primary: var(--blue-500);
+      --action-primary-hover: var(--blue-400);
+      --action-secondary: var(--slate-400);
+
+      /* Status - desaturated for dark mode eye comfort */
+      --status-success: var(--green-500);
+      --status-warning: var(--amber-500);
+      --status-error: var(--red-500);
+      --status-info: var(--blue-400);
+
+      /* Shadows - less visible in dark, use elevation instead */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Apply theme variables to base elements */
+    .theme-light, .theme-dark {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+    }
+
+    .themed-sidebar {
+      background-color: var(--bg-sidebar) !important;
+      border-color: var(--border-sidebar) !important;
+    }
+    .themed-sidebar-item {
+      color: var(--text-sidebar);
+    }
+    .themed-sidebar-item:hover {
+      background-color: var(--bg-sidebar-hover) !important;
+    }
+    .themed-header {
+      background-color: var(--bg-header) !important;
+      border-color: var(--border-color) !important;
+    }
+    .themed-card {
+      background-color: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      box-shadow: var(--shadow-card);
+    }
+    .themed-input {
+      background-color: var(--bg-input) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary) !important;
+    }
+    .themed-input::placeholder { color: var(--text-muted); }
+    .themed-text { color: var(--text-primary) !important; }
+    .themed-text-secondary { color: var(--text-secondary) !important; }
+    .themed-text-muted { color: var(--text-muted) !important; }
+    .themed-button {
+      background-color: var(--bg-button) !important;
+      color: white !important;
+    }
+    .themed-button:hover {
+      background-color: var(--bg-button-hover) !important;
+    }
+    .themed-modal {
+      background-color: var(--bg-modal) !important;
+      border-color: var(--border-color) !important;
+      box-shadow: var(--shadow-modal);
+    }
+
+    /* Light mode specific overrides */
+    .theme-light .themed-header {
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+    }
+
+    /* Light mode backgrounds - make them white/light */
+    .theme-light .bg-gray-900 { background-color: #f8fafc !important; }
+    .theme-light .bg-gray-900\/50 { background-color: rgba(248, 250, 252, 0.5) !important; }
+    .theme-light .bg-gray-800 { background-color: #ffffff !important; }
+    .theme-light .bg-gray-800\/50 { background-color: rgba(255, 255, 255, 0.8) !important; }
+    .theme-light .bg-gray-800\/30 { background-color: rgba(255, 255, 255, 0.9) !important; }
+    .theme-light .bg-gray-700 { background-color: #f1f5f9 !important; }
+    .theme-light .bg-gray-700\/50 { background-color: rgba(241, 245, 249, 0.5) !important; }
+    .theme-light .bg-gray-950 { background-color: #1e3a5f !important; }
+
+    /* Light mode borders - softer */
+    .theme-light .border-gray-700 { border-color: #e2e8f0 !important; }
+    .theme-light .border-gray-800 { border-color: #e2e8f0 !important; }
+    .theme-light .border-gray-600 { border-color: #cbd5e1 !important; }
+
+    /* Light mode text - high contrast for readability */
+    .theme-light .text-gray-100 { color: #0f172a !important; }
+    .theme-light .text-gray-200 { color: #1e293b !important; }
+    .theme-light .text-gray-300 { color: #334155 !important; }
+    .theme-light .text-gray-400 { color: #475569 !important; }
+    .theme-light .text-gray-500 { color: #64748b !important; }
+    .theme-light .text-white:not(.themed-sidebar *) { color: #0f172a !important; }
+
+    /* Keep white text white in buttons */
+    .theme-light button .text-white,
+    .theme-light [class*="bg-emerald"] .text-white,
+    .theme-light [class*="bg-violet"] .text-white,
+    .theme-light [class*="bg-blue"] .text-white {
+      color: #ffffff !important;
+    }
+
+    /* Light mode hovers */
+    .theme-light .hover\:bg-gray-800:hover { background-color: #f1f5f9 !important; }
+    .theme-light .hover\:bg-gray-700:hover { background-color: #e2e8f0 !important; }
+    .theme-light .hover\:bg-gray-700\/50:hover { background-color: rgba(226, 232, 240, 0.5) !important; }
+
+    /* Light mode cards and panels */
+    .theme-light .bg-gray-800\/40 { background-color: rgba(255, 255, 255, 0.9) !important; }
+    .theme-light .bg-gray-900\/80 { background-color: rgba(255, 255, 255, 0.95) !important; }
+
+    /* Fix table rows in light mode */
+    .theme-light [class*="bg-gray-800"]:not(.themed-sidebar):not([class*="border"]) {
+      background-color: #ffffff !important;
+    }
+
+    /* Light mode inputs */
+    .theme-light input:not(.themed-input),
+    .theme-light select,
+    .theme-light textarea {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #1f2937 !important;
+    }
+
+    /* Accent colors for light mode - softer professional tones */
+    .theme-light .text-violet-400 { color: #6366f1 !important; }
+    .theme-light .text-violet-300 { color: #818cf8 !important; }
+    .theme-light .text-emerald-400 { color: #10b981 !important; }
+    .theme-light .text-amber-400 { color: #f59e0b !important; }
+    .theme-light .text-blue-400 { color: #3b82f6 !important; }
+    .theme-light .text-pink-400 { color: #ec4899 !important; }
+    .theme-light .text-cyan-400 { color: #06b6d4 !important; }
+
+    /* Light mode badges keep their colors */
+    .theme-light .bg-emerald-500\/20 { background-color: rgba(16, 185, 129, 0.15) !important; }
+    .theme-light .bg-amber-500\/20 { background-color: rgba(245, 158, 11, 0.15) !important; }
+    .theme-light .bg-red-500\/20 { background-color: rgba(239, 68, 68, 0.15) !important; }
+    .theme-light .bg-violet-500\/20 { background-color: rgba(139, 92, 246, 0.15) !important; }
+    .theme-light .bg-blue-500\/20 { background-color: rgba(59, 130, 246, 0.15) !important; }
+
+    /* =============================================
+       LIGHT MODE COMPONENT OVERRIDES
+       "Engineering Trust" Design System
+       ============================================= */
+
+    /* Base Application */
+    .theme-light {
+      background-color: #F8FAFC !important;
+      color: #1E293B !important;
+    }
+
+    /* Sidebar - Dark slate for high contrast */
+    .theme-light .themed-sidebar {
+      background: linear-gradient(180deg, #0F172A 0%, #020617 100%) !important;
+    }
+    .theme-light .themed-sidebar * {
+      color: #F1F5F9 !important;
+    }
+    .theme-light .themed-sidebar .text-xs {
+      color: #94A3B8 !important;
+    }
+    .theme-light .themed-sidebar button:hover {
+      background-color: #1E293B !important;
+    }
+
+    /* Header - Clean white */
+    .theme-light .themed-header {
+      background-color: #FFFFFF !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    }
+
+    /* Cards - White surface, subtle shadow */
+    .theme-light .border.rounded-xl,
+    .theme-light .border.rounded-2xl,
+    .theme-light [class*="bg-gray-800"].rounded-xl,
+    .theme-light [class*="bg-gray-800"].rounded-2xl,
+    .theme-light [class*="bg-gray-800\/"] {
+      background-color: #FFFFFF !important;
+      border-color: #E2E8F0 !important;
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
+    }
+
+    /* Tables - Clean rows */
+    .theme-light table { background-color: #FFFFFF; }
+    .theme-light th {
+      background-color: #F8FAFC !important;
+      color: #475569 !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+    .theme-light tbody tr:nth-child(odd) { background-color: #FFFFFF !important; }
+    .theme-light tbody tr:nth-child(even) { background-color: #F8FAFC !important; }
+    .theme-light tbody tr:hover { background-color: #D1FAE5 !important; } /* Emerald-100 */
+
+    /* Text Overrides - High contrast */
+    .theme-light .text-gray-100 { color: #1E293B !important; }
+    .theme-light .text-gray-200 { color: #1E293B !important; }
+    .theme-light .text-gray-300 { color: #475569 !important; }
+    .theme-light .text-gray-400 { color: #64748B !important; }
+    .theme-light .text-gray-500 { color: #64748B !important; }
+    .theme-light .text-white:not(.themed-sidebar *) { color: #1E293B !important; }
+
+    /* Background Overrides */
+    .theme-light .bg-gray-900 { background-color: #F8FAFC !important; }
+    .theme-light .bg-gray-800 { background-color: #FFFFFF !important; }
+    .theme-light .bg-gray-700 { background-color: #E2E8F0 !important; color: #475569 !important; }
+
+    /* Border Overrides */
+    .theme-light .border-gray-700,
+    .theme-light .border-gray-800 { border-color: #E2E8F0 !important; }
+
+    /* Primary Buttons - EMERALD #10B981 (M.O.M. extraction) */
+    .theme-light .bg-violet-600,
+    .theme-light .bg-violet-500,
+    .theme-light .bg-emerald-600,
+    .theme-light [class*="bg-violet-600"],
+    .theme-light [class*="bg-emerald-600"] {
+      background-color: var(--action-primary) !important;
+      color: #FFFFFF !important;
+      border-radius: 6px !important;
+    }
+    .theme-light .bg-violet-600 *,
+    .theme-light .bg-emerald-600 * { color: #FFFFFF !important; }
+    .theme-light .bg-violet-600:hover,
+    .theme-light .bg-emerald-600:hover {
+      background-color: var(--action-primary-hover) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Filter Chip Active - PINK #EC4899 */
+    .theme-light .bg-emerald-500\/10 {
+      background-color: var(--filter-active) !important;
+      color: #FFFFFF !important;
+      border-radius: 6px !important;
+    }
+
+    /* Status Badges - Traffic Light System */
+    .theme-light .bg-emerald-500\/20 {
+      background-color: var(--status-healthy) !important;
+      color: #FFFFFF !important;
+      border-radius: 4px !important;
+    }
+    .theme-light .bg-emerald-500\/20 * { color: #FFFFFF !important; }
+
+    .theme-light .bg-amber-500\/20 {
+      background-color: var(--status-warning) !important;
+      color: #FFFFFF !important;
+      border-radius: 4px !important;
+    }
+    .theme-light .bg-amber-500\/20 * { color: #FFFFFF !important; }
+
+    .theme-light .bg-red-500\/20 {
+      background-color: var(--status-error) !important;
+      color: #FFFFFF !important;
+      border-radius: 4px !important;
+    }
+    .theme-light .bg-red-500\/20 * { color: #FFFFFF !important; }
+
+    /* Cyan/Teal badges - Use Emerald (primary action) */
+    .theme-light .bg-cyan-500\/20,
+    .theme-light .bg-teal-500\/20 {
+      background-color: var(--action-primary) !important;
+      color: #FFFFFF !important;
+      border-radius: 6px !important;
+    }
+    .theme-light .bg-cyan-500\/20 *,
+    .theme-light .bg-teal-500\/20 * { color: #FFFFFF !important; }
+
+    /* Status Text Colors - Traffic Light */
+    .theme-light .text-emerald-400,
+    .theme-light .text-emerald-300 { color: var(--status-healthy) !important; }
+    .theme-light .text-amber-400 { color: var(--status-warning) !important; }
+    .theme-light .text-red-400 { color: var(--status-error) !important; }
+    .theme-light .text-cyan-400,
+    .theme-light .text-teal-400 { color: var(--action-primary) !important; }
+    .theme-light .text-yellow-400,
+    .theme-light .text-yellow-500 { color: var(--status-warning) !important; }
+
+    /* Pink Accent - Filter chips, active tabs */
+    .theme-light .text-pink-400,
+    .theme-light .text-pink-300,
+    .theme-light .text-rose-400 { color: var(--filter-active) !important; }
+    .theme-light .border-pink-500,
+    .theme-light .border-rose-500 { border-color: var(--filter-active) !important; }
+    .theme-light .bg-pink-500\/10,
+    .theme-light .bg-pink-500\/20,
+    .theme-light .bg-rose-500\/10 {
+      background-color: var(--filter-active) !important;
+      color: #FFFFFF !important;
+    }
+    .theme-light .bg-pink-500\/10 *,
+    .theme-light .bg-pink-500\/20 * { color: #FFFFFF !important; }
+
+    /* Amber/Orange Icon Highlights */
+    .theme-light .text-orange-400,
+    .theme-light .text-orange-500,
+    .theme-light .text-amber-500 { color: var(--icon-highlight) !important; }
+    .theme-light .bg-orange-500\/20,
+    .theme-light .bg-amber-500\/10 {
+      background-color: var(--icon-highlight) !important;
+      color: #FFFFFF !important;
+    }
+
+    /* Hover States */
+    .theme-light .hover\:bg-gray-800:hover { background-color: #F1F5F9 !important; }
+    .theme-light .hover\:bg-gray-700:hover { background-color: #E2E8F0 !important; }
+
+    /* Inputs - White with subtle border */
+    .theme-light input,
+    .theme-light select,
+    .theme-light textarea {
+      background-color: #FFFFFF !important;
+      border: 1px solid #CBD5E1 !important;
+      color: #1E293B !important;
+      border-radius: 6px !important;
+    }
+    .theme-light input::placeholder { color: #94A3B8 !important; }
+    .theme-light input:focus {
+      border-color: var(--action-primary) !important;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+    }
+
+    /* Action Icons - Visible, emerald on hover */
+    .theme-light button.text-gray-400,
+    .theme-light button.text-gray-500 { color: #64748B !important; }
+    .theme-light button.text-gray-400:hover,
+    .theme-light button.text-gray-500:hover { color: var(--action-primary) !important; }
   </style>
 </head>
 <body>
@@ -50,6 +548,8 @@
         network: <><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></>,
         lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
         key: <><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></>,
+        sun: <><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></>,
+        moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
         'arrow-left-right': <><polyline points="17 11 21 7 17 3"/><line x1="21" y1="7" x2="9" y2="7"/><polyline points="7 21 3 17 7 13"/><line x1="15" y1="17" x2="3" y2="17"/></>,
         radio: <><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></>,
         mail: <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>,
@@ -903,7 +1403,7 @@
         auntie: true,
         rosie: true,
         bro: false,
-        darkMode: true,
+        darkMode: false,
         notifications: true,
         autoRefresh: false,
         dadSecurity: false,
@@ -1927,11 +2427,14 @@
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                   <div>
-                    <div className="text-sm font-medium">Dark Mode</div>
-                    <div className="text-xs text-gray-500">Use dark theme across the application</div>
+                    <div className="text-sm font-medium flex items-center gap-2">
+                      <Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={16} />
+                      {featureFlags.darkMode ? 'Dark Mode' : 'Light Mode'}
+                    </div>
+                    <div className="text-xs text-gray-500">{featureFlags.darkMode ? 'Switch to light theme with Freddie Mac colors' : 'Currently using light theme'}</div>
                   </div>
                   <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.darkMode ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.darkMode ? 'bg-violet-500' : 'bg-blue-500'}`}>
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
                   </button>
                 </div>
@@ -6421,42 +6924,42 @@
       };
 
       return (
-        <div className="min-h-screen bg-gray-900 text-gray-100 flex">
+        <div className={`min-h-screen flex ${featureFlags.darkMode ? 'theme-dark' : 'theme-light'}`}>
           {/* Notification Toast */}
           {notification && (
             <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-              notification.type === 'success' ? 'bg-emerald-600' : notification.type === 'warning' ? 'bg-amber-600' : notification.type === 'error' ? 'bg-red-600' : 'bg-gray-700'
+              notification.type === 'success' ? 'bg-emerald-600' : notification.type === 'warning' ? 'bg-amber-600' : notification.type === 'error' ? 'bg-red-600' : featureFlags.darkMode ? 'bg-gray-700' : 'bg-gray-600'
             }`}>
               <Icon name={notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'alert-triangle' : notification.type === 'error' ? 'x-circle' : 'bell'} size={16} />
               <span className="text-sm">{notification.message}</span>
             </div>
           )}
 
-          <div className="w-64 bg-gray-950 border-r border-gray-800 flex flex-col">
-            <div className="p-4 border-b border-gray-800">
+          <div className="w-64 themed-sidebar border-r flex flex-col">
+            <div className="p-4 border-b" style={{borderColor: 'var(--border-sidebar)'}}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center font-bold text-lg">M</div>
-                <div><div className="font-semibold">MIA</div><div className="text-xs text-gray-500">Make Infrastructure Awesome</div></div>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${featureFlags.darkMode ? 'bg-gradient-to-br from-violet-500 to-fuchsia-500' : 'bg-gradient-to-br from-blue-500 to-cyan-500'}`}>M</div>
+                <div><div className="font-semibold" style={{color: 'var(--text-sidebar)'}}>MIA</div><div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>Make Infrastructure Awesome</div></div>
               </div>
             </div>
             <nav className="flex-1 p-3 space-y-1">
               {navItems.map(item => (
-                <button key={item.id} onClick={() => { setActiveNav(item.id); setShowNewJob(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${activeNav === item.id ? `bg-${item.color}-500/20 text-${item.color}-300 border border-${item.color}-500/30` : 'text-gray-400 hover:bg-gray-800'}`}>
+                <button key={item.id} onClick={() => { setActiveNav(item.id); setShowNewJob(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all themed-sidebar-item ${activeNav === item.id ? `bg-${item.color}-500/20 text-${item.color}-300 border border-${item.color}-500/30` : 'hover:bg-opacity-50'}`} style={activeNav !== item.id ? {color: 'var(--text-sidebar-muted)'} : {}}>
                   <Icon name={item.icon} size={18} />
-                  <div className="flex-1"><div className="text-sm font-medium">{item.label}</div>{item.subtitle && <div className="text-xs text-gray-500">{item.subtitle}</div>}</div>
+                  <div className="flex-1"><div className="text-sm font-medium">{item.label}</div>{item.subtitle && <div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>{item.subtitle}</div>}</div>
                   {activeNav === item.id && <Icon name="chevron-right" size={16} className={`text-${item.color}-400`} />}
                 </button>
               ))}
             </nav>
-            <div className="p-3 border-t border-gray-800">
+            <div className="p-3 border-t" style={{borderColor: 'var(--border-sidebar)'}}>
               <div className="flex items-center gap-3 px-3 py-2">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-sm font-medium text-gray-900">LA</div>
-                <div className="flex-1"><div className="text-sm font-medium">Luke Angel</div><div className="text-xs text-gray-500">Platform PM</div></div>
+                <div className="flex-1"><div className="text-sm font-medium" style={{color: 'var(--text-sidebar)'}}>Luke Angel</div><div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>Platform PM</div></div>
               </div>
             </div>
           </div>
           <div className="flex-1 flex flex-col">
-            <header className="h-14 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/50">
+            <header className="h-14 border-b flex items-center justify-between px-6 themed-header">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Icon name={navItems.find(n => n.id === activeNav)?.icon || 'home'} size={20} className={`text-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-400`} />
@@ -6482,12 +6985,13 @@
                   }} className={`flex items-center gap-1.5 bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-600 hover:bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-500 px-3 py-1.5 rounded-lg text-sm font-medium`}><Icon name="plus" size={16} />New</button>
                 )}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div className="relative">
-                  <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                  <input type="text" placeholder="Search..." className="bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:border-violet-500" />
+                  <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{color: 'var(--text-muted)'}} />
+                  <input type="text" placeholder="Search..." className="themed-input rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
                 </div>
-                <button onClick={() => setActiveNav('settings')} className={`p-2 hover:bg-gray-800 rounded-lg ${activeNav === 'settings' ? 'bg-gray-800' : ''}`} title="Settings"><Icon name="settings" size={18} className={activeNav === 'settings' ? 'text-gray-200' : 'text-gray-400'} /></button>
+                <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})} className="p-2 rounded-lg transition-colors hover:bg-gray-800/50" style={{color: 'var(--text-muted)'}} title={featureFlags.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}><Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={18} /></button>
+                <button onClick={() => setActiveNav('settings')} className={`p-2 rounded-lg transition-colors ${activeNav === 'settings' ? 'bg-blue-500/20' : ''}`} style={{color: activeNav === 'settings' ? 'var(--accent-primary)' : 'var(--text-muted)'}} title="Settings"><Icon name="settings" size={18} /></button>
               </div>
             </header>
             <div className="flex-1 overflow-auto">

@@ -70,3 +70,61 @@ Uses React useState hooks. Key state includes:
 - `savedServiceFilters` - Persisted filter configurations per resource
 - `selectedFilterNode` - Currently selected filter for editing
 - `serviceFilterCategory` - Filter palette category filter
+
+---
+
+## Light Mode Theme (December 2024)
+
+### Status: COMPLETE
+Light mode implemented with pixel-extracted colors from M.O.M./Infrastructure screenshot.
+
+### CSS Variables (`:root`)
+```css
+/* PRIMARY ACTION (+ New button) */
+--action-primary: #10B981;       /* Emerald-500 */
+--action-primary-hover: #059669; /* Emerald-600 */
+
+/* SIDEBAR */
+--sidebar-bg: #0F172A;           /* Dark Navy */
+--sidebar-active: #134E4A;       /* Dark Teal highlight */
+
+/* FILTER CHIP ACTIVE ("All 16") */
+--filter-active: #EC4899;        /* Pink-500 */
+
+/* ICON HIGHLIGHTS (Lambda/ECS) */
+--icon-highlight: #F59E0B;       /* Amber-500 */
+
+/* CARD BACKGROUNDS */
+--bg-card-success: #ECFDF5;      /* Emerald-50 - Monthly Spend */
+--bg-card-info: #EFF6FF;         /* Blue-50 - Total Resources */
+--bg-card-alert: #FEF2F2;        /* Red-50 - Active Alerts */
+
+/* STATUS BADGES (Traffic Light) */
+--status-healthy: #10B981;       /* Green */
+--status-warning: #F59E0B;       /* Amber */
+--status-error: #EF4444;         /* Red */
+```
+
+### Color Mapping
+| UI Element | Color | Hex |
+|------------|-------|-----|
+| + New button | Emerald | `#10B981` |
+| Active filter chip | Pink | `#EC4899` |
+| Resource icons | Amber | `#F59E0B` |
+| Healthy badge | Green | `#10B981` |
+| Warning badge | Amber | `#F59E0B` |
+| Sidebar bg | Navy | `#0F172A` |
+| Sidebar active | Dark Teal | `#134E4A` |
+| Card (success) | Mint | `#ECFDF5` |
+| Card (alert) | Light Red | `#FEF2F2` |
+
+### Features
+- Light mode is DEFAULT (`featureFlags.darkMode: false`)
+- Toggle button in header (sun/moon icon)
+- Dark sidebar maintained in both modes
+- Traffic light status badges (Green/Amber/Red)
+
+### Verification
+```bash
+node verify_parse.js  # Should output: SUCCESS - index.html parses correctly
+```
