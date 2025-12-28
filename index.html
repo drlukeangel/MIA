@@ -128,25 +128,39 @@
     const platformTotal = platformCosts.mom.total + platformCosts.uncle.total + platformCosts.dad.total + platformCosts.auntie.total + platformCosts.rosie.total + platformCosts.bro.total;
     const platformSavings = ((platformCosts.legacyCost - platformTotal) / platformCosts.legacyCost * 100).toFixed(1);
 
+    // Global Namespaces data - used by App component
+    const initialNamespaces = [
+      { id: 1, name: 'sf-loans', description: 'Single-Family Loan Origination & Servicing', bu: 'Single-Family', owner: 'sf-lending-team', environment: 'production', created: '2024-01-15' },
+      { id: 2, name: 'sf-mortgage', description: 'Single-Family Mortgage Products', bu: 'Single-Family', owner: 'sf-mortgage-team', environment: 'production', created: '2024-01-15' },
+      { id: 3, name: 'mf-loans', description: 'Multi-Family Loan Products', bu: 'Multi-Family', owner: 'mf-lending-team', environment: 'production', created: '2024-02-01' },
+      { id: 4, name: 'mf-claims', description: 'Multi-Family Claims Processing', bu: 'Multi-Family', owner: 'mf-claims-team', environment: 'production', created: '2024-02-01' },
+      { id: 5, name: 'eot-platform', description: 'Enterprise Platform Services', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-01' },
+      { id: 6, name: 'eot-integrations', description: 'External Partner & API Integrations', bu: 'Enterprise', owner: 'integration-team', environment: 'production', created: '2024-01-10' },
+      { id: 7, name: 'eot-messaging', description: 'Enterprise Event Bus & Messaging', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-05' },
+      { id: 8, name: 'eot-scheduling', description: 'Job Scheduling & Orchestration', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-05' },
+      { id: 9, name: 'eot-data', description: 'Shared Data Services (MongoDB, Analytics)', bu: 'Enterprise', owner: 'data-platform', environment: 'production', created: '2024-01-08' },
+      { id: 10, name: 'istio-system', description: 'Service Mesh Infrastructure', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-01' },
+    ];
+
     // Enhanced Mock Jobs Data
     const mockJobs = [
-      { id: 1, name: 'loan-etl-daily', type: 'dag', target: 'mwaa', schedule: '0 2 * * *', scheduleHuman: 'Daily at 2:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 2:00 AM', owner: 'loans-origination', tags: ['etl', 'production', 'critical'], successRate: 99.2, avgDuration: '45m 30s', estimatedCost: '$0.85', taskCount: 4, description: 'Daily ETL pipeline for loan origination data. Extracts from source systems, transforms, and loads to data warehouse.',
+      { id: 1, name: 'loan-etl-daily', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 2 * * *', scheduleHuman: 'Daily at 2:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 2:00 AM', owner: 'loans-origination', tags: ['etl', 'production', 'critical'], successRate: 99.2, avgDuration: '45m 30s', estimatedCost: '$0.85', taskCount: 4, description: 'Daily ETL pipeline for loan origination data. Extracts from source systems, transforms, and loads to data warehouse.',
         workflow: [
           { id: 1, type: 'lambda', name: 'WaitForS3File', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:s3-watcher' } },
           { id: 2, type: 'lambda', name: 'ValidateSchema', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:schema-validator' } },
           { id: 3, type: 'glue', name: 'TransformData', config: { jobName: 'loan-etl-transform' } },
           { id: 4, type: 'dynamodb', name: 'LoadToAurora', config: { tableName: 'loans-processed', operation: 'PutItem' } }
         ]},
-      { id: 2, name: 'db-backup-nightly', type: 'schedule', target: 'eventbridge', schedule: '0 3 * * *', scheduleHuman: 'Daily at 3:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 3:00 AM', owner: 'platform-ops', tags: ['backup', 'production'], successRate: 100, avgDuration: '12m 15s', estimatedCost: '$0.12', taskCount: 1, description: 'Nightly database backup job for all production RDS instances.',
+      { id: 2, name: 'db-backup-nightly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 3 * * *', scheduleHuman: 'Daily at 3:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 3:00 AM', owner: 'platform-ops', tags: ['backup', 'production'], successRate: 100, avgDuration: '12m 15s', estimatedCost: '$0.12', taskCount: 1, description: 'Nightly database backup job for all production RDS instances.',
         workflow: [
           { id: 1, type: 'lambda', name: 'CreateRDSSnapshots', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:rds-backup' } },
           { id: 2, type: 'sns', name: 'NotifyOnComplete', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:backup-notifications' } }
         ]},
-      { id: 3, name: 'cache-invalidation', type: 'schedule', target: 'eventbridge', schedule: 'rate(1 hour)', scheduleHuman: 'Every hour', status: 'active', lastRun: '23 min ago', lastRunStatus: 'success', nextRun: 'In 37 minutes', owner: 'platform-ops', tags: ['cache', 'maintenance'], successRate: 99.8, avgDuration: '45s', estimatedCost: '$0.02', taskCount: 1, description: 'Hourly cache invalidation for stale data cleanup.',
+      { id: 3, name: 'cache-invalidation', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(1 hour)', scheduleHuman: 'Every hour', status: 'active', lastRun: '23 min ago', lastRunStatus: 'success', nextRun: 'In 37 minutes', owner: 'platform-ops', tags: ['cache', 'maintenance'], successRate: 99.8, avgDuration: '45s', estimatedCost: '$0.02', taskCount: 1, description: 'Hourly cache invalidation for stale data cleanup.',
         workflow: [
           { id: 1, type: 'lambda', name: 'InvalidateRedisCache', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:cache-invalidator' } }
         ]},
-      { id: 4, name: 'month-end-reporting', type: 'dag', target: 'mwaa', schedule: '0 6 1 * *', scheduleHuman: '1st of month at 6:00 AM', status: 'paused', lastRun: '29 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 6:00 AM', owner: 'finance-analytics', tags: ['reporting', 'finance'], successRate: 97.5, avgDuration: '2h 15m', estimatedCost: '$2.40', taskCount: 8, description: 'Monthly financial reporting pipeline with reconciliation checks.',
+      { id: 4, name: 'month-end-reporting', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 6 1 * *', scheduleHuman: '1st of month at 6:00 AM', status: 'paused', lastRun: '29 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 6:00 AM', owner: 'finance-analytics', tags: ['reporting', 'finance'], successRate: 97.5, avgDuration: '2h 15m', estimatedCost: '$2.40', taskCount: 8, description: 'Monthly financial reporting pipeline with reconciliation checks.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchFinancialData', config: {} },
           { id: 2, type: 'parallel', name: 'ProcessReports', config: {}, branches: [
@@ -158,7 +172,7 @@
           { id: 4, type: 'choice', name: 'CheckDiscrepancy', config: {}, rules: [{ variable: '$.discrepancy', operator: 'NumericGreaterThan', value: '0' }] },
           { id: 5, type: 'sns', name: 'NotifyFinance', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:finance-reports' } }
         ]},
-      { id: 5, name: 'payments-reconciliation', type: 'dag', target: 'mwaa', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '3 hours ago', lastRunStatus: 'failed', nextRun: 'Tomorrow 1:00 AM', owner: 'payments-team', tags: ['payments', 'reconciliation', 'critical'], successRate: 94.2, avgDuration: '55m', estimatedCost: '$1.20', taskCount: 6, description: 'Daily reconciliation of payment transactions with bank systems.',
+      { id: 5, name: 'payments-reconciliation', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '3 hours ago', lastRunStatus: 'failed', nextRun: 'Tomorrow 1:00 AM', owner: 'payments-team', tags: ['payments', 'reconciliation', 'critical'], successRate: 94.2, avgDuration: '55m', estimatedCost: '$1.20', taskCount: 6, description: 'Daily reconciliation of payment transactions with bank systems.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchInternalTxns', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:fetch-internal' } },
           { id: 2, type: 'lambda', name: 'FetchBankTxns', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:fetch-bank' } },
@@ -167,19 +181,19 @@
           { id: 5, type: 'sns', name: 'AlertOnMismatch', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:payment-alerts' } },
           { id: 6, type: 's3', name: 'GenerateReport', config: { bucket: 'payments-reports', key: 'daily/reconciliation.json' } }
         ]},
-      { id: 6, name: 'customer-data-sync', type: 'schedule', target: 'eventbridge', schedule: 'rate(15 minutes)', scheduleHuman: 'Every 15 minutes', status: 'active', lastRun: '8 min ago', lastRunStatus: 'success', nextRun: 'In 7 minutes', owner: 'customer-platform', tags: ['sync', 'customer', 'real-time'], successRate: 99.9, avgDuration: '2m 15s', estimatedCost: '$0.03', taskCount: 2, description: 'Real-time customer data synchronization between CRM and data lake.',
+      { id: 6, name: 'customer-data-sync', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(15 minutes)', scheduleHuman: 'Every 15 minutes', status: 'active', lastRun: '8 min ago', lastRunStatus: 'success', nextRun: 'In 7 minutes', owner: 'customer-platform', tags: ['sync', 'customer', 'real-time'], successRate: 99.9, avgDuration: '2m 15s', estimatedCost: '$0.03', taskCount: 2, description: 'Real-time customer data synchronization between CRM and data lake.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchCRMChanges', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:crm-sync' } },
           { id: 2, type: 'dynamodb', name: 'UpdateCustomerTable', config: { tableName: 'customers', operation: 'BatchWrite' } }
         ]},
-      { id: 7, name: 'fraud-detection-ml', type: 'schedule', target: 'eventbridge', schedule: 'rate(5 minutes)', scheduleHuman: 'Every 5 minutes', status: 'active', lastRun: '2 min ago', lastRunStatus: 'success', nextRun: 'In 3 minutes', owner: 'fraud-prevention', tags: ['ml', 'fraud', 'critical', 'real-time'], successRate: 99.7, avgDuration: '1m 45s', estimatedCost: '$0.08', taskCount: 4, description: 'Real-time fraud detection using ML models on transaction streams.',
+      { id: 7, name: 'fraud-detection-ml', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(5 minutes)', scheduleHuman: 'Every 5 minutes', status: 'active', lastRun: '2 min ago', lastRunStatus: 'success', nextRun: 'In 3 minutes', owner: 'fraud-prevention', tags: ['ml', 'fraud', 'critical', 'real-time'], successRate: 99.7, avgDuration: '1m 45s', estimatedCost: '$0.08', taskCount: 4, description: 'Real-time fraud detection using ML models on transaction streams.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchTransactions', config: {} },
           { id: 2, type: 'lambda', name: 'RunMLModel', config: {} },
           { id: 3, type: 'lambda', name: 'FlagSuspicious', config: {} },
           { id: 4, type: 'sns', name: 'NotifyTeam', config: {} }
         ]},
-      { id: 8, name: 'compliance-audit-weekly', type: 'schedule', target: 'eventbridge', schedule: '0 8 * * 1', scheduleHuman: 'Every Monday at 8:00 AM', status: 'active', lastRun: '3 days ago', lastRunStatus: 'success', nextRun: 'Monday 8:00 AM', owner: 'compliance-team', tags: ['compliance', 'audit', 'weekly'], successRate: 100, avgDuration: '1h 30m', estimatedCost: '$1.50', taskCount: 5, description: 'Weekly compliance audit report generation and submission.',
+      { id: 8, name: 'compliance-audit-weekly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 8 * * 1', scheduleHuman: 'Every Monday at 8:00 AM', status: 'active', lastRun: '3 days ago', lastRunStatus: 'success', nextRun: 'Monday 8:00 AM', owner: 'compliance-team', tags: ['compliance', 'audit', 'weekly'], successRate: 100, avgDuration: '1h 30m', estimatedCost: '$1.50', taskCount: 5, description: 'Weekly compliance audit report generation and submission.',
         workflow: [
           { id: 1, type: 'lambda', name: 'GatherAuditData', config: {} },
           { id: 2, type: 'glue', name: 'ProcessAuditRecords', config: { jobName: 'compliance-audit-etl' } },
@@ -187,49 +201,49 @@
           { id: 4, type: 's3', name: 'StoreReport', config: { bucket: 'compliance-reports' } },
           { id: 5, type: 'sns', name: 'NotifyCompliance', config: {} }
         ]},
-      { id: 9, name: 'data-quality-check', type: 'schedule', target: 'eventbridge', schedule: '0 4 * * *', scheduleHuman: 'Daily at 4:00 AM', status: 'active', lastRun: '6 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 4:00 AM', owner: 'data-engineering', tags: ['data-quality', 'validation', 'production'], successRate: 98.5, avgDuration: '25m', estimatedCost: '$0.35', taskCount: 3, description: 'Daily data quality validation across all critical datasets.',
+      { id: 9, name: 'data-quality-check', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 4 * * *', scheduleHuman: 'Daily at 4:00 AM', status: 'active', lastRun: '6 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 4:00 AM', owner: 'data-engineering', tags: ['data-quality', 'validation', 'production'], successRate: 98.5, avgDuration: '25m', estimatedCost: '$0.35', taskCount: 3, description: 'Daily data quality validation across all critical datasets.',
         workflow: [
           { id: 1, type: 'glue', name: 'RunDQChecks', config: { jobName: 'data-quality-validator' } },
           { id: 2, type: 'choice', name: 'CheckResults', config: {}, rules: [{ variable: '$.failedChecks', operator: 'NumericGreaterThan', value: '0' }] },
           { id: 3, type: 'sns', name: 'AlertOnFailure', config: {} }
         ]},
-      { id: 10, name: 'user-analytics-hourly', type: 'schedule', target: 'eventbridge', schedule: '0 * * * *', scheduleHuman: 'Every hour', status: 'active', lastRun: '45 min ago', lastRunStatus: 'success', nextRun: 'In 15 minutes', owner: 'product-analytics', tags: ['analytics', 'user-behavior'], successRate: 99.6, avgDuration: '8m', estimatedCost: '$0.12', taskCount: 3, description: 'Hourly aggregation of user behavior analytics for dashboards.',
+      { id: 10, name: 'user-analytics-hourly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 * * * *', scheduleHuman: 'Every hour', status: 'active', lastRun: '45 min ago', lastRunStatus: 'success', nextRun: 'In 15 minutes', owner: 'product-analytics', tags: ['analytics', 'user-behavior'], successRate: 99.6, avgDuration: '8m', estimatedCost: '$0.12', taskCount: 3, description: 'Hourly aggregation of user behavior analytics for dashboards.',
         workflow: [
           { id: 1, type: 'lambda', name: 'AggregateEvents', config: {} },
           { id: 2, type: 'glue', name: 'TransformMetrics', config: { jobName: 'user-metrics-etl' } },
           { id: 3, type: 'dynamodb', name: 'UpdateDashboard', config: { tableName: 'analytics-cache' } }
         ]},
-      { id: 11, name: 'api-usage-billing', type: 'schedule', target: 'eventbridge', schedule: '0 0 1 * *', scheduleHuman: '1st of month at midnight', status: 'active', lastRun: '27 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 12:00 AM', owner: 'billing-team', tags: ['billing', 'api', 'monthly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.55', taskCount: 4, description: 'Monthly API usage aggregation and billing report generation.',
+      { id: 11, name: 'api-usage-billing', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 0 1 * *', scheduleHuman: '1st of month at midnight', status: 'active', lastRun: '27 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 12:00 AM', owner: 'billing-team', tags: ['billing', 'api', 'monthly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.55', taskCount: 4, description: 'Monthly API usage aggregation and billing report generation.',
         workflow: [
           { id: 1, type: 'lambda', name: 'AggregateUsage', config: {} },
           { id: 2, type: 'glue', name: 'CalculateBilling', config: { jobName: 'api-billing-calc' } },
           { id: 3, type: 's3', name: 'StoreInvoices', config: { bucket: 'billing-invoices' } },
           { id: 4, type: 'sns', name: 'NotifyFinance', config: {} }
         ]},
-      { id: 12, name: 'log-archival-daily', type: 'schedule', target: 'eventbridge', schedule: '0 5 * * *', scheduleHuman: 'Daily at 5:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 5:00 AM', owner: 'platform-ops', tags: ['logs', 'archival', 'storage'], successRate: 99.8, avgDuration: '15m', estimatedCost: '$0.08', taskCount: 2, description: 'Daily log archival to S3 Glacier for cost optimization.',
+      { id: 12, name: 'log-archival-daily', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 5 * * *', scheduleHuman: 'Daily at 5:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 5:00 AM', owner: 'platform-ops', tags: ['logs', 'archival', 'storage'], successRate: 99.8, avgDuration: '15m', estimatedCost: '$0.08', taskCount: 2, description: 'Daily log archival to S3 Glacier for cost optimization.',
         workflow: [
           { id: 1, type: 'lambda', name: 'IdentifyOldLogs', config: {} },
           { id: 2, type: 's3', name: 'MoveToGlacier', config: { bucket: 'logs-archive', storageClass: 'GLACIER' } }
         ]},
-      { id: 13, name: 'security-scan-nightly', type: 'schedule', target: 'eventbridge', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '7 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 1:00 AM', owner: 'security-team', tags: ['security', 'scan', 'critical'], successRate: 99.9, avgDuration: '35m', estimatedCost: '$0.45', taskCount: 4, description: 'Nightly security vulnerability scanning across infrastructure.',
+      { id: 13, name: 'security-scan-nightly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '7 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 1:00 AM', owner: 'security-team', tags: ['security', 'scan', 'critical'], successRate: 99.9, avgDuration: '35m', estimatedCost: '$0.45', taskCount: 4, description: 'Nightly security vulnerability scanning across infrastructure.',
         workflow: [
           { id: 1, type: 'lambda', name: 'TriggerScans', config: {} },
           { id: 2, type: 'lambda', name: 'CollectResults', config: {} },
           { id: 3, type: 'choice', name: 'CheckVulnerabilities', config: {}, rules: [{ variable: '$.criticalCount', operator: 'NumericGreaterThan', value: '0' }] },
           { id: 4, type: 'sns', name: 'AlertSecurityTeam', config: {} }
         ]},
-      { id: 14, name: 'inventory-sync', type: 'schedule', target: 'eventbridge', schedule: 'rate(30 minutes)', scheduleHuman: 'Every 30 minutes', status: 'active', lastRun: '12 min ago', lastRunStatus: 'success', nextRun: 'In 18 minutes', owner: 'inventory-team', tags: ['inventory', 'sync', 'warehouse'], successRate: 99.4, avgDuration: '4m', estimatedCost: '$0.05', taskCount: 2, description: 'Real-time inventory sync between warehouse systems and e-commerce.',
+      { id: 14, name: 'inventory-sync', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(30 minutes)', scheduleHuman: 'Every 30 minutes', status: 'active', lastRun: '12 min ago', lastRunStatus: 'success', nextRun: 'In 18 minutes', owner: 'inventory-team', tags: ['inventory', 'sync', 'warehouse'], successRate: 99.4, avgDuration: '4m', estimatedCost: '$0.05', taskCount: 2, description: 'Real-time inventory sync between warehouse systems and e-commerce.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchWarehouseData', config: {} },
           { id: 2, type: 'dynamodb', name: 'UpdateInventory', config: { tableName: 'product-inventory' } }
         ]},
-      { id: 15, name: 'email-campaign-processor', type: 'schedule', target: 'eventbridge', schedule: '0 9 * * *', scheduleHuman: 'Daily at 9:00 AM', status: 'paused', lastRun: '2 days ago', lastRunStatus: 'success', nextRun: 'Paused', owner: 'marketing-team', tags: ['marketing', 'email', 'campaigns'], successRate: 98.2, avgDuration: '20m', estimatedCost: '$0.25', taskCount: 3, description: 'Daily email campaign processing and delivery scheduling.',
+      { id: 15, name: 'email-campaign-processor', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 9 * * *', scheduleHuman: 'Daily at 9:00 AM', status: 'paused', lastRun: '2 days ago', lastRunStatus: 'success', nextRun: 'Paused', owner: 'marketing-team', tags: ['marketing', 'email', 'campaigns'], successRate: 98.2, avgDuration: '20m', estimatedCost: '$0.25', taskCount: 3, description: 'Daily email campaign processing and delivery scheduling.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchCampaigns', config: {} },
           { id: 2, type: 'lambda', name: 'SegmentAudience', config: {} },
           { id: 3, type: 'sns', name: 'QueueEmails', config: {} }
         ]},
-      { id: 16, name: 'model-retraining-weekly', type: 'schedule', target: 'eventbridge', schedule: '0 2 * * 0', scheduleHuman: 'Every Sunday at 2:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 2:00 AM', owner: 'ml-platform', tags: ['ml', 'training', 'weekly'], successRate: 96.5, avgDuration: '3h 45m', estimatedCost: '$8.50', taskCount: 5, description: 'Weekly retraining of ML models with latest data.',
+      { id: 16, name: 'model-retraining-weekly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 2 * * 0', scheduleHuman: 'Every Sunday at 2:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 2:00 AM', owner: 'ml-platform', tags: ['ml', 'training', 'weekly'], successRate: 96.5, avgDuration: '3h 45m', estimatedCost: '$8.50', taskCount: 5, description: 'Weekly retraining of ML models with latest data.',
         workflow: [
           { id: 1, type: 'lambda', name: 'PrepareDataset', config: {} },
           { id: 2, type: 'batch', name: 'TrainModels', config: { jobQueue: 'ml-training-queue' } },
@@ -237,26 +251,26 @@
           { id: 4, type: 's3', name: 'DeployModels', config: { bucket: 'ml-models-prod' } },
           { id: 5, type: 'sns', name: 'NotifyMLTeam', config: {} }
         ]},
-      { id: 17, name: 'partner-data-export', type: 'schedule', target: 'eventbridge', schedule: '0 6 * * *', scheduleHuman: 'Daily at 6:00 AM', status: 'active', lastRun: '4 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 6:00 AM', owner: 'partnerships-team', tags: ['partner', 'export', 'integration'], successRate: 99.1, avgDuration: '18m', estimatedCost: '$0.22', taskCount: 3, description: 'Daily data export to partner systems via secure SFTP.',
+      { id: 17, name: 'partner-data-export', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 6 * * *', scheduleHuman: 'Daily at 6:00 AM', status: 'active', lastRun: '4 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 6:00 AM', owner: 'partnerships-team', tags: ['partner', 'export', 'integration'], successRate: 99.1, avgDuration: '18m', estimatedCost: '$0.22', taskCount: 3, description: 'Daily data export to partner systems via secure SFTP.',
         workflow: [
           { id: 1, type: 'glue', name: 'PrepareExport', config: { jobName: 'partner-export-etl' } },
           { id: 2, type: 'lambda', name: 'EncryptData', config: {} },
           { id: 3, type: 'lambda', name: 'UploadToSFTP', config: {} }
         ]},
-      { id: 18, name: 'report-distribution', type: 'schedule', target: 'eventbridge', schedule: '0 7 * * 1-5', scheduleHuman: 'Weekdays at 7:00 AM', status: 'active', lastRun: '1 day ago', lastRunStatus: 'success', nextRun: 'Tomorrow 7:00 AM', owner: 'business-intel', tags: ['reports', 'distribution', 'business'], successRate: 99.5, avgDuration: '12m', estimatedCost: '$0.15', taskCount: 3, description: 'Daily business intelligence report distribution to stakeholders.',
+      { id: 18, name: 'report-distribution', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 7 * * 1-5', scheduleHuman: 'Weekdays at 7:00 AM', status: 'active', lastRun: '1 day ago', lastRunStatus: 'success', nextRun: 'Tomorrow 7:00 AM', owner: 'business-intel', tags: ['reports', 'distribution', 'business'], successRate: 99.5, avgDuration: '12m', estimatedCost: '$0.15', taskCount: 3, description: 'Daily business intelligence report distribution to stakeholders.',
         workflow: [
           { id: 1, type: 'lambda', name: 'GenerateReports', config: {} },
           { id: 2, type: 's3', name: 'StoreReports', config: { bucket: 'bi-reports' } },
           { id: 3, type: 'sns', name: 'NotifyStakeholders', config: {} }
         ]},
-      { id: 19, name: 'database-maintenance', type: 'schedule', target: 'eventbridge', schedule: '0 3 * * 0', scheduleHuman: 'Every Sunday at 3:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 3:00 AM', owner: 'dba-team', tags: ['database', 'maintenance', 'weekly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.35', taskCount: 4, description: 'Weekly database maintenance including vacuum and index rebuild.',
+      { id: 19, name: 'database-maintenance', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 3 * * 0', scheduleHuman: 'Every Sunday at 3:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 3:00 AM', owner: 'dba-team', tags: ['database', 'maintenance', 'weekly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.35', taskCount: 4, description: 'Weekly database maintenance including vacuum and index rebuild.',
         workflow: [
           { id: 1, type: 'lambda', name: 'CheckTableSizes', config: {} },
           { id: 2, type: 'lambda', name: 'RunVacuum', config: {} },
           { id: 3, type: 'lambda', name: 'RebuildIndexes', config: {} },
           { id: 4, type: 'sns', name: 'NotifyDBA', config: {} }
         ]},
-      { id: 20, name: 'cost-allocation-daily', type: 'schedule', target: 'eventbridge', schedule: '0 8 * * *', scheduleHuman: 'Daily at 8:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 8:00 AM', owner: 'finops-team', tags: ['cost', 'finops', 'allocation'], successRate: 99.8, avgDuration: '22m', estimatedCost: '$0.28', taskCount: 4, description: 'Daily AWS cost allocation and tagging compliance check.',
+      { id: 20, name: 'cost-allocation-daily', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 8 * * *', scheduleHuman: 'Daily at 8:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 8:00 AM', owner: 'finops-team', tags: ['cost', 'finops', 'allocation'], successRate: 99.8, avgDuration: '22m', estimatedCost: '$0.28', taskCount: 4, description: 'Daily AWS cost allocation and tagging compliance check.',
         workflow: [
           { id: 1, type: 'lambda', name: 'FetchCostData', config: {} },
           { id: 2, type: 'glue', name: 'AllocateCosts', config: { jobName: 'cost-allocation-etl' } },
@@ -448,15 +462,15 @@
 
     // U.N.C.L.E. - Data Storage resources
     const mockDatastores = [
-      { id: 1, name: 'loan-service-db', type: 'postgresql', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.' },
-      { id: 2, name: 'user-profiles', type: 'mongodb', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', nodes: 3, collections: 45, documents: '2.8M', storage: '125 GB', description: 'User profile and preferences store. Powers personalization and user settings across all applications.' },
-      { id: 3, name: 'orders-table', type: 'dynamodb', mode: 'On-demand', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M', size: '8.5 GB', description: 'Orders table with order items and status. Supports high-throughput order processing.' },
-      { id: 4, name: 'analytics-db', type: 'dsql', engine: 'Aurora DSQL', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', queries: '2.4K/day', storage: '1.2 TB', users: 45, description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.' },
-      { id: 5, name: 'document-store', type: 'mongodb', engine: 'MongoDB Atlas M40', status: 'available', size: 'M40', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', nodes: 3, collections: 28, documents: '1.8M', storage: '45 GB', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.' },
-      { id: 9, name: 'session-store', type: 'mongodb', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', nodes: 3, collections: 12, documents: '2.1M', storage: '85 GB', description: 'Session and cache store for west coast users. Provides low-latency session management.' },
-      { id: 6, name: 'payments-ledger', type: 'postgresql', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.' },
-      { id: 7, name: 'customer-360', type: 'documentdb', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', nodes: 3, collections: 32, documents: '4.2M', storage: '180 GB', connections: 28, description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.' },
-      { id: 8, name: 'audit-logs-db', type: 'documentdb', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', nodes: 3, collections: 18, documents: '125M', storage: '2.1 TB', connections: 15, description: 'Compliance audit log storage. Immutable document store for regulatory requirements.' },
+      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.' },
+      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', nodes: 3, collections: 45, documents: '2.8M', storage: '125 GB', description: 'User profile and preferences store. Powers personalization and user settings across all applications.' },
+      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', mode: 'On-demand', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M', size: '8.5 GB', description: 'Orders table with order items and status. Supports high-throughput order processing.' },
+      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', engine: 'Aurora DSQL', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', queries: '2.4K/day', storage: '1.2 TB', users: 45, description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.' },
+      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M40', status: 'available', size: 'M40', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', nodes: 3, collections: 28, documents: '1.8M', storage: '45 GB', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.' },
+      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', nodes: 3, collections: 12, documents: '2.1M', storage: '85 GB', description: 'Session and cache store for west coast users. Provides low-latency session management.' },
+      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.' },
+      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', nodes: 3, collections: 32, documents: '4.2M', storage: '180 GB', connections: 28, description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.' },
+      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', nodes: 3, collections: 18, documents: '125M', storage: '2.1 TB', connections: 15, description: 'Compliance audit log storage. Immutable document store for regulatory requirements.' },
     ];
 
     // B.R.O. - Networking resources
@@ -497,54 +511,56 @@
     // Istio Mesh Resources - Services, Virtual Services, Gateways, Policies
     const mockMeshResources = [
       // Services (backend services in the mesh)
-      { id: 1, name: 'loan-service', type: 'service', namespace: 'lending', status: 'healthy', host: 'loan-service.lending.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-15' },
-      { id: 2, name: 'user-service', type: 'service', namespace: 'identity', status: 'healthy', host: 'user-service.identity.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'identity-team', bu: 'Enterprise', created: '2024-01-20' },
-      { id: 3, name: 'payment-gateway', type: 'service', namespace: 'payments', status: 'degraded', host: 'payment-gateway.payments.svc.cluster.local', port: 8443, protocol: 'HTTPS', endpoints: 3, owner: 'payments-team', bu: 'Enterprise', created: '2024-02-10' },
-      { id: 4, name: 'notification-service', type: 'service', namespace: 'comms', status: 'healthy', host: 'notification-service.comms.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-05' },
-      { id: 5, name: 'mortgage-calc-service', type: 'service', namespace: 'lending', status: 'healthy', host: 'mortgage-calc-service.lending.svc.cluster.local', port: 8080, protocol: 'gRPC', endpoints: 3, owner: 'loans-origination', bu: 'Single-Family', created: '2024-05-12' },
-      // Virtual Services (traffic routing)
-      { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'lending', status: 'healthy', host: 'api.lending.fm.com', gateway: 'lending-gw-ingress', routes: 12, owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-16' },
-      { id: 7, name: 'user-api-vs', type: 'virtualservice', namespace: 'identity', status: 'healthy', host: 'api.identity.fm.com', gateway: 'identity-gw-ingress', routes: 8, owner: 'identity-team', bu: 'Enterprise', created: '2024-01-21' },
-      { id: 8, name: 'payment-vs', type: 'virtualservice', namespace: 'payments', status: 'healthy', host: 'api.payments.fm.com', gateway: 'payments-gw-ingress', routes: 15, owner: 'payments-team', bu: 'Enterprise', created: '2024-02-11' },
-      { id: 9, name: 'public-api-vs', type: 'virtualservice', namespace: 'istio-system', status: 'healthy', host: 'api.fanniemae.com', gateway: 'public-gw-ingress', routes: 45, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
+      { id: 1, name: 'loan-service', type: 'service', namespace: 'sf-loans', status: 'healthy', host: 'loan-service.sf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-15' },
+      { id: 2, name: 'user-service', type: 'service', namespace: 'eot-platform', status: 'healthy', host: 'user-service.eot-platform.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
+      { id: 3, name: 'payment-gateway', type: 'service', namespace: 'eot-integrations', status: 'degraded', host: 'payment-gateway.eot-integrations.svc.cluster.local', port: 8443, protocol: 'HTTPS', endpoints: 3, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-10' },
+      { id: 4, name: 'notification-service', type: 'service', namespace: 'eot-messaging', status: 'healthy', host: 'notification-service.eot-messaging.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-05' },
+      { id: 5, name: 'mortgage-calc-service', type: 'service', namespace: 'sf-mortgage', status: 'healthy', host: 'mortgage-calc-service.sf-mortgage.svc.cluster.local', port: 8080, protocol: 'gRPC', endpoints: 3, owner: 'sf-mortgage-team', bu: 'Single-Family', created: '2024-05-12' },
+      { id: 42, name: 'claims-processor', type: 'service', namespace: 'mf-claims', status: 'healthy', host: 'claims-processor.mf-claims.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-02-15' },
+      { id: 43, name: 'mf-loan-service', type: 'service', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service.mf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-20' },
+      // Virtual Services (traffic routing) - host is external, targetService is internal service
+      { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'sf-loans', status: 'healthy', host: 'api.sf-loans.fm.com', targetService: 'loan-service', gateway: 'sf-loans-gw-ingress', routes: 12, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-16' },
+      { id: 7, name: 'user-api-vs', type: 'virtualservice', namespace: 'eot-platform', status: 'healthy', host: 'api.platform.fm.com', targetService: 'user-service', gateway: 'platform-gw-ingress', routes: 8, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-21' },
+      { id: 8, name: 'payment-vs', type: 'virtualservice', namespace: 'eot-integrations', status: 'healthy', host: 'api.payments.fm.com', targetService: 'payment-gateway', gateway: 'integrations-gw-ingress', routes: 15, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-11' },
+      { id: 9, name: 'public-api-vs', type: 'virtualservice', namespace: 'istio-system', status: 'healthy', host: 'api.freddiemac.com', targetService: 'loan-service', gateway: 'public-gw-ingress', routes: 45, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
       // Ingress Gateways (external traffic entry)
-      { id: 10, name: 'public-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.fanniemae.com', 'portal.fanniemae.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-05' },
-      { id: 11, name: 'lending-gw-ingress', type: 'ingress', namespace: 'lending', status: 'healthy', hosts: ['api.lending.fm.com'], tls: 'SIMPLE', port: 443, owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-10' },
-      { id: 12, name: 'partner-gw-ingress', type: 'ingress', namespace: 'integration', status: 'healthy', hosts: ['partner-api.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-04-20' },
-      { id: 40, name: 'payments-gw-ingress', type: 'ingress', namespace: 'payments', status: 'healthy', hosts: ['api.payments.fm.com'], tls: 'MUTUAL', port: 443, owner: 'payments-team', bu: 'Enterprise', created: '2024-02-08' },
-      { id: 41, name: 'identity-gw-ingress', type: 'ingress', namespace: 'identity', status: 'healthy', hosts: ['api.identity.fm.com'], tls: 'MUTUAL', port: 443, owner: 'identity-team', bu: 'Enterprise', created: '2024-01-18' },
+      { id: 10, name: 'public-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.freddiemac.com', 'portal.freddiemac.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-05' },
+      { id: 11, name: 'sf-loans-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.sf-loans.fm.com'], tls: 'SIMPLE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-10' },
+      { id: 12, name: 'partner-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['partner-api.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-04-20' },
+      { id: 40, name: 'integrations-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.payments.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-08' },
+      { id: 41, name: 'platform-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.platform.fm.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-18' },
       // Egress Gateways (controlled external calls)
-      { id: 13, name: 'bank-gw-egress', type: 'egress', namespace: 'payments', status: 'healthy', hosts: ['*.bankofamerica.com', '*.chase.com', '*.wellsfargo.com'], tls: 'ORIGINATE', port: 443, owner: 'payments-team', bu: 'Enterprise', created: '2024-02-15' },
-      { id: 14, name: 'credit-bureau-gw-egress', type: 'egress', namespace: 'lending', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], tls: 'ORIGINATE', port: 443, owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-20' },
-      { id: 15, name: 'snowflake-gw-egress', type: 'egress', namespace: 'data', status: 'healthy', hosts: ['*.snowflakecomputing.com'], tls: 'ORIGINATE', port: 443, owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
+      { id: 13, name: 'bank-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.bankofamerica.com', '*.chase.com', '*.wellsfargo.com'], tls: 'ORIGINATE', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-15' },
+      { id: 14, name: 'credit-bureau-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], tls: 'ORIGINATE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
+      { id: 15, name: 'snowflake-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.snowflakecomputing.com'], tls: 'ORIGINATE', port: 443, owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
       { id: 38, name: 'external-apis-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.stripe.com', 'api.plaid.com', 'api.twilio.com'], tls: 'ORIGINATE', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-18' },
       // East-West Gateways (cross-cluster/namespace traffic)
-      { id: 28, name: 'lending-to-payments-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.payments.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-01' },
-      { id: 29, name: 'identity-mesh-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.identity.svc.cluster.local', '*.lending.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
+      { id: 28, name: 'sf-to-eot-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-integrations.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-01' },
+      { id: 29, name: 'platform-mesh-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-platform.svc.cluster.local', '*.sf-loans.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
       { id: 30, name: 'cross-cluster-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.cluster-east.fm.com', '*.cluster-west.fm.com'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-03-05' },
       // Destination Rules (load balancing, circuit breakers)
-      { id: 16, name: 'loan-service-dr', type: 'destinationrule', namespace: 'lending', status: 'healthy', host: 'loan-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-17' },
-      { id: 17, name: 'payment-gateway-dr', type: 'destinationrule', namespace: 'payments', status: 'warning', host: 'payment-gateway', trafficPolicy: 'LEAST_CONN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'payments-team', bu: 'Enterprise', created: '2024-02-12' },
-      { id: 39, name: 'user-service-dr', type: 'destinationrule', namespace: 'identity', status: 'healthy', host: 'user-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: false, mtls: 'STRICT', owner: 'identity-team', bu: 'Enterprise', created: '2024-01-22' },
-      { id: 18, name: 'external-banks-dr', type: 'destinationrule', namespace: 'payments', status: 'healthy', host: '*.bankofamerica.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'payments-team', bu: 'Enterprise', created: '2024-02-16' },
-      { id: 31, name: 'stripe-api-dr', type: 'destinationrule', namespace: 'payments', status: 'healthy', host: 'api.stripe.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'payments-team', bu: 'Enterprise', created: '2024-02-21' },
-      { id: 32, name: 'credit-bureau-dr', type: 'destinationrule', namespace: 'lending', status: 'healthy', host: 'api.equifax.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-21' },
-      { id: 33, name: 'plaid-api-dr', type: 'destinationrule', namespace: 'lending', status: 'healthy', host: 'api.plaid.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-26' },
-      { id: 34, name: 'twilio-api-dr', type: 'destinationrule', namespace: 'comms', status: 'healthy', host: 'api.twilio.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-11' },
-      { id: 35, name: 'snowflake-dr', type: 'destinationrule', namespace: 'data', status: 'healthy', host: '*.snowflakecomputing.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'data-platform', bu: 'Enterprise', created: '2024-05-02' },
+      { id: 16, name: 'loan-service-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'loan-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-17' },
+      { id: 17, name: 'payment-gateway-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'warning', host: 'payment-gateway', trafficPolicy: 'LEAST_CONN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-12' },
+      { id: 39, name: 'user-service-dr', type: 'destinationrule', namespace: 'eot-platform', status: 'healthy', host: 'user-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: false, mtls: 'STRICT', owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-22' },
+      { id: 18, name: 'external-banks-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: '*.bankofamerica.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-16' },
+      { id: 31, name: 'stripe-api-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: 'api.stripe.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-21' },
+      { id: 32, name: 'credit-bureau-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.equifax.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-21' },
+      { id: 33, name: 'plaid-api-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.plaid.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-26' },
+      { id: 34, name: 'twilio-api-dr', type: 'destinationrule', namespace: 'eot-messaging', status: 'healthy', host: 'api.twilio.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-11' },
+      { id: 35, name: 'snowflake-dr', type: 'destinationrule', namespace: 'eot-data', status: 'healthy', host: '*.snowflakecomputing.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'data-platform', bu: 'Enterprise', created: '2024-05-02' },
       // Authorization Policies (access control)
-      { id: 19, name: 'lending-authz', type: 'authpolicy', namespace: 'lending', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/identity/sa/user-service'], rules: 5, owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-18' },
-      { id: 20, name: 'payments-authz', type: 'authpolicy', namespace: 'payments', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/lending/sa/*'], rules: 8, owner: 'payments-team', bu: 'Enterprise', created: '2024-02-13' },
+      { id: 19, name: 'sf-loans-authz', type: 'authpolicy', namespace: 'sf-loans', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/eot-platform/sa/user-service'], rules: 5, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-18' },
+      { id: 20, name: 'integrations-authz', type: 'authpolicy', namespace: 'eot-integrations', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/sf-loans/sa/*'], rules: 8, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-13' },
       { id: 21, name: 'deny-external-authz', type: 'authpolicy', namespace: 'istio-system', status: 'healthy', action: 'DENY', principals: ['*'], rules: 3, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-06' },
       // ServiceEntry (external services registry)
-      { id: 22, name: 'stripe-api-se', type: 'serviceentry', namespace: 'payments', status: 'healthy', hosts: ['api.stripe.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'payments-team', bu: 'Enterprise', created: '2024-02-20' },
+      { id: 22, name: 'stripe-api-se', type: 'serviceentry', namespace: 'eot-integrations', status: 'healthy', hosts: ['api.stripe.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-20' },
       { id: 23, name: 'google-apis-se', type: 'serviceentry', namespace: 'istio-system', status: 'healthy', hosts: ['*.googleapis.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
-      { id: 24, name: 'plaid-api-se', type: 'serviceentry', namespace: 'lending', status: 'healthy', hosts: ['api.plaid.com', 'sandbox.plaid.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-25' },
-      { id: 25, name: 'twilio-api-se', type: 'serviceentry', namespace: 'comms', status: 'healthy', hosts: ['api.twilio.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-10' },
-      { id: 26, name: 'datadog-intake-se', type: 'serviceentry', namespace: 'monitoring', status: 'healthy', hosts: ['intake.logs.datadoghq.com', 'api.datadoghq.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
-      { id: 27, name: 'legacy-mainframe-se', type: 'serviceentry', namespace: 'integration', status: 'warning', hosts: ['mainframe.internal.fm.com'], location: 'MESH_INTERNAL', resolution: 'STATIC', ports: [{ number: 5250, protocol: 'TCP' }], endpoints: ['10.50.100.15', '10.50.100.16'], owner: 'integration-team', bu: 'Enterprise', created: '2024-05-05' },
-      { id: 36, name: 'credit-bureaus-se', type: 'serviceentry', namespace: 'lending', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'loans-origination', bu: 'Single-Family', created: '2024-03-20' },
-      { id: 37, name: 'snowflake-api-se', type: 'serviceentry', namespace: 'data', status: 'healthy', hosts: ['*.snowflakecomputing.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
+      { id: 24, name: 'plaid-api-se', type: 'serviceentry', namespace: 'sf-loans', status: 'healthy', hosts: ['api.plaid.com', 'sandbox.plaid.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-25' },
+      { id: 25, name: 'twilio-api-se', type: 'serviceentry', namespace: 'eot-messaging', status: 'healthy', hosts: ['api.twilio.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-10' },
+      { id: 26, name: 'datadog-intake-se', type: 'serviceentry', namespace: 'eot-platform', status: 'healthy', hosts: ['intake.logs.datadoghq.com', 'api.datadoghq.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
+      { id: 27, name: 'legacy-mainframe-se', type: 'serviceentry', namespace: 'eot-integrations', status: 'warning', hosts: ['mainframe.internal.fm.com'], location: 'MESH_INTERNAL', resolution: 'STATIC', ports: [{ number: 5250, protocol: 'TCP' }], endpoints: ['10.50.100.15', '10.50.100.16'], owner: 'integration-team', bu: 'Enterprise', created: '2024-05-05' },
+      { id: 36, name: 'credit-bureaus-se', type: 'serviceentry', namespace: 'sf-loans', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
+      { id: 37, name: 'snowflake-api-se', type: 'serviceentry', namespace: 'eot-data', status: 'healthy', hosts: ['*.snowflakecomputing.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
     ];
 
     // WASM Plugins for Envoy
@@ -714,11 +730,11 @@
     };
 
     const mockMessaging = [
-      { id: 1, name: 'order-events', type: 'sns', subscribers: 4, messagesDay: '45.2K', status: 'active', zone: 'local', owner: 'orders-team', created: '2024-05-12', monthlyCost: '$125', retention: 'N/A', encryption: 'AWS KMS', deliveryRate: '99.98%', description: 'Order lifecycle events topic. Publishes order created, updated, shipped, and delivered events.' },
-      { id: 2, name: 'payment-queue', type: 'sqs', depth: 23, messagesDay: '12.8K', status: 'active', zone: 'local', owner: 'payments-team', created: '2024-06-01', monthlyCost: '$85', retention: '14 days', encryption: 'AWS KMS', avgProcessTime: '245ms', description: 'Payment processing queue. Handles async payment authorization and capture requests.' },
-      { id: 3, name: 'enterprise-bus', type: 'eventbridge', rules: 47, messagesDay: '892K', status: 'active', zone: 'central', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$450', retention: 'Archive enabled', encryption: 'AWS KMS', targets: 23, description: 'Central event bus for cross-domain integration. Routes events between business domains using content-based filtering.' },
-      { id: 4, name: 'data-stream', type: 'kafka', partitions: 12, messagesDay: '2.4M', status: 'active', zone: 'central', owner: 'data-platform', created: '2024-03-20', monthlyCost: '$680', retention: '7 days', encryption: 'TLS 1.3', consumerGroups: 8, description: 'High-throughput data stream for analytics and real-time processing. Powers dashboards and ML pipelines.' },
-      { id: 5, name: 'shipping-dlq', type: 'sqs', depth: 156, messagesDay: '0.3K', status: 'warning', zone: 'local', owner: 'logistics-team', created: '2024-07-10', monthlyCost: '$12', retention: '14 days', encryption: 'AWS KMS', avgAge: '6 hours', description: 'Dead letter queue for failed shipping notifications. Messages require manual investigation and replay.' },
+      { id: 1, name: 'order-events', type: 'sns', namespace: 'eot-messaging', subscribers: 4, messagesDay: '45.2K', status: 'active', zone: 'local', owner: 'orders-team', created: '2024-05-12', monthlyCost: '$125', retention: 'N/A', encryption: 'AWS KMS', deliveryRate: '99.98%', description: 'Order lifecycle events topic. Publishes order created, updated, shipped, and delivered events.' },
+      { id: 2, name: 'payment-queue', type: 'sqs', namespace: 'eot-messaging', depth: 23, messagesDay: '12.8K', status: 'active', zone: 'local', owner: 'payments-team', created: '2024-06-01', monthlyCost: '$85', retention: '14 days', encryption: 'AWS KMS', avgProcessTime: '245ms', description: 'Payment processing queue. Handles async payment authorization and capture requests.' },
+      { id: 3, name: 'enterprise-bus', type: 'eventbridge', namespace: 'eot-messaging', rules: 47, messagesDay: '892K', status: 'active', zone: 'central', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$450', retention: 'Archive enabled', encryption: 'AWS KMS', targets: 23, description: 'Central event bus for cross-domain integration. Routes events between business domains using content-based filtering.' },
+      { id: 4, name: 'data-stream', type: 'kafka', namespace: 'eot-messaging', partitions: 12, messagesDay: '2.4M', status: 'active', zone: 'central', owner: 'data-platform', created: '2024-03-20', monthlyCost: '$680', retention: '7 days', encryption: 'TLS 1.3', consumerGroups: 8, description: 'High-throughput data stream for analytics and real-time processing. Powers dashboards and ML pipelines.' },
+      { id: 5, name: 'shipping-dlq', type: 'sqs', namespace: 'eot-messaging', depth: 156, messagesDay: '0.3K', status: 'warning', zone: 'local', owner: 'logistics-team', created: '2024-07-10', monthlyCost: '$12', retention: '14 days', encryption: 'AWS KMS', avgAge: '6 hours', description: 'Dead letter queue for failed shipping notifications. Messages require manual investigation and replay.' },
     ];
 
     // Feature Flags
@@ -728,6 +744,9 @@
 
     // Main App
     const App = () => {
+      // Global Namespaces state
+      const [namespaces, setNamespaces] = useState(initialNamespaces);
+
       // URL-based navigation
       const getInitialNav = () => {
         const params = new URLSearchParams(window.location.search);
@@ -810,7 +829,10 @@
       const [showNewNetworkResource, setShowNewNetworkResource] = useState(false);
       const [newNetworkData, setNewNetworkData] = useState({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' });
       const [uncleFilter, setUncleFilter] = useState('All');
-      const [dadFilter, setDadFilter] = useState('All');
+      const [dadFilter, setDadFilter] = useState('Virtual Services');
+      const [meshConfigSubTab, setMeshConfigSubTab] = useState('traffic'); // 'traffic' or 'external'
+      const [expandedSeId, setExpandedSeId] = useState(null);
+      const [expandedTrafficId, setExpandedTrafficId] = useState(null);
       const [securityFilter, setSecurityFilter] = useState('All');
       const [certFilter, setCertFilter] = useState('All');
       const [wasmFilter, setWasmFilter] = useState('Enabled');
@@ -860,11 +882,16 @@
       const [dadDetailEditMode, setDadDetailEditMode] = useState(false);
       const [showServiceEditor, setShowServiceEditor] = useState(false);
       const [serviceEditorResource, setServiceEditorResource] = useState(null);
+      const [editingAuthPolicy, setEditingAuthPolicy] = useState(null);
+      const [editingDestinationRule, setEditingDestinationRule] = useState(null);
+      const [editingGateway, setEditingGateway] = useState(null);
       const [serviceEditorMode, setServiceEditorMode] = useState('visual');
       const [serviceFilterCategory, setServiceFilterCategory] = useState('all');
       const [selectedFilterNode, setSelectedFilterNode] = useState(null);
       const [savedServiceFilters, setSavedServiceFilters] = useState({});
       const [showSettings, setShowSettings] = useState(false);
+      const [settingsActiveTab, setSettingsActiveTab] = useState('namespaces');
+      const [editingNamespace, setEditingNamespace] = useState(null);
       const [showPatternWizard, setShowPatternWizard] = useState(false);
       const [patternWizardStep, setPatternWizardStep] = useState(0);
       const [patternWizardType, setPatternWizardType] = useState(null);
@@ -1760,6 +1787,240 @@
         </div>
       );
 
+      // SETTINGS VIEW (Global Configuration)
+      const SettingsView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Namespaces</span>
+                <Icon name="folder" size={14} className="text-gray-400" />
+              </div>
+              <div className="text-2xl font-semibold text-gray-300">{namespaces.length}</div>
+              <div className="text-xs text-gray-500 mt-1">Kubernetes namespaces</div>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Single-Family</span>
+                <Icon name="home" size={14} className="text-emerald-400" />
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">{namespaces.filter(n => n.bu === 'Single-Family').length}</div>
+              <div className="text-xs text-gray-500 mt-1">SF business unit</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Multi-Family</span>
+                <Icon name="building" size={14} className="text-blue-400" />
+              </div>
+              <div className="text-2xl font-semibold text-blue-300">{namespaces.filter(n => n.bu === 'Multi-Family').length}</div>
+              <div className="text-xs text-gray-500 mt-1">MF business unit</div>
+            </div>
+            <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Enterprise</span>
+                <Icon name="server" size={14} className="text-violet-400" />
+              </div>
+              <div className="text-2xl font-semibold text-violet-300">{namespaces.filter(n => n.bu === 'Enterprise').length}</div>
+              <div className="text-xs text-gray-500 mt-1">EOT business unit</div>
+            </div>
+          </div>
+
+          {/* Settings Tabs */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'namespaces', label: 'Namespaces', icon: 'folder' },
+              { id: 'modules', label: 'Dashboard Modules', icon: 'layout' },
+              { id: 'general', label: 'General', icon: 'sliders' }
+            ].map(tab => (
+              <button key={tab.id} onClick={() => setSettingsActiveTab(tab.id)} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${settingsActiveTab === tab.id ? 'bg-gray-500/20 text-gray-200 border border-gray-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                <Icon name={tab.icon} size={16} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Namespaces Tab */}
+          {settingsActiveTab === 'namespaces' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+                <h3 className="font-medium">Kubernetes Namespaces</h3>
+                <button onClick={() => setEditingNamespace({ id: Date.now(), name: '', description: '', bu: 'Enterprise', owner: '', environment: 'production', created: new Date().toISOString().split('T')[0], isNew: true })} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium">
+                  <Icon name="plus" size={14} />Add Namespace
+                </button>
+              </div>
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-700">
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Namespace</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Description</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Business Unit</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Owner</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Created</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {namespaces.map(ns => (
+                    <tr key={ns.id} className="border-b border-gray-700/50 hover:bg-gray-800/30">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${ns.bu === 'Single-Family' ? 'bg-emerald-500/20 text-emerald-400' : ns.bu === 'Multi-Family' ? 'bg-blue-500/20 text-blue-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                            <Icon name="folder" size={16} />
+                          </div>
+                          <code className="text-sm font-mono text-gray-300">{ns.name}</code>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{ns.description}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ns.bu === 'Single-Family' ? 'bg-emerald-500/20 text-emerald-300' : ns.bu === 'Multi-Family' ? 'bg-blue-500/20 text-blue-300' : 'bg-violet-500/20 text-violet-300'}`}>
+                          {ns.bu}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{ns.owner}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{ns.created}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => setEditingNamespace({...ns})} className="p-1.5 hover:bg-amber-500/20 rounded-lg text-gray-400 hover:text-amber-400" title="Edit"><Icon name="edit" size={14} /></button>
+                          <button onClick={() => { setNamespaces(prev => prev.filter(n => n.id !== ns.id)); showNotification(`Namespace "${ns.name}" deleted`, 'warning'); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Dashboard Modules Tab */}
+          {settingsActiveTab === 'modules' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+              <div className="space-y-2">
+                {[
+                  { key: 'mom', label: 'M.O.M.', desc: 'Multi-Cloud Orchestration Manager', icon: 'cloud', color: 'emerald' },
+                  { key: 'uncle', label: 'U.N.C.L.E.', desc: 'Unified Notification & Communication Layer Engine', icon: 'bell', color: 'blue' },
+                  { key: 'dad', label: 'D.A.D.', desc: 'Distributed Application Director', icon: 'shield', color: 'amber' },
+                  { key: 'auntie', label: 'A.U.N.T.I.E.', desc: 'Advanced Unified Network Traffic Inspection Engine', icon: 'cpu', color: 'purple' },
+                  { key: 'rosie', label: 'R.O.S.I.E.', desc: 'Routine Operations Scheduling & Integration Engine', icon: 'clock', color: 'rose' },
+                  { key: 'bro', label: 'B.R.O.', desc: 'Backbone Routing Operations', icon: 'network', color: 'cyan' }
+                ].map(mod => (
+                  <div key={mod.key} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg bg-${mod.color}-500/20 flex items-center justify-center`}>
+                        <Icon name={mod.icon} size={16} className={`text-${mod.color}-400`} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">{mod.label}</div>
+                        <div className="text-xs text-gray-500">{mod.desc}</div>
+                      </div>
+                    </div>
+                    <button onClick={() => setFeatureFlags({...featureFlags, [mod.key]: !featureFlags[mod.key]})}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags[mod.key] ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags[mod.key] ? 'translate-x-7' : 'translate-x-1'}`} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* General Tab */}
+          {settingsActiveTab === 'general' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium">Dark Mode</div>
+                    <div className="text-xs text-gray-500">Use dark theme across the application</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.darkMode ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium">Notifications</div>
+                    <div className="text-xs text-gray-500">Show system notifications and alerts</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, notifications: !featureFlags.notifications})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.notifications ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.notifications ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium">Auto Refresh</div>
+                    <div className="text-xs text-gray-500">Automatically refresh data every 30 seconds</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, autoRefresh: !featureFlags.autoRefresh})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.autoRefresh ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.autoRefresh ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Namespace Editor Modal */}
+          {editingNamespace && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setEditingNamespace(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <h2 className="text-lg font-semibold">{editingNamespace.isNew ? 'Create Namespace' : 'Edit Namespace'}</h2>
+                  <button onClick={() => setEditingNamespace(null)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Name</label>
+                    <input type="text" value={editingNamespace.name} onChange={e => setEditingNamespace({...editingNamespace, name: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500 font-mono" placeholder="my-namespace" />
+                    <p className="text-xs text-gray-500 mt-1">Lowercase letters, numbers, and hyphens only</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Description</label>
+                    <input type="text" value={editingNamespace.description} onChange={e => setEditingNamespace({...editingNamespace, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" placeholder="Purpose of this namespace" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Business Unit</label>
+                      <select value={editingNamespace.bu} onChange={e => setEditingNamespace({...editingNamespace, bu: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                        <option value="Single-Family">Single-Family</option>
+                        <option value="Multi-Family">Multi-Family</option>
+                        <option value="Enterprise">Enterprise</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Owner</label>
+                      <input type="text" value={editingNamespace.owner} onChange={e => setEditingNamespace({...editingNamespace, owner: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" placeholder="team-name" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
+                    <select value={editingNamespace.environment} onChange={e => setEditingNamespace({...editingNamespace, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                      <option value="production">Production</option>
+                      <option value="staging">Staging</option>
+                      <option value="development">Development</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 p-4 border-t border-gray-700">
+                  <button onClick={() => setEditingNamespace(null)} className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg text-sm">Cancel</button>
+                  <button onClick={() => {
+                    if (editingNamespace.isNew) {
+                      setNamespaces(prev => [...prev, {...editingNamespace, isNew: undefined}]);
+                      showNotification(`Namespace "${editingNamespace.name}" created`, 'success');
+                    } else {
+                      setNamespaces(prev => prev.map(n => n.id === editingNamespace.id ? editingNamespace : n));
+                      showNotification(`Namespace "${editingNamespace.name}" updated`, 'success');
+                    }
+                    setEditingNamespace(null);
+                  }} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium">
+                    {editingNamespace.isNew ? 'Create' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
       // U.N.C.L.E. VIEW (Data Storage)
       const UNCLEView = () => (
         <div className="p-6">
@@ -2260,14 +2521,13 @@
       const DADView = () => {
         const meshStats = getMeshStats(meshResources);
         const filteredResources = meshResources.filter(r => {
-          if (r.type === 'authpolicy') return false; // Auth policies moved to Security tab
-          if (r.type === 'service') return false; // Services moved to Services tab
-          if (dadFilter === 'All') return true;
+          if (r.type === 'authpolicy') return false; // Auth policies shown in Services tab
+          if (r.type === 'service') return false; // Services in Services tab
+          if (r.type === 'destinationrule') return false; // DRs shown in expanded views
           if (dadFilter === 'Virtual Services') return r.type === 'virtualservice';
           if (dadFilter === 'Ingress') return r.type === 'ingress';
           if (dadFilter === 'Egress') return r.type === 'egress';
           if (dadFilter === 'East-West') return r.type === 'eastwest';
-          if (dadFilter === 'Dest Rules') return r.type === 'destinationrule';
           if (dadFilter === 'Svc Entries') return r.type === 'serviceentry';
           return true;
         });
@@ -2296,7 +2556,7 @@
             const servicesWithPolicies = meshResources.filter(r => r.type === 'service').map(svc => {
               const filters = getServiceFilters(svc);
               const dr = meshResources.find(r => r.type === 'destinationrule' && r.host === svc.name);
-              const vs = meshResources.filter(r => r.type === 'virtualservice' && (r.host === svc.name || r.name?.includes(svc.name.split('-')[0])));
+              const vs = meshResources.filter(r => r.type === 'virtualservice' && r.targetService === svc.name);
               const gateways = meshResources.filter(r => ['ingress', 'egress'].includes(r.type) && vs.some(v => v.gateway === r.name));
               const authPolicies = meshResources.filter(r => r.type === 'authpolicy' && r.namespace === svc.namespace);
               const hasIstioFeatures = filters.length > 0 || dr || vs.length > 0 || gateways.length > 0 || authPolicies.length > 0;
@@ -2361,6 +2621,26 @@
                       {isExpanded && (
                         <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            {/* Auth Policies Column - First since AuthZ is first check */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})</div>
+                              {authPolicies.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {authPolicies.map((ap, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <Icon name={ap.action === 'ALLOW' ? 'check-circle' : 'x-circle'} size={12} className={ap.action === 'ALLOW' ? 'text-emerald-400' : 'text-red-400'} />
+                                        <span className="text-gray-300">{ap.name}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${ap.action === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>{ap.action}</span>
+                                        <button onClick={(e) => { e.stopPropagation(); setEditingAuthPolicy({...ap, rules: Array.isArray(ap.rules) ? ap.rules : []}); }} className="p-1 hover:bg-rose-500/20 rounded text-gray-500 hover:text-rose-400"><Icon name="edit" size={12} /></button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">No auth policies</span>}
+                            </div>
                             {/* Filters Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
                               <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="filter" size={12} className="text-cyan-400" />Filters ({filters.length})</div>
@@ -2385,7 +2665,7 @@
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between">
                                     <span className="text-xs text-gray-300">{dr.name}</span>
-                                    <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(dr); setShowServiceEditor(true); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="external-link" size={12} /></button>
+                                    <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...dr, subsets: dr.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={12} /></button>
                                   </div>
                                   <div className="text-[10px] text-gray-500 space-y-1">
                                     <div>LB: <span className="text-gray-400">{dr.trafficPolicy}</span></div>
@@ -2394,7 +2674,11 @@
                                     {dr.subsets && <div>Subsets: <span className="text-amber-400">{dr.subsets.map(s => s.name).join(', ')}</span></div>}
                                   </div>
                                 </div>
-                              ) : <span className="text-xs text-gray-600">No destination rule</span>}
+                              ) : (
+                                <div className="text-center py-2">
+                                  <span className="text-xs text-gray-600">No destination rule</span>
+                                </div>
+                              )}
                             </div>
                             {/* Routing Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
@@ -2407,7 +2691,7 @@
                                         <span className="text-gray-300">{v.name}</span>
                                         {v.gateway && <span className="text-[10px] text-gray-500">via {v.gateway}</span>}
                                       </div>
-                                      <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(v); setShowServiceEditor(true); }} className="p-1 hover:bg-blue-500/20 rounded text-gray-500 hover:text-blue-400"><Icon name="external-link" size={12} /></button>
+                                      <button onClick={(e) => { e.stopPropagation(); setEditingVirtualService({...v, routes: v.routes || []}); }} className="p-1 hover:bg-blue-500/20 rounded text-gray-500 hover:text-blue-400"><Icon name="edit" size={12} /></button>
                                     </div>
                                   ))}
                                 </div>
@@ -2425,35 +2709,19 @@
                                         <span className="text-gray-300">{gw.name}</span>
                                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">{gw.type}</span>
                                       </div>
-                                      <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(gw); setShowServiceEditor(true); }} className={`p-1 rounded text-gray-500 ${gw.type === 'ingress' ? 'hover:bg-cyan-500/20 hover:text-cyan-400' : 'hover:bg-orange-500/20 hover:text-orange-400'}`}><Icon name="external-link" size={12} /></button>
+                                      <button onClick={(e) => { e.stopPropagation(); setEditingGateway({...gw}); }} className={`p-1 rounded text-gray-500 ${gw.type === 'ingress' ? 'hover:bg-cyan-500/20 hover:text-cyan-400' : 'hover:bg-orange-500/20 hover:text-orange-400'}`}><Icon name="edit" size={12} /></button>
                                     </div>
                                   ))}
                                 </div>
                               ) : <span className="text-xs text-gray-600">Not exposed</span>}
                             </div>
-                            {/* Auth Policies Column */}
-                            <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})</div>
-                              {authPolicies.length > 0 ? (
-                                <div className="space-y-1.5">
-                                  {authPolicies.map((ap, i) => (
-                                    <div key={i} className="flex items-center justify-between text-xs">
-                                      <div className="flex items-center gap-2">
-                                        <Icon name={ap.action === 'ALLOW' ? 'check-circle' : 'x-circle'} size={12} className={ap.action === 'ALLOW' ? 'text-emerald-400' : 'text-red-400'} />
-                                        <span className="text-gray-300">{ap.name}</span>
-                                      </div>
-                                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${ap.action === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>{ap.action}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : <span className="text-xs text-gray-600">No auth policies</span>}
-                            </div>
                           </div>
                           {/* Actions Row */}
                           <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
                             <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(svc); setShowServiceEditor(true); }} className="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="edit" size={12} />Edit Service</button>
-                            <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(svc); setShowServiceEditor(true); }} className="text-xs text-gray-400 hover:text-amber-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />Add Filter</button>
-                            {!dr && <button onClick={(e) => { e.stopPropagation(); showNotification('Creating DestinationRule...'); }} className="text-xs text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />Add DR</button>}
+                            <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(svc); setShowServiceEditor(true); }} className="text-xs text-gray-400 hover:text-amber-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />Filter</button>
+                            {!dr && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: svc.namespace, host: svc.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-xs text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />DR</button>}
+                            <button onClick={(e) => { e.stopPropagation(); setEditingAuthPolicy({ isNew: true, namespace: svc.namespace, targetService: svc.name, action: 'ALLOW', rules: [] }); }} className="text-xs text-gray-400 hover:text-rose-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />AuthZ</button>
                           </div>
                         </div>
                       )}
@@ -2476,22 +2744,36 @@
               'Svc Entries': { desc: 'Service Entries add external services to the mesh registry. Use to enable mesh features (mTLS, observability) for external APIs, databases, or legacy systems outside the cluster.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: ServiceEntry\nmetadata:\n  name: stripe-api\nspec:\n  hosts:\n    - api.stripe.com\n  location: MESH_EXTERNAL\n  ports:\n    - number: 443\n      name: https\n      protocol: TLS\n  resolution: DNS\n  endpoints:\n    - address: api.stripe.com' }
             };
             return <>
-          {/* Filter Tabs with Counts */}
+          {/* Sub-tabs: Traffic Config | External Services */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex bg-gray-800/50 border border-gray-700 rounded-lg p-1">
+              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? 'bg-amber-500/20 text-amber-300' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="git-branch" size={14} />Traffic Config
+                <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
+              </button>
+              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? 'bg-amber-500/20 text-amber-300' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="external-link" size={14} />External Services
+                <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.serviceEntries}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Traffic Config Sub-tab */}
+          {meshConfigSubTab === 'traffic' && (
           <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
             {[
-              { id: 'Virtual Services', count: meshStats.virtualServices },
-              { id: 'Dest Rules', count: meshStats.destinationRules },
-              { id: 'Svc Entries', count: meshStats.serviceEntries },
+              { id: 'Virtual Services', count: meshStats.virtualServices, icon: 'git-branch' },
               { id: 'divider1' },
-              { id: 'Ingress', count: meshStats.ingress, sublabel: 'Gateway' },
-              { id: 'Egress', count: meshStats.egress, sublabel: 'Gateway' },
-              { id: 'East-West', count: meshStats.eastwest, sublabel: 'Gateway' }
+              { id: 'Ingress', count: meshStats.ingress, sublabel: 'Gateway', icon: 'log-in' },
+              { id: 'Egress', count: meshStats.egress, sublabel: 'Gateway', icon: 'log-out' },
+              { id: 'East-West', count: meshStats.eastwest, sublabel: 'Gateway', icon: 'repeat' }
             ].map(cat => (
               cat.id.startsWith('divider') ? (
                 <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
               ) : (
                 <div key={cat.id} className="flex items-center gap-1">
                   <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${dadFilter === cat.id ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    <Icon name={cat.icon} size={14} />
                     <div className="flex flex-col items-center">
                       <span>{cat.id}</span>
                       {cat.sublabel && <span className="text-xs text-gray-500">{cat.sublabel}</span>}
@@ -2503,83 +2785,204 @@
               )
             ))}
           </div>
-          <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead><tr className="border-b border-gray-700">
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Resource</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Details</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Related</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
-              </tr></thead>
-              <tbody>
-                {filteredResources.map(r => {
-                  const typeConfig = {
-                    service: { icon: 'server', label: 'Service', badgeClass: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-                    virtualservice: { icon: 'git-branch', label: 'Virtual Service', badgeClass: 'bg-violet-500/20 text-violet-300 border-violet-500/30' },
-                    ingress: { icon: 'log-in', label: 'Ingress', badgeClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' },
-                    egress: { icon: 'log-out', label: 'Egress', badgeClass: 'bg-orange-500/20 text-orange-300 border-orange-500/30' },
-                    eastwest: { icon: 'repeat', label: 'East-West', badgeClass: 'bg-teal-500/20 text-teal-300 border-teal-500/30' },
-                    destinationrule: { icon: 'sliders', label: 'Dest Rule', badgeClass: 'bg-violet-500/20 text-violet-300 border-violet-500/30' },
-                    authpolicy: { icon: 'shield', label: 'Auth Policy', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-                    serviceentry: { icon: 'external-link', label: 'Svc Entry', badgeClass: 'bg-pink-500/20 text-pink-300 border-pink-500/30' }
-                  }[r.type] || { icon: 'box', label: r.type, badgeClass: 'bg-gray-500/20 text-gray-300 border-gray-500/30' };
+          )}
+          {meshConfigSubTab === 'traffic' && (
+          <div className="space-y-3">
+            {filteredResources.map(r => {
+              const typeConfig = {
+                virtualservice: { icon: 'git-branch', label: 'Virtual Service', color: 'violet' },
+                ingress: { icon: 'log-in', label: 'Ingress Gateway', color: 'cyan' },
+                egress: { icon: 'log-out', label: 'Egress Gateway', color: 'orange' },
+                eastwest: { icon: 'repeat', label: 'East-West Gateway', color: 'teal' }
+              }[r.type] || { icon: 'box', label: r.type, color: 'gray' };
 
-                  const getDetails = () => {
-                    switch(r.type) {
-                      case 'service': return `${r.protocol} :${r.port} • ${r.endpoints} endpoints`;
-                      case 'virtualservice': return `${r.routes} routes • ${r.gateway}`;
-                      case 'ingress': return `${r.tls} TLS • Port ${r.port}`;
-                      case 'egress': return `${r.hosts?.length || 0} hosts • ${r.tls}`;
-                      case 'eastwest': return `${r.hosts?.length || 0} hosts • ${r.tls} mTLS`;
-                      case 'destinationrule': return `${r.trafficPolicy} • ${r.mtls} mTLS`;
-                      case 'authpolicy': return `${r.action} • ${r.rules} rules`;
-                      case 'serviceentry': return `${r.location} • ${r.resolution} • ${r.hosts?.length || 0} hosts`;
-                      default: return '';
-                    }
-                  };
+              const relatedDR = meshResources.find(dr => dr.type === 'destinationrule' && (dr.host === r.host || dr.namespace === r.namespace));
+              const isExpanded = expandedTrafficId === r.id;
 
-                  return (
-                  <tr key={r.id} onClick={() => { if (['destinationrule', 'serviceentry'].includes(r.type)) { setServiceEditorResource(r); } else { setServiceEditorResource(r); setShowServiceEditor(true); } }} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
-                    <td className="px-4 py-3"><div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'warning' ? 'bg-amber-500/20 text-amber-400' : r.status === 'degraded' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}><Icon name={typeConfig.icon} size={16} /></div>
-                      <div><div className="font-medium">{r.name}</div><div className="text-xs text-gray-500">{r.namespace}</div></div>
-                    </div></td>
-                    <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border ${typeConfig.badgeClass}`}><Icon name={typeConfig.icon} size={10} />{typeConfig.label}</span></td>
-                    <td className="px-4 py-3"><StatusBadge status={r.status} size="sm" /></td>
-                    <td className="px-4 py-3"><span className="text-sm text-gray-400">{getDetails()}</span></td>
-                    <td className="px-4 py-3">
-                      {(() => {
-                        const related = getRelatedResources(r, meshResources);
-                        const badges = [];
-                        if (related.destRules.length > 0) badges.push({ icon: 'sliders', label: `${related.destRules.length} DR`, classes: 'bg-violet-500/10 text-violet-400 border-violet-500/20', tooltip: related.destRules.map(dr => dr.name).join(', ') });
-                        if (related.virtualServices.length > 0) badges.push({ icon: 'git-branch', label: `${related.virtualServices.length} VS`, classes: 'bg-blue-500/10 text-blue-400 border-blue-500/20', tooltip: related.virtualServices.map(vs => vs.name).join(', ') });
-                        if (related.gateways.length > 0) badges.push({ icon: 'log-in', label: `${related.gateways.length} GW`, classes: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20', tooltip: related.gateways.map(gw => gw.name).join(', ') });
-                        if (related.serviceEntries.length > 0) badges.push({ icon: 'external-link', label: `${related.serviceEntries.length} SE`, classes: 'bg-pink-500/10 text-pink-400 border-pink-500/20', tooltip: related.serviceEntries.map(se => se.name).join(', ') });
-                        if (r.subsets) badges.push({ icon: 'git-branch', label: `${r.subsets.length} subsets`, classes: 'bg-amber-500/10 text-amber-400 border-amber-500/20', tooltip: r.subsets.map(s => s.name).join(', ') });
-                        return badges.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {badges.map((b, i) => (
-                              <span key={i} title={b.tooltip} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${b.classes}`}>
-                                <Icon name={b.icon} size={10} />{b.label}
-                              </span>
+              const getDetails = () => {
+                switch(r.type) {
+                  case 'virtualservice': return `${r.routes} routes`;
+                  case 'ingress': return `${r.tls} TLS • Port ${r.port}`;
+                  case 'egress': return `${r.hosts?.length || 0} hosts`;
+                  case 'eastwest': return `${r.hosts?.length || 0} hosts`;
+                  default: return '';
+                }
+              };
+
+              return (
+                <div key={r.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                  <div onClick={() => setExpandedTrafficId(isExpanded ? null : r.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
+                    <div className="flex items-center gap-4">
+                      <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}><Icon name={typeConfig.icon} size={16} /></div>
+                      <div>
+                        <div className="font-medium">{r.name}</div>
+                        <div className="text-xs text-gray-500">{r.namespace}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-2 py-1 rounded text-xs bg-${typeConfig.color}-500/10 text-${typeConfig.color}-400 border border-${typeConfig.color}-500/20`}>{typeConfig.label}</span>
+                      <span className="text-xs text-gray-500">{getDetails()}</span>
+                      {r.gateway && <span className="text-xs text-gray-500">via {r.gateway}</span>}
+                      {relatedDR && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-xs flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
+                      <StatusBadge status={r.status} size="sm" />
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Resource Details Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name={typeConfig.icon} size={12} className={`text-${typeConfig.color}-400`} />Details</div>
+                          {r.type === 'virtualservice' && (
+                            <div className="space-y-2 text-xs">
+                              <div><span className="text-gray-500">Host:</span> <span className="text-gray-300">{r.host}</span></div>
+                              <div><span className="text-gray-500">Routes:</span> <span className="text-gray-300">{r.routes}</span></div>
+                              <div><span className="text-gray-500">Gateway:</span> <span className="text-gray-300">{r.gateway || 'mesh'}</span></div>
+                            </div>
+                          )}
+                          {['ingress', 'egress', 'eastwest'].includes(r.type) && (
+                            <div className="space-y-2 text-xs">
+                              <div><span className="text-gray-500">Hosts:</span></div>
+                              {r.hosts?.map((h, i) => <div key={i} className="text-gray-300 bg-gray-700/30 px-2 py-1 rounded">{h}</div>)}
+                              <div><span className="text-gray-500">TLS:</span> <span className="text-gray-300">{r.tls}</span></div>
+                              <div><span className="text-gray-500">Port:</span> <span className="text-gray-300">{r.port}</span></div>
+                            </div>
+                          )}
+                        </div>
+                        {/* Destination Rule Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule</div>
+                          {relatedDR ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-300">{relatedDR.name}</span>
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={12} /></button>
+                              </div>
+                              <div className="text-[10px] text-gray-500 space-y-1">
+                                <div>LB: <span className="text-gray-400">{relatedDR.trafficPolicy}</span></div>
+                                <div>mTLS: <span className="text-gray-400">{relatedDR.mtls}</span></div>
+                                {relatedDR.circuitBreaker && <div className="text-amber-400">Circuit Breaker Enabled</div>}
+                                {relatedDR.subsets && <div>Subsets: <span className="text-amber-400">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-2">
+                              <span className="text-xs text-gray-600">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-xs text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={12} className="inline mr-1" />DR</button>
+                            </div>
+                          )}
+                        </div>
+                        {/* Metadata Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="info" size={12} className="text-gray-400" />Metadata</div>
+                          <div className="space-y-2 text-xs">
+                            <div><span className="text-gray-500">Owner:</span> <span className="text-gray-300">{r.owner}</span></div>
+                            <div><span className="text-gray-500">BU:</span> <span className="text-gray-300">{r.bu}</span></div>
+                            <div><span className="text-gray-500">Created:</span> <span className="text-gray-300">{r.created}</span></div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Actions Row */}
+                      <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
+                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(r); setShowServiceEditor(true); }} className="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="edit" size={12} />Edit</button>
+                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-xs text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />DR</button>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          )}
+
+          {/* External Services Sub-tab */}
+          {meshConfigSubTab === 'external' && (
+          <div className="space-y-3">
+            {meshResources.filter(r => r.type === 'serviceentry').map(se => {
+              const relatedDR = meshResources.find(r => r.type === 'destinationrule' && se.hosts?.some(h => r.host?.includes(h.replace('*.', '')) || h.includes(r.host?.replace('*.', '') || '')));
+              const relatedEgress = meshResources.filter(r => r.type === 'egress' && r.hosts?.some(h => se.hosts?.some(sh => h.includes(sh.replace('*.', '')) || sh.includes(h.replace('*.', '')))));
+              const isExpanded = expandedSeId === se.id;
+              return (
+                <div key={se.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                  <div onClick={() => setExpandedSeId(isExpanded ? null : se.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
+                    <div className="flex items-center gap-4">
+                      <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${se.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}><Icon name="external-link" size={16} /></div>
+                      <div>
+                        <div className="font-medium">{se.name}</div>
+                        <div className="text-xs text-gray-500">{se.namespace}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">{se.hosts?.length || 0} hosts</span>
+                        <span className="px-2 py-0.5 rounded text-xs bg-gray-700 text-gray-300">{se.location}</span>
+                        <span className="px-2 py-0.5 rounded text-xs bg-gray-700 text-gray-300">{se.resolution}</span>
+                      </div>
+                      {relatedDR && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-xs flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
+                      {relatedEgress.length > 0 && <span className="px-2 py-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded text-xs flex items-center gap-1"><Icon name="log-out" size={12} />{relatedEgress.length} GW</span>}
+                      <StatusBadge status={se.status} size="sm" />
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Hosts Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="globe" size={12} className="text-pink-400" />Hosts</div>
+                          <div className="space-y-1">
+                            {se.hosts?.map((h, i) => (
+                              <div key={i} className="text-xs text-gray-300 bg-gray-700/30 px-2 py-1 rounded">{h}</div>
                             ))}
                           </div>
-                        ) : <span className="text-xs text-gray-600">—</span>;
-                      })()}
-                    </td>
-                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={(e) => { e.stopPropagation(); if (['destinationrule', 'serviceentry'].includes(r.type)) { setServiceEditorResource(r); } else { setServiceEditorResource(r); setShowServiceEditor(true); } }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        </div>
+                        {/* Ports Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="radio" size={12} className="text-blue-400" />Ports</div>
+                          <div className="space-y-1">
+                            {se.ports?.map((p, i) => (
+                              <div key={i} className="text-xs text-gray-300 flex items-center gap-2">
+                                <span className="text-cyan-400">{p.number}</span>
+                                <span className="px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">{p.protocol}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Destination Rule Column */}
+                        <div className="bg-gray-800/50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule</div>
+                          {relatedDR ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-300">{relatedDR.name}</span>
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={12} /></button>
+                              </div>
+                              <div className="text-[10px] text-gray-500 space-y-1">
+                                <div>LB: <span className="text-gray-400">{relatedDR.trafficPolicy}</span></div>
+                                <div>mTLS: <span className="text-gray-400">{relatedDR.mtls}</span></div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-2">
+                              <span className="text-xs text-gray-600">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: se.namespace, host: se.hosts?.[0] || se.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'SIMPLE', subsets: [] }); }} className="block mt-2 text-xs text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={12} className="inline mr-1" />DR</button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      {/* Actions Row */}
+                      <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
+                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(se); }} className="text-xs text-gray-400 hover:text-pink-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="edit" size={12} />Edit Entry</button>
+                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: se.namespace, host: se.hosts?.[0] || se.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'SIMPLE', subsets: [] }); }} className="text-xs text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />DR</button>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+          )}
 
           {/* Edit Sidebar for Dest Rules and Svc Entries */}
           {serviceEditorResource && ['destinationrule', 'serviceentry'].includes(serviceEditorResource.type) && (
@@ -4225,7 +4628,9 @@
                             </div>
                             <div>
                               <label className="text-xs text-gray-500 mb-1 block">Namespace</label>
-                              <input type="text" defaultValue={vs.namespace} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
+                              <select defaultValue={vs.namespace} onChange={e => setEditingVirtualService({...vs, namespace: e.target.value})} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none">
+                                {namespaces.map(ns => <option key={ns.id} value={ns.name}>{ns.name}</option>)}
+                              </select>
                             </div>
                             <div>
                               <label className="text-xs text-gray-500 mb-1 block">Host</label>
@@ -4316,10 +4721,6 @@
                                   <Icon name="plus" size={12} />Add Label
                                 </button>
                               </div>
-                            </div>
-                            <div>
-                              <label className="text-xs text-gray-500 mb-2 block">Owner</label>
-                              <input type="text" defaultValue={vs.owner || 'platform-team'} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
                             </div>
                           </div>
                         </div>
@@ -4588,7 +4989,6 @@
                       {[
                         { type: 'service', label: 'Service', icon: 'server', color: 'emerald' },
                         { type: 'virtualservice', label: 'VirtualService', icon: 'git-branch', color: 'violet' },
-                        { type: 'destinationrule', label: 'DestinationRule', icon: 'sliders', color: 'violet' },
                         { type: 'ingress', label: 'Ingress GW', icon: 'log-in', color: 'cyan' },
                         { type: 'egress', label: 'Egress GW', icon: 'log-out', color: 'orange' },
                         { type: 'eastwest', label: 'East-West GW', icon: 'repeat', color: 'teal' },
@@ -6087,7 +6487,7 @@
                   <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input type="text" placeholder="Search..." className="bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:border-violet-500" />
                 </div>
-                <button onClick={() => setShowSettings(true)} className="p-2 hover:bg-gray-800 rounded-lg" title="Settings"><Icon name="settings" size={18} className="text-gray-400" /></button>
+                <button onClick={() => setActiveNav('settings')} className={`p-2 hover:bg-gray-800 rounded-lg ${activeNav === 'settings' ? 'bg-gray-800' : ''}`} title="Settings"><Icon name="settings" size={18} className={activeNav === 'settings' ? 'text-gray-200' : 'text-gray-400'} /></button>
               </div>
             </header>
             <div className="flex-1 overflow-auto">
@@ -6098,172 +6498,9 @@
               {activeNav === 'auntie' && <AUNTIEView />}
               {activeNav === 'rosie' && <ROSIEView />}
               {activeNav === 'bro' && <BROView />}
+              {activeNav === 'settings' && <SettingsView />}
             </div>
           </div>
-
-          {/* Global Settings Modal */}
-          {showSettings && (
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowSettings(false)}>
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-5 border-b border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                      <Icon name="settings" size={20} className="text-violet-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold">Global Settings</h2>
-                      <p className="text-sm text-gray-400">Configure MIA features and preferences</p>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowSettings(false)} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
-                </div>
-                <div className="p-5 overflow-y-auto space-y-6">
-                  {/* Dashboard Modules */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2"><Icon name="layout" size={16} className="text-violet-400" />Dashboard Modules</h3>
-                    <div className="space-y-2">
-                      {[
-                        { key: 'mom', label: 'M.O.M.', desc: 'Multi-Cloud Orchestration Manager', icon: 'cloud', color: 'emerald' },
-                        { key: 'uncle', label: 'U.N.C.L.E.', desc: 'Unified Notification & Communication Layer Engine', icon: 'bell', color: 'blue' },
-                        { key: 'dad', label: 'D.A.D.', desc: 'Distributed Application Director', icon: 'shield', color: 'amber' },
-                        { key: 'auntie', label: 'A.U.N.T.I.E.', desc: 'Advanced Unified Network Traffic Inspection Engine', icon: 'cpu', color: 'purple' },
-                        { key: 'rosie', label: 'R.O.S.I.E.', desc: 'Routine Operations Scheduling & Integration Engine', icon: 'clock', color: 'rose' },
-                        { key: 'bro', label: 'B.R.O.', desc: 'Backbone Routing Operations', icon: 'network', color: 'cyan' }
-                      ].map(mod => (
-                        <div key={mod.key} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg bg-${mod.color}-500/20 flex items-center justify-center`}>
-                              <Icon name={mod.icon} size={16} className={`text-${mod.color}-400`} />
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium">{mod.label}</div>
-                              <div className="text-xs text-gray-500">{mod.desc}</div>
-                            </div>
-                          </div>
-                          <button onClick={() => setFeatureFlags({...featureFlags, [mod.key]: !featureFlags[mod.key]})}
-                            className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags[mod.key] ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags[mod.key] ? 'translate-x-7' : 'translate-x-1'}`} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* General Settings */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2"><Icon name="sliders" size={16} className="text-violet-400" />General Settings</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div>
-                          <div className="text-sm font-medium">Dark Mode</div>
-                          <div className="text-xs text-gray-500">Use dark theme across the application</div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.darkMode ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div>
-                          <div className="text-sm font-medium">Notifications</div>
-                          <div className="text-xs text-gray-500">Show system notifications and alerts</div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, notifications: !featureFlags.notifications})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.notifications ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.notifications ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div>
-                          <div className="text-sm font-medium">Auto Refresh</div>
-                          <div className="text-xs text-gray-500">Automatically refresh data every 30 seconds</div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, autoRefresh: !featureFlags.autoRefresh})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.autoRefresh ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.autoRefresh ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* D.A.D. Settings */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2"><Icon name="shield" size={16} className="text-amber-400" />D.A.D. Settings</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                            <Icon name="shield" size={16} className="text-amber-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">Security Tab</div>
-                            <div className="text-xs text-gray-500">Show Security policies in D.A.D. dashboard</div>
-                          </div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, dadSecurity: !featureFlags.dadSecurity})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.dadSecurity ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.dadSecurity ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                            <Icon name="lock" size={16} className="text-amber-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">Certificates Tab</div>
-                            <div className="text-xs text-gray-500">Show Certificates management in D.A.D. dashboard</div>
-                          </div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, dadCertificates: !featureFlags.dadCertificates})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.dadCertificates ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.dadCertificates ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                            <Icon name="code" size={16} className="text-amber-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">Lua Filters Tab</div>
-                            <div className="text-xs text-gray-500">Show Lua filters management in D.A.D. dashboard</div>
-                          </div>
-                        </div>
-                        <button onClick={() => setFeatureFlags({...featureFlags, dadLua: !featureFlags.dadLua})}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.dadLua ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.dadLua ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* R.O.S.I.E. Settings */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2"><Icon name="clock" size={16} className="text-pink-400" />R.O.S.I.E. Settings</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-fuchsia-500/20 flex items-center justify-center">
-                            <Icon name="wind" size={16} className="text-fuchsia-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">MWAA (Airflow) Platform</div>
-                            <div className="text-xs text-gray-500">Enable Amazon Managed Workflows for Apache Airflow</div>
-                          </div>
-                        </div>
-                        <button onClick={() => setEnableAirflow(!enableAirflow)}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${enableAirflow ? 'bg-emerald-500' : 'bg-gray-600'}`}>
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${enableAirflow ? 'translate-x-7' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 border-t border-gray-700 flex justify-end gap-2">
-                  <button onClick={() => setShowSettings(false)} className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg">Close</button>
-                  <button onClick={() => { showNotification('Settings saved!', 'success'); setShowSettings(false); }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg font-medium">Save Changes</button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Filter/WASM Info Modal */}
           {showFilterInfo && (
@@ -6636,12 +6873,12 @@
                       } else if (patternWizardType?.id === 'expose-service') {
                         newResources.push(
                           { id: nextId, name: `${prefix}-gw-ingress`, type: 'ingress', namespace: 'istio-system', hosts: [patternWizardData.hostname], tls: patternWizardData.tlsMode || 'SIMPLE', port: 443, status: 'healthy' },
-                          { id: nextId + 1, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.targetService, gateway: `${prefix}-gw-ingress`, routes: 1, status: 'healthy' },
+                          { id: nextId + 1, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.hostname, targetService: patternWizardData.targetService, gateway: `${prefix}-gw-ingress`, routes: 1, status: 'healthy' },
                           { id: nextId + 2, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: patternWizardData.targetService, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy' }
                         );
                       } else if (patternWizardType?.id === 'canary') {
                         newResources.push(
-                          { id: nextId, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.targetService, gateway: 'mesh', routes: 2, status: 'healthy' },
+                          { id: nextId, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.targetService, targetService: patternWizardData.targetService, gateway: 'mesh', routes: 2, status: 'healthy' },
                           { id: nextId + 1, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: patternWizardData.targetService, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy', subsets: [{ name: 'stable', labels: { version: 'v1' }, weight: patternWizardData.stableWeight || 90 }, { name: 'canary', labels: { version: 'v2' }, weight: patternWizardData.canaryWeight || 10 }] }
                         );
                       } else if (patternWizardType?.id === 'cross-cluster') {
@@ -8077,7 +8314,6 @@
                     <div><label className="text-sm font-medium text-gray-300 block mb-1">Port</label><input type="text" defaultValue={r.port || '8080'} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
                     <div><label className="text-sm font-medium text-gray-300 block mb-1">Protocol</label><select defaultValue={r.protocol || 'HTTP'} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option>HTTP</option><option>HTTPS</option><option>gRPC</option><option>TCP</option></select></div>
                   </div>
-                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Owner</label><input type="text" defaultValue={r.owner || ''} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
                   <div><label className="text-sm font-medium text-gray-300 block mb-1">Status</label><select defaultValue={r.status} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option value="healthy">Healthy</option><option value="warning">Warning</option><option value="degraded">Degraded</option><option value="error">Error</option></select></div>
 
                   {/* Type-specific fields */}
@@ -8116,6 +8352,516 @@
               </div>
             </div>);
           })()}
+
+          {/* DestinationRule Editor Modal */}
+          {editingDestinationRule && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingDestinationRule(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                      <Icon name="sliders" size={20} className="text-violet-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingDestinationRule.isNew ? 'Create Destination Rule' : editingDestinationRule.name}</div>
+                      <div className="text-xs text-gray-500">{editingDestinationRule.isNew ? 'Configure traffic policy' : 'Edit traffic policy'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingDestinationRule(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Name</label>
+                      <input type="text" defaultValue={editingDestinationRule.name || ''} placeholder={`${editingDestinationRule.host || 'service'}-dr`} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Namespace</label>
+                      <input type="text" defaultValue={editingDestinationRule.namespace || ''} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                    </div>
+                  </div>
+
+                  {/* Host */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Host</h3>
+                    <input type="text" defaultValue={editingDestinationRule.host || ''} placeholder="service.namespace.svc.cluster.local" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                  </div>
+
+                  {/* Traffic Policy */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="sliders" size={14} className="text-gray-400" />Traffic Policy</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1.5">Load Balancer</label>
+                        <select defaultValue={editingDestinationRule.trafficPolicy || 'ROUND_ROBIN'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                          <option value="ROUND_ROBIN">ROUND_ROBIN</option>
+                          <option value="LEAST_CONN">LEAST_CONN</option>
+                          <option value="RANDOM">RANDOM</option>
+                          <option value="PASSTHROUGH">PASSTHROUGH</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1.5">TLS Mode</label>
+                        <select defaultValue={editingDestinationRule.mtls || 'ISTIO_MUTUAL'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                          <option value="DISABLE">DISABLE</option>
+                          <option value="SIMPLE">SIMPLE</option>
+                          <option value="MUTUAL">MUTUAL</option>
+                          <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Circuit Breaker */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Circuit Breaker (Outlier Detection)</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm text-gray-300">Enable Circuit Breaker</label>
+                        <input type="checkbox" defaultChecked={editingDestinationRule.circuitBreaker} className="w-4 h-4 rounded bg-gray-700 border-gray-600" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-[10px] text-gray-600 mb-1">Consecutive 5xx Errors</label>
+                          <input type="number" defaultValue="5" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600 mb-1">Interval</label>
+                          <input type="text" defaultValue="30s" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-gray-600 mb-1">Base Ejection Time</label>
+                          <input type="text" defaultValue="60s" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subsets */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="git-branch" size={14} className="text-gray-400" />Subsets ({(editingDestinationRule.subsets || []).length})</h3>
+                    <div className="space-y-2">
+                      {(editingDestinationRule.subsets || []).map((subset, idx) => (
+                        <div key={idx} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-medium text-amber-400">Subset {idx + 1}</span>
+                            <button onClick={() => setEditingDestinationRule({...editingDestinationRule, subsets: editingDestinationRule.subsets.filter((_, i) => i !== idx)})} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash2" size={12} /></button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-[10px] text-gray-600 mb-1">Name</label>
+                              <input type="text" value={subset.name || ''} onChange={(e) => { const newSubsets = [...editingDestinationRule.subsets]; newSubsets[idx] = {...subset, name: e.target.value}; setEditingDestinationRule({...editingDestinationRule, subsets: newSubsets}); }} placeholder="stable, canary" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] text-gray-600 mb-1">Version Label</label>
+                              <input type="text" value={subset.labels?.version || ''} onChange={(e) => { const newSubsets = [...editingDestinationRule.subsets]; newSubsets[idx] = {...subset, labels: {...subset.labels, version: e.target.value}}; setEditingDestinationRule({...editingDestinationRule, subsets: newSubsets}); }} placeholder="v1, v2" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(editingDestinationRule.subsets || []).length === 0 && (
+                        <div className="text-center py-3 text-xs text-gray-500">No subsets - add subsets for canary/blue-green deployments</div>
+                      )}
+                      <button onClick={() => setEditingDestinationRule({...editingDestinationRule, subsets: [...(editingDestinationRule.subsets || []), { name: '', labels: { version: '' } }]})} className="w-full py-2 border border-dashed border-gray-600 rounded-lg text-xs text-gray-500 hover:border-violet-500 hover:text-violet-400 flex items-center justify-center gap-2">
+                        <Icon name="plus" size={12} />Add Subset
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-xs text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ${editingDestinationRule.name || editingDestinationRule.host + '-dr'}
+  namespace: ${editingDestinationRule.namespace || 'default'}
+spec:
+  host: ${editingDestinationRule.host || 'my-service'}
+  trafficPolicy:
+    loadBalancer:
+      simple: ${editingDestinationRule.trafficPolicy || 'ROUND_ROBIN'}
+    tls:
+      mode: ${editingDestinationRule.mtls || 'ISTIO_MUTUAL'}${editingDestinationRule.circuitBreaker ? `
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 60s` : ''}${(editingDestinationRule.subsets || []).length > 0 ? `
+  subsets:${(editingDestinationRule.subsets || []).filter(s => s.name).map(s => `
+  - name: ${s.name}
+    labels:
+      version: ${s.labels?.version || 'v1'}`).join('')}` : ''}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    DestinationRule defines traffic policy after routing
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingDestinationRule(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingDestinationRule.isNew) {
+                          const newDR = {
+                            id: Date.now(),
+                            name: editingDestinationRule.name || `${editingDestinationRule.host}-dr`,
+                            type: 'destinationrule',
+                            namespace: editingDestinationRule.namespace,
+                            status: 'healthy',
+                            host: editingDestinationRule.host,
+                            trafficPolicy: editingDestinationRule.trafficPolicy || 'ROUND_ROBIN',
+                            circuitBreaker: editingDestinationRule.circuitBreaker || false,
+                            mtls: editingDestinationRule.mtls || 'ISTIO_MUTUAL',
+                            subsets: editingDestinationRule.subsets || [],
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newDR]);
+                        }
+                        showNotification(editingDestinationRule.isNew ? 'DestinationRule created' : 'DestinationRule updated', 'success');
+                        setEditingDestinationRule(null);
+                      }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-sm font-medium rounded-lg">
+                      {editingDestinationRule.isNew ? 'Create Rule' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AuthZ Policy Editor Modal */}
+          {editingAuthPolicy && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingAuthPolicy(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                      <Icon name="shield" size={20} className="text-rose-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingAuthPolicy.isNew ? 'Create Authorization Policy' : editingAuthPolicy.name}</div>
+                      <div className="text-xs text-gray-500">{editingAuthPolicy.isNew ? 'Define access control rules' : 'Edit policy rules'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingAuthPolicy(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Policy Name</label>
+                      <input type="text" defaultValue={editingAuthPolicy.name || ''} placeholder={`${editingAuthPolicy.targetService || 'service'}-authz`} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Namespace</label>
+                      <input type="text" defaultValue={editingAuthPolicy.namespace || ''} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                    </div>
+                  </div>
+
+                  {/* Target Selector */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="target" size={14} className="text-gray-400" />Target Selector</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1.5">Match Labels (app)</label>
+                        <input type="text" defaultValue={editingAuthPolicy.targetService || ''} placeholder="my-service" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Action</h3>
+                    <div className="flex gap-3">
+                      {['ALLOW', 'DENY', 'AUDIT'].map(action => (
+                        <button key={action} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${editingAuthPolicy.action === action ? (action === 'ALLOW' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : action === 'DENY' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-amber-500/20 border-amber-500 text-amber-400') : 'bg-gray-800 border-gray-600 text-gray-400 hover:border-gray-500'}`}>
+                          <Icon name={action === 'ALLOW' ? 'check-circle' : action === 'DENY' ? 'x-circle' : 'eye'} size={14} className="inline mr-2" />{action}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Rules */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="list" size={14} className="text-gray-400" />Rules ({(editingAuthPolicy.rules || []).length})</h3>
+                    <div className="space-y-3">
+                      {(editingAuthPolicy.rules || []).map((rule, idx) => (
+                        <div key={idx} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-medium text-rose-400">Rule {idx + 1}</span>
+                            <button onClick={() => setEditingAuthPolicy({...editingAuthPolicy, rules: editingAuthPolicy.rules.filter((_, i) => i !== idx)})} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash2" size={12} /></button>
+                          </div>
+                          <div className="space-y-3">
+                            <div>
+                              <div className="text-[10px] text-gray-500 mb-1.5">From (Source)</div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <input type="text" value={rule.principals || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, principals: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="cluster.local/ns/*/sa/*" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.namespaces || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, namespaces: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="namespaces" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] text-gray-500 mb-1.5">To (Operation)</div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <input type="text" value={rule.methods || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, methods: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="GET, POST" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.paths || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, paths: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="/api/*" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.ports || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, ports: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="8080" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(editingAuthPolicy.rules || []).length === 0 && (
+                        <div className="text-center py-4 text-xs text-gray-500">No rules defined - add a rule to specify access controls</div>
+                      )}
+                      <button onClick={() => setEditingAuthPolicy({...editingAuthPolicy, rules: [...(editingAuthPolicy.rules || []), { id: Date.now(), principals: '', namespaces: '', methods: '', paths: '', ports: '' }]})} className="w-full py-2 border border-dashed border-gray-600 rounded-lg text-xs text-gray-500 hover:border-rose-500 hover:text-rose-400 flex items-center justify-center gap-2">
+                        <Icon name="plus" size={12} />Add Rule
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-xs text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: ${editingAuthPolicy.name || editingAuthPolicy.targetService + '-authz'}
+  namespace: ${editingAuthPolicy.namespace || 'default'}
+spec:
+  selector:
+    matchLabels:
+      app: ${editingAuthPolicy.targetService || 'my-service'}
+  action: ${editingAuthPolicy.action || 'ALLOW'}${(editingAuthPolicy.rules || []).length > 0 ? `
+  rules:${(editingAuthPolicy.rules || []).map(r => `
+  - from:
+    - source:
+        ${r.principals ? `principals: [${r.principals.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : 'principals: ["*"]'}${r.namespaces ? `
+        namespaces: [${r.namespaces.split(',').map(n => `"${n.trim()}"`).join(', ')}]` : ''}
+    to:
+    - operation:
+        ${r.methods ? `methods: [${r.methods.split(',').map(m => `"${m.trim()}"`).join(', ')}]` : ''}${r.paths ? `
+        paths: [${r.paths.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : ''}${r.ports ? `
+        ports: [${r.ports.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : ''}`).join('')}` : `
+  rules:
+  - from:
+    - source:
+        principals: ["*"]`}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    AuthorizationPolicy controls access to workloads in the mesh
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingAuthPolicy(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingAuthPolicy.isNew) {
+                          const newPolicy = {
+                            id: Date.now(),
+                            name: editingAuthPolicy.name || `${editingAuthPolicy.targetService}-authz`,
+                            type: 'authpolicy',
+                            namespace: editingAuthPolicy.namespace,
+                            status: 'healthy',
+                            action: editingAuthPolicy.action || 'ALLOW',
+                            rules: (editingAuthPolicy.rules || []).length,
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newPolicy]);
+                        }
+                        showNotification(editingAuthPolicy.isNew ? 'AuthorizationPolicy created' : 'AuthorizationPolicy updated', 'success');
+                        setEditingAuthPolicy(null);
+                      }} className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-sm font-medium rounded-lg">
+                      {editingAuthPolicy.isNew ? 'Create Policy' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Gateway Editor Modal */}
+          {editingGateway && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingGateway(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${editingGateway.type === 'ingress' ? 'bg-cyan-500/20' : 'bg-orange-500/20'}`}>
+                      <Icon name={editingGateway.type === 'ingress' ? 'log-in' : 'log-out'} size={20} className={editingGateway.type === 'ingress' ? 'text-cyan-400' : 'text-orange-400'} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingGateway.isNew ? 'Create Gateway' : editingGateway.name}</div>
+                      <div className="text-xs text-gray-500">{editingGateway.isNew ? 'Configure external access' : `Edit ${editingGateway.type} gateway`}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingGateway(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Name</label>
+                      <input type="text" defaultValue={editingGateway.name || ''} className={`w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${editingGateway.type === 'ingress' ? 'focus:border-cyan-500' : 'focus:border-orange-500'}`} />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1.5">Namespace</label>
+                      <select defaultValue={editingGateway.namespace || 'istio-system'} onChange={e => setEditingGateway({...editingGateway, namespace: e.target.value})} className={`w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${editingGateway.type === 'ingress' ? 'focus:border-cyan-500' : 'focus:border-orange-500'}`}>
+                        {namespaces.map(ns => <option key={ns.id} value={ns.name}>{ns.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="layers" size={14} className="text-gray-400" />Gateway Type</h3>
+                    <div className="flex gap-3">
+                      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${editingGateway.type === 'ingress' ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                        <input type="radio" name="gwType" value="ingress" defaultChecked={editingGateway.type === 'ingress'} className="hidden" />
+                        <Icon name="log-in" size={20} className={editingGateway.type === 'ingress' ? 'text-cyan-400' : 'text-gray-500'} />
+                        <div>
+                          <div className="text-sm font-medium">Ingress</div>
+                          <div className="text-xs text-gray-500">External traffic into mesh</div>
+                        </div>
+                      </label>
+                      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${editingGateway.type === 'egress' ? 'border-orange-500 bg-orange-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                        <input type="radio" name="gwType" value="egress" defaultChecked={editingGateway.type === 'egress'} className="hidden" />
+                        <Icon name="log-out" size={20} className={editingGateway.type === 'egress' ? 'text-orange-400' : 'text-gray-500'} />
+                        <div>
+                          <div className="text-sm font-medium">Egress</div>
+                          <div className="text-xs text-gray-500">Traffic leaving mesh</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Servers */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Server Configuration</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1.5">Port</label>
+                          <input type="number" defaultValue={editingGateway.port || 443} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1.5">Protocol</label>
+                          <select defaultValue="HTTPS" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                            <option value="HTTP">HTTP</option>
+                            <option value="HTTPS">HTTPS</option>
+                            <option value="GRPC">GRPC</option>
+                            <option value="TCP">TCP</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1.5">Hosts</label>
+                        <input type="text" defaultValue={editingGateway.hosts?.join(', ') || '*.example.com'} placeholder="*.example.com, api.example.com" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TLS */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="lock" size={14} className="text-gray-400" />TLS Configuration</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1.5">TLS Mode</label>
+                        <select defaultValue={editingGateway.tls || 'SIMPLE'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                          <option value="PASSTHROUGH">PASSTHROUGH</option>
+                          <option value="SIMPLE">SIMPLE</option>
+                          <option value="MUTUAL">MUTUAL</option>
+                          <option value="AUTO_PASSTHROUGH">AUTO_PASSTHROUGH</option>
+                          <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1.5">Credential Name</label>
+                          <input type="text" defaultValue={editingGateway.credentialName || ''} placeholder="my-tls-secret" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1.5">Min TLS Version</label>
+                          <select defaultValue="TLSV1_2" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                            <option value="TLSV1_0">TLS 1.0</option>
+                            <option value="TLSV1_1">TLS 1.1</option>
+                            <option value="TLSV1_2">TLS 1.2</option>
+                            <option value="TLSV1_3">TLS 1.3</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-xs text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ${editingGateway.name || 'my-gateway'}
+  namespace: ${editingGateway.namespace || 'istio-system'}
+spec:
+  selector:
+    istio: ${editingGateway.type === 'ingress' ? 'ingressgateway' : 'egressgateway'}
+  servers:
+  - port:
+      number: ${editingGateway.port || 443}
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "${editingGateway.hosts?.[0] || '*.example.com'}"
+    tls:
+      mode: ${editingGateway.tls || 'SIMPLE'}
+      credentialName: ${editingGateway.credentialName || 'my-tls-secret'}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-xs text-gray-500">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    Gateway manages inbound/outbound traffic at mesh edge
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingGateway(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingGateway.isNew) {
+                          const newGW = {
+                            id: Date.now(),
+                            name: editingGateway.name || `new-${editingGateway.type}-gateway`,
+                            type: editingGateway.type,
+                            namespace: editingGateway.namespace || 'istio-system',
+                            status: 'healthy',
+                            hosts: editingGateway.hosts || ['*.example.com'],
+                            tls: editingGateway.tls || 'SIMPLE',
+                            port: editingGateway.port || 443,
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newGW]);
+                        }
+                        showNotification(editingGateway.isNew ? 'Gateway created' : 'Gateway updated', 'success');
+                        setEditingGateway(null);
+                      }} className={`px-4 py-2 text-sm font-medium rounded-lg ${editingGateway.type === 'ingress' ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-orange-600 hover:bg-orange-500'}`}>
+                      {editingGateway.isNew ? 'Create Gateway' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     };
