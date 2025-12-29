@@ -1,0 +1,8961 @@
+import { useState } from 'react';
+
+// Simple SVG Icon Component
+    const Icon = ({ name, size = 18, className = '', style = {} }) => {
+      const icons = {
+        home: <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>,
+        clock: <><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></>,
+        box: <><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></>,
+        package: <><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></>,
+        shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>,
+        'message-square': <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+        'chevron-right': <path d="M9 18l6-6-6-6"/>,
+        plus: <path d="M12 5v14M5 12h14"/>,
+        play: <polygon points="5 3 19 12 5 21 5 3"/>,
+        'more-horizontal': <><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></>,
+        'git-branch': <><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></>,
+        zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+        database: <><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></>,
+        server: <><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></>,
+        cpu: <><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></>,
+        'hard-drive': <><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></>,
+        layers: <><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>,
+        'alert-circle': <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
+        'alert-triangle': <><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+        'check-circle': <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+        'x-circle': <><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>,
+        network: <><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></>,
+        lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
+        key: <><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></>,
+        sun: <><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></>,
+        moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>,
+        'arrow-left-right': <><polyline points="17 11 21 7 17 3"/><line x1="21" y1="7" x2="9" y2="7"/><polyline points="7 21 3 17 7 13"/><line x1="15" y1="17" x2="3" y2="17"/></>,
+        radio: <><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></>,
+        mail: <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></>,
+        activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>,
+        filter: <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>,
+        'trending-up': <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
+        users: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+        globe: <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>,
+        'arrow-right': <><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>,
+        folder: <><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></>,
+        'cloud-lightning': <><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><polyline points="13 11 9 17 15 17 11 23"/></>,
+        'refresh-cw': <><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></>,
+        'file-text': <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></>,
+        bell: <><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></>,
+        save: <><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></>,
+        layout: <><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></>,
+        code: <><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></>,
+        check: <polyline points="20 6 9 17 4 12"/>,
+        trash2: <><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></>,
+        search: <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
+        'help-circle': <><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
+        info: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></>,
+        'dollar-sign': <><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></>,
+        'trending-down': <><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></>,
+        pause: <><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></>,
+        loader: <><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></>,
+        'chevron-left': <polyline points="15 18 9 12 15 6"/>,
+        'chevron-down': <polyline points="6 9 12 15 18 9"/>,
+        edit: <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+        x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
+        copy: <><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></>,
+        eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+        terminal: <><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></>,
+        clock2: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+        user: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+        tag: <><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></>,
+        calendar: <><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>,
+        'external-link': <><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></>,
+        'log-in': <><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></>,
+        'log-out': <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
+        sliders: <><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></>,
+        target: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>,
+        'pause-circle': <><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></>,
+        'play-circle': <><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></>,
+        settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
+        wrench: <><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></>,
+        monitor: <><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>,
+        'git-merge': <><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></>,
+        wifi: <><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></>,
+        grid: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>,
+        'share-2': <><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></>,
+        link: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>,
+        gauge: <><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M16.24 7.76l-1.41 1.41"/></>,
+        'zap-off': <><polyline points="12.41 6.75 13 2 10.57 4.92"/><polyline points="18.57 12.91 21 10 15.66 10"/><polyline points="8 8 3 14 12 14 11 22 16 16"/><line x1="1" y1="1" x2="23" y2="23"/></>,
+        'edit-3': <><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
+        'minimize-2': <><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></>,
+        clipboard: <><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></>,
+        repeat: <><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></>,
+      };
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
+          {icons[name] || null}
+        </svg>
+      );
+    };
+
+    // Platform Costs Data Model
+    const platformCosts = {
+      mom: { total: 6000, breakdown: { lambda: 850, ecs: 3200, emr: 1950 }, trend: 2.3 },
+      uncle: { total: 7970, breakdown: { aurora: 2800, mongodb: 1200, dynamodb: 1350, dsql: 1150, documentdb: 1470 }, trend: 1.8 },
+      dad: { total: 2800, breakdown: { mesh: 1200, certificates: 400, observability: 1200 }, trend: -1.5 },
+      auntie: { total: 8200, breakdown: { sns: 1200, sqs: 2400, eventbridge: 1800, kafka: 2800 }, trend: 5.2 },
+      rosie: { total: 1550, breakdown: { eventbridge_scheduler: 450, mwaa: 850, batch: 250 }, trend: -12.4 },
+      bro: { total: 4200, breakdown: { vpc: 850, tgw: 1400, vpn: 650, directconnect: 980, route53: 320 }, trend: -3.2 },
+      legacyCost: 108333
+    };
+    const platformTotal = platformCosts.mom.total + platformCosts.uncle.total + platformCosts.dad.total + platformCosts.auntie.total + platformCosts.rosie.total + platformCosts.bro.total;
+    const platformSavings = ((platformCosts.legacyCost - platformTotal) / platformCosts.legacyCost * 100).toFixed(1);
+
+    // Global Namespaces data - used by App component
+    const initialNamespaces = [
+      { id: 1, name: 'sf-loans', description: 'Single-Family Loan Origination & Servicing', bu: 'Single-Family', owner: 'sf-lending-team', environment: 'production', created: '2024-01-15' },
+      { id: 2, name: 'sf-mortgage', description: 'Single-Family Mortgage Products', bu: 'Single-Family', owner: 'sf-mortgage-team', environment: 'production', created: '2024-01-15' },
+      { id: 3, name: 'mf-loans', description: 'Multi-Family Loan Products', bu: 'Multi-Family', owner: 'mf-lending-team', environment: 'production', created: '2024-02-01' },
+      { id: 4, name: 'mf-claims', description: 'Multi-Family Claims Processing', bu: 'Multi-Family', owner: 'mf-claims-team', environment: 'production', created: '2024-02-01' },
+      { id: 5, name: 'eot-platform', description: 'Enterprise Platform Services', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-01' },
+      { id: 6, name: 'eot-integrations', description: 'External Partner & API Integrations', bu: 'Enterprise', owner: 'integration-team', environment: 'production', created: '2024-01-10' },
+      { id: 7, name: 'eot-messaging', description: 'Enterprise Event Bus & Messaging', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-05' },
+      { id: 8, name: 'eot-scheduling', description: 'Job Scheduling & Orchestration', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-05' },
+      { id: 9, name: 'eot-data', description: 'Shared Data Services (MongoDB, Analytics)', bu: 'Enterprise', owner: 'data-platform', environment: 'production', created: '2024-01-08' },
+      { id: 10, name: 'istio-system', description: 'Service Mesh Infrastructure', bu: 'Enterprise', owner: 'platform-ops', environment: 'production', created: '2024-01-01' },
+    ];
+
+    // Enhanced Mock Jobs Data
+    const mockJobs = [
+      { id: 1, name: 'loan-etl-daily', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 2 * * *', scheduleHuman: 'Daily at 2:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 2:00 AM', owner: 'loans-origination', tags: ['etl', 'production', 'critical'], successRate: 99.2, avgDuration: '45m 30s', estimatedCost: '$0.85', taskCount: 4, description: 'Daily ETL pipeline for loan origination data. Extracts from source systems, transforms, and loads to data warehouse.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'WaitForS3File', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:s3-watcher' } },
+          { id: 2, type: 'lambda', name: 'ValidateSchema', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:schema-validator' } },
+          { id: 3, type: 'glue', name: 'TransformData', config: { jobName: 'loan-etl-transform' } },
+          { id: 4, type: 'dynamodb', name: 'LoadToAurora', config: { tableName: 'loans-processed', operation: 'PutItem' } }
+        ]},
+      { id: 2, name: 'db-backup-nightly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 3 * * *', scheduleHuman: 'Daily at 3:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 3:00 AM', owner: 'platform-ops', tags: ['backup', 'production'], successRate: 100, avgDuration: '12m 15s', estimatedCost: '$0.12', taskCount: 1, description: 'Nightly database backup job for all production RDS instances.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'CreateRDSSnapshots', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:rds-backup' } },
+          { id: 2, type: 'sns', name: 'NotifyOnComplete', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:backup-notifications' } }
+        ]},
+      { id: 3, name: 'cache-invalidation', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(1 hour)', scheduleHuman: 'Every hour', status: 'active', lastRun: '23 min ago', lastRunStatus: 'success', nextRun: 'In 37 minutes', owner: 'platform-ops', tags: ['cache', 'maintenance'], successRate: 99.8, avgDuration: '45s', estimatedCost: '$0.02', taskCount: 1, description: 'Hourly cache invalidation for stale data cleanup.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'InvalidateRedisCache', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:cache-invalidator' } }
+        ]},
+      { id: 4, name: 'month-end-reporting', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 6 1 * *', scheduleHuman: '1st of month at 6:00 AM', status: 'paused', lastRun: '29 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 6:00 AM', owner: 'finance-analytics', tags: ['reporting', 'finance'], successRate: 97.5, avgDuration: '2h 15m', estimatedCost: '$2.40', taskCount: 8, description: 'Monthly financial reporting pipeline with reconciliation checks.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchFinancialData', config: {} },
+          { id: 2, type: 'parallel', name: 'ProcessReports', config: {}, branches: [
+            [{ id: 21, type: 'glue', name: 'Revenue Report', config: { jobName: 'revenue-report-etl' } }],
+            [{ id: 22, type: 'glue', name: 'Expense Report', config: { jobName: 'expense-report-etl' } }],
+            [{ id: 23, type: 'glue', name: 'Balance Sheet', config: { jobName: 'balance-sheet-etl' } }]
+          ]},
+          { id: 3, type: 'lambda', name: 'ReconcileReports', config: {} },
+          { id: 4, type: 'choice', name: 'CheckDiscrepancy', config: {}, rules: [{ variable: '$.discrepancy', operator: 'NumericGreaterThan', value: '0' }] },
+          { id: 5, type: 'sns', name: 'NotifyFinance', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:finance-reports' } }
+        ]},
+      { id: 5, name: 'payments-reconciliation', type: 'dag', target: 'mwaa', namespace: 'eot-scheduling', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '3 hours ago', lastRunStatus: 'failed', nextRun: 'Tomorrow 1:00 AM', owner: 'payments-team', tags: ['payments', 'reconciliation', 'critical'], successRate: 94.2, avgDuration: '55m', estimatedCost: '$1.20', taskCount: 6, description: 'Daily reconciliation of payment transactions with bank systems.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchInternalTxns', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:fetch-internal' } },
+          { id: 2, type: 'lambda', name: 'FetchBankTxns', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:fetch-bank' } },
+          { id: 3, type: 'lambda', name: 'ReconcileTxns', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:reconcile' } },
+          { id: 4, type: 'choice', name: 'CheckMismatches', config: {}, rules: [{ variable: '$.mismatchCount', operator: 'NumericGreaterThan', value: '0' }] },
+          { id: 5, type: 'sns', name: 'AlertOnMismatch', config: { topicArn: 'arn:aws:sns:us-east-1:123456789:payment-alerts' } },
+          { id: 6, type: 's3', name: 'GenerateReport', config: { bucket: 'payments-reports', key: 'daily/reconciliation.json' } }
+        ]},
+      { id: 6, name: 'customer-data-sync', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(15 minutes)', scheduleHuman: 'Every 15 minutes', status: 'active', lastRun: '8 min ago', lastRunStatus: 'success', nextRun: 'In 7 minutes', owner: 'customer-platform', tags: ['sync', 'customer', 'real-time'], successRate: 99.9, avgDuration: '2m 15s', estimatedCost: '$0.03', taskCount: 2, description: 'Real-time customer data synchronization between CRM and data lake.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchCRMChanges', config: { functionArn: 'arn:aws:lambda:us-east-1:123456789:function:crm-sync' } },
+          { id: 2, type: 'dynamodb', name: 'UpdateCustomerTable', config: { tableName: 'customers', operation: 'BatchWrite' } }
+        ]},
+      { id: 7, name: 'fraud-detection-ml', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(5 minutes)', scheduleHuman: 'Every 5 minutes', status: 'active', lastRun: '2 min ago', lastRunStatus: 'success', nextRun: 'In 3 minutes', owner: 'fraud-prevention', tags: ['ml', 'fraud', 'critical', 'real-time'], successRate: 99.7, avgDuration: '1m 45s', estimatedCost: '$0.08', taskCount: 4, description: 'Real-time fraud detection using ML models on transaction streams.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchTransactions', config: {} },
+          { id: 2, type: 'lambda', name: 'RunMLModel', config: {} },
+          { id: 3, type: 'lambda', name: 'FlagSuspicious', config: {} },
+          { id: 4, type: 'sns', name: 'NotifyTeam', config: {} }
+        ]},
+      { id: 8, name: 'compliance-audit-weekly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 8 * * 1', scheduleHuman: 'Every Monday at 8:00 AM', status: 'active', lastRun: '3 days ago', lastRunStatus: 'success', nextRun: 'Monday 8:00 AM', owner: 'compliance-team', tags: ['compliance', 'audit', 'weekly'], successRate: 100, avgDuration: '1h 30m', estimatedCost: '$1.50', taskCount: 5, description: 'Weekly compliance audit report generation and submission.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'GatherAuditData', config: {} },
+          { id: 2, type: 'glue', name: 'ProcessAuditRecords', config: { jobName: 'compliance-audit-etl' } },
+          { id: 3, type: 'lambda', name: 'GenerateReport', config: {} },
+          { id: 4, type: 's3', name: 'StoreReport', config: { bucket: 'compliance-reports' } },
+          { id: 5, type: 'sns', name: 'NotifyCompliance', config: {} }
+        ]},
+      { id: 9, name: 'data-quality-check', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 4 * * *', scheduleHuman: 'Daily at 4:00 AM', status: 'active', lastRun: '6 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 4:00 AM', owner: 'data-engineering', tags: ['data-quality', 'validation', 'production'], successRate: 98.5, avgDuration: '25m', estimatedCost: '$0.35', taskCount: 3, description: 'Daily data quality validation across all critical datasets.',
+        workflow: [
+          { id: 1, type: 'glue', name: 'RunDQChecks', config: { jobName: 'data-quality-validator' } },
+          { id: 2, type: 'choice', name: 'CheckResults', config: {}, rules: [{ variable: '$.failedChecks', operator: 'NumericGreaterThan', value: '0' }] },
+          { id: 3, type: 'sns', name: 'AlertOnFailure', config: {} }
+        ]},
+      { id: 10, name: 'user-analytics-hourly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 * * * *', scheduleHuman: 'Every hour', status: 'active', lastRun: '45 min ago', lastRunStatus: 'success', nextRun: 'In 15 minutes', owner: 'product-analytics', tags: ['analytics', 'user-behavior'], successRate: 99.6, avgDuration: '8m', estimatedCost: '$0.12', taskCount: 3, description: 'Hourly aggregation of user behavior analytics for dashboards.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'AggregateEvents', config: {} },
+          { id: 2, type: 'glue', name: 'TransformMetrics', config: { jobName: 'user-metrics-etl' } },
+          { id: 3, type: 'dynamodb', name: 'UpdateDashboard', config: { tableName: 'analytics-cache' } }
+        ]},
+      { id: 11, name: 'api-usage-billing', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 0 1 * *', scheduleHuman: '1st of month at midnight', status: 'active', lastRun: '27 days ago', lastRunStatus: 'success', nextRun: 'Jan 1, 12:00 AM', owner: 'billing-team', tags: ['billing', 'api', 'monthly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.55', taskCount: 4, description: 'Monthly API usage aggregation and billing report generation.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'AggregateUsage', config: {} },
+          { id: 2, type: 'glue', name: 'CalculateBilling', config: { jobName: 'api-billing-calc' } },
+          { id: 3, type: 's3', name: 'StoreInvoices', config: { bucket: 'billing-invoices' } },
+          { id: 4, type: 'sns', name: 'NotifyFinance', config: {} }
+        ]},
+      { id: 12, name: 'log-archival-daily', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 5 * * *', scheduleHuman: 'Daily at 5:00 AM', status: 'active', lastRun: '5 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 5:00 AM', owner: 'platform-ops', tags: ['logs', 'archival', 'storage'], successRate: 99.8, avgDuration: '15m', estimatedCost: '$0.08', taskCount: 2, description: 'Daily log archival to S3 Glacier for cost optimization.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'IdentifyOldLogs', config: {} },
+          { id: 2, type: 's3', name: 'MoveToGlacier', config: { bucket: 'logs-archive', storageClass: 'GLACIER' } }
+        ]},
+      { id: 13, name: 'security-scan-nightly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 1 * * *', scheduleHuman: 'Daily at 1:00 AM', status: 'active', lastRun: '7 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 1:00 AM', owner: 'security-team', tags: ['security', 'scan', 'critical'], successRate: 99.9, avgDuration: '35m', estimatedCost: '$0.45', taskCount: 4, description: 'Nightly security vulnerability scanning across infrastructure.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'TriggerScans', config: {} },
+          { id: 2, type: 'lambda', name: 'CollectResults', config: {} },
+          { id: 3, type: 'choice', name: 'CheckVulnerabilities', config: {}, rules: [{ variable: '$.criticalCount', operator: 'NumericGreaterThan', value: '0' }] },
+          { id: 4, type: 'sns', name: 'AlertSecurityTeam', config: {} }
+        ]},
+      { id: 14, name: 'inventory-sync', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: 'rate(30 minutes)', scheduleHuman: 'Every 30 minutes', status: 'active', lastRun: '12 min ago', lastRunStatus: 'success', nextRun: 'In 18 minutes', owner: 'inventory-team', tags: ['inventory', 'sync', 'warehouse'], successRate: 99.4, avgDuration: '4m', estimatedCost: '$0.05', taskCount: 2, description: 'Real-time inventory sync between warehouse systems and e-commerce.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchWarehouseData', config: {} },
+          { id: 2, type: 'dynamodb', name: 'UpdateInventory', config: { tableName: 'product-inventory' } }
+        ]},
+      { id: 15, name: 'email-campaign-processor', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 9 * * *', scheduleHuman: 'Daily at 9:00 AM', status: 'paused', lastRun: '2 days ago', lastRunStatus: 'success', nextRun: 'Paused', owner: 'marketing-team', tags: ['marketing', 'email', 'campaigns'], successRate: 98.2, avgDuration: '20m', estimatedCost: '$0.25', taskCount: 3, description: 'Daily email campaign processing and delivery scheduling.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchCampaigns', config: {} },
+          { id: 2, type: 'lambda', name: 'SegmentAudience', config: {} },
+          { id: 3, type: 'sns', name: 'QueueEmails', config: {} }
+        ]},
+      { id: 16, name: 'model-retraining-weekly', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 2 * * 0', scheduleHuman: 'Every Sunday at 2:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 2:00 AM', owner: 'ml-platform', tags: ['ml', 'training', 'weekly'], successRate: 96.5, avgDuration: '3h 45m', estimatedCost: '$8.50', taskCount: 5, description: 'Weekly retraining of ML models with latest data.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'PrepareDataset', config: {} },
+          { id: 2, type: 'batch', name: 'TrainModels', config: { jobQueue: 'ml-training-queue' } },
+          { id: 3, type: 'lambda', name: 'ValidateModels', config: {} },
+          { id: 4, type: 's3', name: 'DeployModels', config: { bucket: 'ml-models-prod' } },
+          { id: 5, type: 'sns', name: 'NotifyMLTeam', config: {} }
+        ]},
+      { id: 17, name: 'partner-data-export', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 6 * * *', scheduleHuman: 'Daily at 6:00 AM', status: 'active', lastRun: '4 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 6:00 AM', owner: 'partnerships-team', tags: ['partner', 'export', 'integration'], successRate: 99.1, avgDuration: '18m', estimatedCost: '$0.22', taskCount: 3, description: 'Daily data export to partner systems via secure SFTP.',
+        workflow: [
+          { id: 1, type: 'glue', name: 'PrepareExport', config: { jobName: 'partner-export-etl' } },
+          { id: 2, type: 'lambda', name: 'EncryptData', config: {} },
+          { id: 3, type: 'lambda', name: 'UploadToSFTP', config: {} }
+        ]},
+      { id: 18, name: 'report-distribution', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 7 * * 1-5', scheduleHuman: 'Weekdays at 7:00 AM', status: 'active', lastRun: '1 day ago', lastRunStatus: 'success', nextRun: 'Tomorrow 7:00 AM', owner: 'business-intel', tags: ['reports', 'distribution', 'business'], successRate: 99.5, avgDuration: '12m', estimatedCost: '$0.15', taskCount: 3, description: 'Daily business intelligence report distribution to stakeholders.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'GenerateReports', config: {} },
+          { id: 2, type: 's3', name: 'StoreReports', config: { bucket: 'bi-reports' } },
+          { id: 3, type: 'sns', name: 'NotifyStakeholders', config: {} }
+        ]},
+      { id: 19, name: 'database-maintenance', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 3 * * 0', scheduleHuman: 'Every Sunday at 3:00 AM', status: 'active', lastRun: '5 days ago', lastRunStatus: 'success', nextRun: 'Sunday 3:00 AM', owner: 'dba-team', tags: ['database', 'maintenance', 'weekly'], successRate: 100, avgDuration: '45m', estimatedCost: '$0.35', taskCount: 4, description: 'Weekly database maintenance including vacuum and index rebuild.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'CheckTableSizes', config: {} },
+          { id: 2, type: 'lambda', name: 'RunVacuum', config: {} },
+          { id: 3, type: 'lambda', name: 'RebuildIndexes', config: {} },
+          { id: 4, type: 'sns', name: 'NotifyDBA', config: {} }
+        ]},
+      { id: 20, name: 'cost-allocation-daily', type: 'schedule', target: 'eventbridge', namespace: 'eot-scheduling', schedule: '0 8 * * *', scheduleHuman: 'Daily at 8:00 AM', status: 'active', lastRun: '2 hours ago', lastRunStatus: 'success', nextRun: 'Tomorrow 8:00 AM', owner: 'finops-team', tags: ['cost', 'finops', 'allocation'], successRate: 99.8, avgDuration: '22m', estimatedCost: '$0.28', taskCount: 4, description: 'Daily AWS cost allocation and tagging compliance check.',
+        workflow: [
+          { id: 1, type: 'lambda', name: 'FetchCostData', config: {} },
+          { id: 2, type: 'glue', name: 'AllocateCosts', config: { jobName: 'cost-allocation-etl' } },
+          { id: 3, type: 'dynamodb', name: 'UpdateCostDB', config: { tableName: 'cost-allocation' } },
+          { id: 4, type: 'sns', name: 'NotifyFinOps', config: {} }
+        ]},
+    ];
+
+    // Mock Runs Data
+    // Generate 1000+ mock runs
+    const jobTemplates = [
+      { name: 'loan-etl-daily', jobId: 1, avgDuration: 45, steps: ['WaitForS3File', 'ValidateSchema', 'TransformData', 'LoadToAurora'] },
+      { name: 'db-backup-nightly', jobId: 2, avgDuration: 12, steps: ['CreateRDSSnapshots'] },
+      { name: 'cache-invalidation', jobId: 3, avgDuration: 3, steps: ['InvalidateRedisCache'] },
+      { name: 'fraud-detection-ml', jobId: 4, avgDuration: 25, steps: ['FetchTransactions', 'RunMLModel', 'FlagSuspicious', 'NotifyTeam'] },
+      { name: 'payments-reconciliation', jobId: 5, avgDuration: 35, steps: ['FetchInternalTxns', 'FetchBankTxns', 'ReconcileTxns', 'GenerateReport'] },
+    ];
+    const triggers = ['Scheduled', 'Manual', 'API', 'Webhook'];
+    const errors = [null, null, null, null, null, null, null, 'Timeout after 3 retries', 'Connection refused', 'Invalid schema', 'Rate limit exceeded', 'Memory limit exceeded'];
+    const mockRuns = Array.from({ length: 1005 }, (_, i) => {
+      const job = jobTemplates[i % jobTemplates.length];
+      const date = new Date(2025, 0, 15);
+      date.setMinutes(date.getMinutes() - i * 30);
+      const isRunning = i < 2;
+      const isFailed = !isRunning && Math.random() < 0.08;
+      const status = isRunning ? 'running' : isFailed ? 'failed' : 'success';
+      const error = isFailed ? errors[Math.floor(Math.random() * errors.length)] || 'Unknown error' : null;
+      const duration = Math.floor(job.avgDuration * (0.8 + Math.random() * 0.4));
+      const stepStatuses = job.steps.map((s, si) => {
+        if (isRunning && si === job.steps.length - 1) return 'running';
+        if (isFailed && si === job.steps.length - 1) return 'failed';
+        return 'success';
+      });
+      return {
+        id: `run-${String(i + 1).padStart(4, '0')}`,
+        jobName: job.name,
+        jobId: job.jobId,
+        status,
+        startTime: date.toISOString().replace('T', ' ').slice(0, 19),
+        duration: `${duration}m ${Math.floor(Math.random() * 60)}s`,
+        triggeredBy: triggers[Math.floor(Math.random() * triggers.length)],
+        tasks: { success: stepStatuses.filter(s => s === 'success').length, failed: stepStatuses.filter(s => s === 'failed').length, running: stepStatuses.filter(s => s === 'running').length },
+        error,
+        steps: job.steps.map((name, si) => ({
+          name,
+          type: 'Task',
+          status: stepStatuses[si],
+          startTime: `${String(2 + si).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}:00`,
+          duration: `${Math.floor(duration / job.steps.length)}m`,
+          logs: `[INFO] Starting ${name}...\n[INFO] Processing batch 1/10\n[INFO] Processing batch 2/10\n[INFO] Processing batch 3/10\n${stepStatuses[si] === 'failed' ? '[ERROR] ' + (error || 'Task failed') : '[INFO] Completed successfully'}`
+        }))
+      };
+    });
+
+    // Mock Connections Data
+    const mockConnections = [
+      { id: 1, name: 'loans-prod-aurora', type: 'aurora', host: 'loans-prod.xxx.rds.amazonaws.com', status: 'healthy', lastTested: '2 hours ago' },
+      { id: 2, name: 'analytics-dsql', type: 'dsql', host: 'analytics.xxx.dsql.amazonaws.com', status: 'healthy', lastTested: '1 hour ago' },
+      { id: 3, name: 'payments-api', type: 'http', host: 'api.payments.internal', status: 'degraded', lastTested: '30 min ago' },
+      { id: 4, name: 's3-data-lake', type: 's3', host: 's3://data-lake-prod', status: 'healthy', lastTested: '15 min ago' },
+    ];
+
+    // Mock Variables Data
+    const mockVariables = [
+      { key: 'LOANS_S3_BUCKET', value: 'loans-data-prod', description: 'Production S3 bucket for loan data', encrypted: false },
+      { key: 'BANK_API_KEY', value: '********', description: 'Bank integration API key', encrypted: true },
+      { key: 'DW_SCHEMA', value: 'analytics_prod', description: 'Data warehouse schema name', encrypted: false },
+      { key: 'SLACK_WEBHOOK', value: '********', description: 'Slack notifications webhook URL', encrypted: true },
+    ];
+
+    // StatusBadge Component - Reusable status indicator
+    const StatusBadge = ({ status, size = 'md' }) => {
+      const configs = {
+        active: { icon: 'check-circle', color: 'emerald', label: 'Active' },
+        paused: { icon: 'pause', color: 'amber', label: 'Paused' },
+        success: { icon: 'check-circle', color: 'emerald', label: 'Success' },
+        failed: { icon: 'x-circle', color: 'red', label: 'Failed' },
+        running: { icon: 'loader', color: 'blue', label: 'Running', animate: true },
+        healthy: { icon: 'check-circle', color: 'emerald', label: 'Healthy' },
+        degraded: { icon: 'alert-triangle', color: 'amber', label: 'Degraded' },
+        warning: { icon: 'alert-triangle', color: 'amber', label: 'Warning' },
+        available: { icon: 'check-circle', color: 'emerald', label: 'Available' },
+      };
+      const config = configs[status] || configs.active;
+      const sizeClasses = size === 'sm' ? 'text-xs px-1.5 py-0.5' : 'text-sm px-2 py-1';
+      return (
+        <span className={`inline-flex items-center gap-1.5 ${sizeClasses} rounded-full font-medium bg-${config.color}-500/20 text-${config.color}-300 border border-${config.color}-500/30`}>
+          <Icon name={config.icon} size={size === 'sm' ? 10 : 12} className={`text-white ${config.animate ? 'animate-spin' : ''}`} />
+          {config.label}
+        </span>
+      );
+    };
+
+    // PlatformBadge Component - Shows Step Function vs MWAA
+    const PlatformBadge = ({ target }) => {
+      const isMAWA = target === 'mwaa';
+      return (
+        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium ${
+          isMAWA ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+        }`}>
+          <Icon name={isMAWA ? 'git-branch' : 'zap'} size={10} />
+          {isMAWA ? 'Airflow' : 'Step Function'}
+        </span>
+      );
+    };
+
+    // FakeGraph Component - SVG line chart
+    const FakeGraph = ({ color = 'emerald', height = 100, data, label }) => {
+      const points = data || Array.from({ length: 30 }, (_, i) => 50 + Math.sin(i * 0.5) * 30 + Math.random() * 20);
+      const max = Math.max(...points);
+      const min = Math.min(...points);
+      const range = max - min || 1;
+      const pathData = points.map((p, i) => {
+        const x = (i / (points.length - 1)) * 100;
+        const y = 10 + (1 - ((p - min) / range)) * 80;
+        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+      }).join(' ');
+      const areaData = pathData + ` L 100 95 L 0 95 Z`;
+      const colorMap = { emerald: '#10b981', cyan: '#06b6d4', amber: '#f59e0b', red: '#ef4444', pink: '#0891b2', violet: '#8b5cf6' };
+      const strokeColor = colorMap[color] || colorMap.emerald;
+      const gradientId = `grad-${color}-${Math.random().toString(36).substr(2, 9)}`;
+      return (
+        <div className="relative">
+          {label && <div className="text-sm text-gray-400 mb-2">{label}</div>}
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full" style={{ height }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor={strokeColor} stopOpacity="0.3" />
+                <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={areaData} fill={`url(#${gradientId})`} />
+            <path d={pathData} fill="none" stroke={strokeColor} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+          </svg>
+          <div className="flex justify-between text-xs text-gray-600 mt-1">
+            <span>{points.length > 60 ? '6mo ago' : points.length > 30 ? '3mo ago' : '30d ago'}</span>
+            <span>Now</span>
+          </div>
+        </div>
+      );
+    };
+
+    // CostWidget Component - Shows cost with trend
+    const CostWidget = ({ label, cost, trend, color = 'emerald' }) => (
+      <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-gray-400">
+            <Icon name="dollar-sign" size={16} />
+            <span className="text-sm">{label}</span>
+          </div>
+          {trend !== undefined && (
+            <span className={`text-xs flex items-center gap-1 ${trend < 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+              <Icon name={trend < 0 ? 'trending-down' : 'trending-up'} size={12} />
+              {Math.abs(trend)}%
+            </span>
+          )}
+        </div>
+        <div className={`text-2xl font-semibold mt-1 text-${color}-400`}>
+          ${cost.toLocaleString()}
+        </div>
+      </div>
+    );
+
+    // M.O.M. - Compute/Infrastructure resources (no databases)
+    const mockInfraResources = [
+      // Lambda functions - aws_lambda_function
+      { id: 1, name: 'order-processor', type: 'lambda', runtime: 'python3.11', status: 'active', memory: 1024, region: 'us-east-1', owner: 'orders-team', created: '2024-09-10', monthlyCost: '$45', invocations: '2.4M/mo', avgDuration: '234ms', errors: '0.02%', timeout: 30, handler: 'main.handler', role: 'arn:aws:iam::123456789:role/order-processor-role', layers: ['arn:aws:lambda:us-east-1:123456789:layer:common-utils:5'], vpcConfig: { subnetIds: ['subnet-abc123', 'subnet-def456'], securityGroupIds: ['sg-lambda-01'] }, envVars: { ORDER_TABLE: 'orders-prod', QUEUE_URL: 'https://sqs.us-east-1.amazonaws.com/123456789/order-queue' }, description: 'Processes incoming orders and validates inventory. Triggers downstream fulfillment workflows.' },
+      { id: 4, name: 'image-resizer', type: 'lambda', runtime: 'nodejs20.x', status: 'active', memory: 512, region: 'us-east-1', owner: 'media-team', created: '2024-10-05', monthlyCost: '$28', invocations: '850K/mo', avgDuration: '180ms', errors: '0.01%', timeout: 15, handler: 'index.handler', role: 'arn:aws:iam::123456789:role/image-resizer-role', layers: ['arn:aws:lambda:us-east-1:123456789:layer:sharp:3'], vpcConfig: null, envVars: { DEST_BUCKET: 'processed-images-prod', MAX_WIDTH: '1920' }, description: 'Resizes and optimizes uploaded images. Triggered by S3 events.' },
+      // ECS services - aws_ecs_service + aws_ecs_task_definition
+      { id: 2, name: 'payment-api', type: 'ecs', image: '123456789.dkr.ecr.us-east-1.amazonaws.com/payment-api:v2.3.1', status: 'running', desiredCount: 3, runningCount: 3, region: 'us-east-1', owner: 'payments-team', created: '2024-07-01', monthlyCost: '$890', cpu: 1024, memoryMb: 2048, cpuUtil: '45%', memUtil: '62%', requests: '8.5K/min', latency: '12ms', cluster: 'prod-cluster', launchType: 'FARGATE', networkMode: 'awsvpc', subnets: ['subnet-abc123', 'subnet-def456'], securityGroups: ['sg-ecs-payment'], taskRole: 'arn:aws:iam::123456789:role/payment-api-task', executionRole: 'arn:aws:iam::123456789:role/ecsTaskExecutionRole', loadBalancer: { targetGroupArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789:targetgroup/payment-api/abc123', containerPort: 8080 }, description: 'Payment processing API service. Handles card tokenization, payment authorization, and settlement.' },
+      { id: 5, name: 'fraud-detection', type: 'ecs', image: '123456789.dkr.ecr.us-east-1.amazonaws.com/fraud-ml:v1.2.0', status: 'running', desiredCount: 2, runningCount: 2, region: 'us-east-1', owner: 'risk-team', created: '2024-08-15', monthlyCost: '$650', cpu: 2048, memoryMb: 4096, cpuUtil: '68%', memUtil: '74%', requests: '3.2K/min', latency: '45ms', cluster: 'prod-cluster', launchType: 'FARGATE', networkMode: 'awsvpc', subnets: ['subnet-abc123', 'subnet-def456'], securityGroups: ['sg-ecs-fraud'], taskRole: 'arn:aws:iam::123456789:role/fraud-detection-task', executionRole: 'arn:aws:iam::123456789:role/ecsTaskExecutionRole', loadBalancer: { targetGroupArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789:targetgroup/fraud-ml/def456', containerPort: 8080 }, description: 'ML-based fraud detection service. Analyzes transactions in real-time.' },
+      // EMR clusters - aws_emr_cluster
+      { id: 3, name: 'analytics-cluster', type: 'emr', releaseLabel: 'emr-6.10.0', status: 'waiting', region: 'us-east-1', owner: 'data-platform', created: '2024-11-20', monthlyCost: '$1,250', jobsRun: 156, uptime: '99.2%', storage: '2.4 TB', applications: ['Spark', 'Hive', 'Presto'], masterInstanceType: 'm5.xlarge', masterCount: 1, coreInstanceType: 'r5.2xlarge', coreCount: 4, serviceRole: 'arn:aws:iam::123456789:role/EMR_DefaultRole', ec2Role: 'arn:aws:iam::123456789:role/EMR_EC2_DefaultRole', subnetId: 'subnet-emr123', securityGroups: { master: 'sg-emr-master', slave: 'sg-emr-core' }, logUri: 's3://emr-logs-prod/analytics-cluster/', bootstrapActions: ['s3://bootstrap-scripts/install-deps.sh'], description: 'Spark cluster for analytics and reporting. Runs nightly ETL jobs and ad-hoc queries.' },
+      // EC2 instances - aws_instance
+      { id: 6, name: 'api-gateway-01', type: 'ec2', instanceType: 't3.xlarge', status: 'running', region: 'us-east-1', owner: 'platform-ops', created: '2024-03-10', monthlyCost: '$125', cpuUtil: '34%', memUtil: '52%', network: '450 Mbps', diskUtil: '45%', ami: 'ami-0abcdef1234567890', subnetId: 'subnet-pub-123', securityGroups: ['sg-api-gateway'], keyName: 'prod-keypair', iamInstanceProfile: 'api-gateway-profile', ebsVolumes: [{ deviceName: '/dev/xvda', volumeSize: 100, volumeType: 'gp3', iops: 3000 }], userData: '#!/bin/bash\nyum update -y', tags: { Environment: 'prod', Service: 'api-gateway' }, description: 'API Gateway load balancer instance. Handles incoming traffic distribution.' },
+      { id: 7, name: 'jenkins-master', type: 'ec2', instanceType: 'm5.2xlarge', status: 'running', region: 'us-east-1', owner: 'devops-team', created: '2024-01-15', monthlyCost: '$280', cpuUtil: '62%', memUtil: '71%', network: '120 Mbps', diskUtil: '68%', ami: 'ami-jenkins-golden-2024', subnetId: 'subnet-priv-456', securityGroups: ['sg-jenkins-master'], keyName: 'devops-keypair', iamInstanceProfile: 'jenkins-master-profile', ebsVolumes: [{ deviceName: '/dev/xvda', volumeSize: 200, volumeType: 'gp3', iops: 6000 }, { deviceName: '/dev/xvdb', volumeSize: 500, volumeType: 'st1' }], userData: null, tags: { Environment: 'prod', Service: 'cicd' }, description: 'Jenkins CI/CD master server. Orchestrates build and deployment pipelines.' },
+      { id: 8, name: 'bastion-host', type: 'ec2', instanceType: 't3.medium', status: 'running', region: 'us-east-1', owner: 'security-team', created: '2024-02-20', monthlyCost: '$35', cpuUtil: '8%', memUtil: '22%', network: '25 Mbps', diskUtil: '12%', ami: 'ami-bastion-hardened-v3', subnetId: 'subnet-pub-789', securityGroups: ['sg-bastion'], keyName: 'bastion-keypair', iamInstanceProfile: 'bastion-profile', ebsVolumes: [{ deviceName: '/dev/xvda', volumeSize: 30, volumeType: 'gp3', iops: 3000 }], userData: null, tags: { Environment: 'prod', Service: 'security' }, description: 'Secure bastion host for SSH access. Provides controlled entry to private subnets.' },
+      { id: 9, name: 'kafka-broker-01', type: 'ec2', instanceType: 'r5.xlarge', status: 'running', region: 'us-east-1', owner: 'data-platform', created: '2024-05-08', monthlyCost: '$195', cpuUtil: '45%', memUtil: '78%', network: '850 Mbps', diskUtil: '56%', ami: 'ami-kafka-optimized-v2', subnetId: 'subnet-priv-data', securityGroups: ['sg-kafka-broker'], keyName: 'kafka-keypair', iamInstanceProfile: 'kafka-broker-profile', ebsVolumes: [{ deviceName: '/dev/xvda', volumeSize: 50, volumeType: 'gp3', iops: 3000 }, { deviceName: '/dev/xvdb', volumeSize: 1000, volumeType: 'gp3', iops: 10000 }], userData: null, tags: { Environment: 'prod', Service: 'kafka', BrokerId: '1' }, description: 'Kafka broker for event streaming. Handles high-throughput message processing.' },
+      { id: 10, name: 'monitoring-server', type: 'ec2', instanceType: 'm5.xlarge', status: 'running', region: 'us-east-1', owner: 'platform-ops', created: '2024-04-12', monthlyCost: '$145', cpuUtil: '28%', memUtil: '65%', network: '200 Mbps', diskUtil: '42%', ami: 'ami-monitoring-stack-v4', subnetId: 'subnet-priv-ops', securityGroups: ['sg-monitoring'], keyName: 'ops-keypair', iamInstanceProfile: 'monitoring-profile', ebsVolumes: [{ deviceName: '/dev/xvda', volumeSize: 100, volumeType: 'gp3', iops: 3000 }, { deviceName: '/dev/xvdb', volumeSize: 500, volumeType: 'gp3', iops: 6000 }], userData: null, tags: { Environment: 'prod', Service: 'monitoring' }, description: 'Prometheus and Grafana monitoring stack. Collects metrics from all services.' },
+      // API Gateway - aws_apigatewayv2_api (HTTP/WebSocket) or aws_api_gateway_rest_api (REST)
+      { id: 11, name: 'lending-api-gw', type: 'apigateway', apiType: 'HTTP', protocolType: 'HTTP', status: 'active', region: 'us-east-1', owner: 'loans-origination', created: '2024-02-15', monthlyCost: '$185', requests: '2.4M/mo', latency: '12ms', routes: 24, stages: ['prod', 'staging'], endpointType: 'REGIONAL', corsConfig: { allowOrigins: ['https://lending.fanniemae.com'], allowMethods: ['GET', 'POST', 'PUT', 'DELETE'], allowHeaders: ['Authorization', 'Content-Type'] }, defaultAuthorizer: 'JWT', integrations: [{ route: 'POST /loans', target: 'arn:aws:lambda:us-east-1:123456789:function:create-loan' }, { route: 'GET /loans/{id}', target: 'arn:aws:lambda:us-east-1:123456789:function:get-loan' }], accessLogArn: 'arn:aws:logs:us-east-1:123456789:log-group:/aws/apigateway/lending-api', description: 'API Gateway for lending services. Handles authentication, rate limiting, and request routing.' },
+      { id: 12, name: 'partner-api-gw', type: 'apigateway', apiType: 'REST', protocolType: 'REST', status: 'active', region: 'us-east-1', owner: 'integration-team', created: '2024-03-20', monthlyCost: '$320', requests: '4.1M/mo', latency: '18ms', routes: 45, stages: ['prod', 'sandbox'], endpointType: 'REGIONAL', apiKeyRequired: true, usagePlans: [{ name: 'partner-basic', rateLimit: 100, burstLimit: 200, quota: 10000 }, { name: 'partner-premium', rateLimit: 1000, burstLimit: 2000, quota: 100000 }], defaultAuthorizer: 'API_KEY', integrations: [{ route: 'POST /v1/applications', target: 'arn:aws:lambda:us-east-1:123456789:function:create-application' }], accessLogArn: 'arn:aws:logs:us-east-1:123456789:log-group:/aws/apigateway/partner-api', description: 'Partner-facing API Gateway. Provides external API access with usage plans and API keys.' },
+      { id: 13, name: 'websocket-gw', type: 'apigateway', apiType: 'WebSocket', protocolType: 'WEBSOCKET', status: 'active', region: 'us-east-1', owner: 'platform-ops', created: '2024-05-10', monthlyCost: '$95', connections: '12K active', messages: '850K/day', routes: 8, stages: ['prod'], endpointType: 'REGIONAL', routeSelectionExpression: '$request.body.action', integrations: [{ route: '$connect', target: 'arn:aws:lambda:us-east-1:123456789:function:ws-connect' }, { route: '$disconnect', target: 'arn:aws:lambda:us-east-1:123456789:function:ws-disconnect' }, { route: 'subscribe', target: 'arn:aws:lambda:us-east-1:123456789:function:ws-subscribe' }], accessLogArn: 'arn:aws:logs:us-east-1:123456789:log-group:/aws/apigateway/websocket-gw', description: 'WebSocket API for real-time notifications. Powers live updates in dashboard applications.' },
+      // EventBridge Pipes - aws_pipes_pipe
+      { id: 14, name: 'order-enrichment-pipe', type: 'pipe', sourceType: 'SQS', sourceArn: 'arn:aws:sqs:us-east-1:123456789:order-queue', targetType: 'EventBridge', targetArn: 'arn:aws:events:us-east-1:123456789:event-bus/order-bus', status: 'running', region: 'us-east-1', owner: 'orders-team', created: '2024-06-01', monthlyCost: '$45', throughput: '2.8K/hr', enrichmentType: 'Lambda', enrichmentArn: 'arn:aws:lambda:us-east-1:123456789:function:order-enricher', filterPattern: '{"source": ["order-service"], "detail-type": ["OrderCreated"]}', batchSize: 10, maxBatchWindow: 5, roleArn: 'arn:aws:iam::123456789:role/order-pipe-role', logConfig: { level: 'ERROR', cloudwatchLogGroup: '/aws/pipes/order-enrichment' }, description: 'Enriches order events with customer data before routing to EventBridge.' },
+      { id: 15, name: 'payment-sync-pipe', type: 'pipe', sourceType: 'DynamoDB', sourceArn: 'arn:aws:dynamodb:us-east-1:123456789:table/payments/stream/2024-01-01T00:00:00.000', targetType: 'Kinesis', targetArn: 'arn:aws:kinesis:us-east-1:123456789:stream/payment-stream', status: 'running', region: 'us-east-1', owner: 'payments-team', created: '2024-04-15', monthlyCost: '$68', throughput: '5.2K/hr', enrichmentType: 'None', enrichmentArn: null, filterPattern: null, batchSize: 100, startingPosition: 'LATEST', roleArn: 'arn:aws:iam::123456789:role/payment-pipe-role', logConfig: { level: 'INFO', cloudwatchLogGroup: '/aws/pipes/payment-sync' }, description: 'Streams payment table changes to Kinesis for real-time analytics.' },
+      { id: 16, name: 'audit-log-pipe', type: 'pipe', sourceType: 'Kinesis', sourceArn: 'arn:aws:kinesis:us-east-1:123456789:stream/app-logs', targetType: 'S3', targetArn: 'arn:aws:s3:::audit-archive-prod', status: 'running', region: 'us-east-1', owner: 'security-team', created: '2024-01-20', monthlyCost: '$32', throughput: '12K/hr', enrichmentType: 'Lambda', enrichmentArn: 'arn:aws:lambda:us-east-1:123456789:function:audit-filter', filterPattern: '{"eventType": ["SECURITY", "COMPLIANCE", "ACCESS"]}', batchSize: 500, startingPosition: 'TRIM_HORIZON', roleArn: 'arn:aws:iam::123456789:role/audit-pipe-role', logConfig: { level: 'ERROR', cloudwatchLogGroup: '/aws/pipes/audit-log' }, description: 'Filters and archives audit-relevant events to S3 for compliance.' },
+    ];
+
+    // U.N.C.L.E. - Data Storage resources
+    const mockDatastores = [
+      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.' },
+      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', nodes: 3, collections: 45, documents: '2.8M', storage: '125 GB', description: 'User profile and preferences store. Powers personalization and user settings across all applications.' },
+      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', mode: 'On-demand', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M', size: '8.5 GB', description: 'Orders table with order items and status. Supports high-throughput order processing.' },
+      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', engine: 'Aurora DSQL', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', queries: '2.4K/day', storage: '1.2 TB', users: 45, description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.' },
+      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M40', status: 'available', size: 'M40', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', nodes: 3, collections: 28, documents: '1.8M', storage: '45 GB', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.' },
+      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', nodes: 3, collections: 12, documents: '2.1M', storage: '85 GB', description: 'Session and cache store for west coast users. Provides low-latency session management.' },
+      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.' },
+      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', nodes: 3, collections: 32, documents: '4.2M', storage: '180 GB', connections: 28, description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.' },
+      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', nodes: 3, collections: 18, documents: '125M', storage: '2.1 TB', connections: 15, description: 'Compliance audit log storage. Immutable document store for regulatory requirements.' },
+    ];
+
+    // B.R.O. - Networking resources
+    const mockNetworkResources = [
+      // VPCs
+      { id: 1, name: 'prod-vpc', type: 'vpc', cidr: '10.0.0.0/16', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-05', monthlyCost: '$125', subnets: 12, routeTables: 6, nacls: 4, flowLogs: true, description: 'Production VPC hosting all production workloads. Multi-AZ with public and private subnets.' },
+      { id: 2, name: 'staging-vpc', type: 'vpc', cidr: '10.1.0.0/16', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-10', monthlyCost: '$85', subnets: 8, routeTables: 4, nacls: 3, flowLogs: true, description: 'Staging VPC for pre-production testing. Mirrors production architecture at smaller scale.' },
+      { id: 3, name: 'dev-vpc', type: 'vpc', cidr: '10.2.0.0/16', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$45', subnets: 6, routeTables: 3, nacls: 2, flowLogs: false, description: 'Development VPC for engineering teams. Isolated environment for feature development.' },
+      { id: 4, name: 'shared-services-vpc', type: 'vpc', cidr: '10.10.0.0/16', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-02-01', monthlyCost: '$95', subnets: 6, routeTables: 4, nacls: 3, flowLogs: true, description: 'Shared services VPC for common infrastructure. Hosts monitoring, logging, and CI/CD systems.' },
+      // Transit Gateways
+      { id: 5, name: 'main-tgw', type: 'tgw', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-20', monthlyCost: '$450', attachments: 8, routeTables: 3, associations: 8, propagations: 12, bandwidth: '50 Gbps', description: 'Primary Transit Gateway connecting all VPCs. Hub for east-west traffic routing.' },
+      { id: 6, name: 'cross-region-tgw', type: 'tgw', status: 'available', region: 'us-west-2', owner: 'platform-ops', created: '2024-03-01', monthlyCost: '$380', attachments: 4, routeTables: 2, associations: 4, propagations: 6, bandwidth: '25 Gbps', description: 'West region Transit Gateway. Peered with main TGW for cross-region connectivity.' },
+      { id: 7, name: 'partner-tgw', type: 'tgw', status: 'available', region: 'us-east-1', owner: 'integration-team', created: '2024-04-15', monthlyCost: '$280', attachments: 3, routeTables: 2, associations: 3, propagations: 4, bandwidth: '10 Gbps', description: 'Partner Transit Gateway for B2B integrations. Isolated routing for external partner connectivity.' },
+      // VPN Connections
+      { id: 8, name: 'datacenter-vpn-01', type: 'vpn', status: 'up', region: 'us-east-1', owner: 'network-ops', created: '2024-02-10', monthlyCost: '$125', tunnels: '2/2', encryption: 'AES-256', remoteIp: '203.0.113.10', localCidr: '10.0.0.0/8', remoteCidr: '172.16.0.0/12', throughput: '1.25 Gbps', description: 'Primary VPN to on-premises datacenter. Encrypted tunnel for hybrid connectivity.' },
+      { id: 9, name: 'datacenter-vpn-02', type: 'vpn', status: 'up', region: 'us-east-1', owner: 'network-ops', created: '2024-02-10', monthlyCost: '$125', tunnels: '2/2', encryption: 'AES-256', remoteIp: '203.0.113.20', localCidr: '10.0.0.0/8', remoteCidr: '172.16.0.0/12', throughput: '1.25 Gbps', description: 'Backup VPN to on-premises datacenter. Failover path for high availability.' },
+      { id: 10, name: 'partner-bank-vpn', type: 'vpn', status: 'up', region: 'us-east-1', owner: 'integration-team', created: '2024-05-20', monthlyCost: '$95', tunnels: '2/2', encryption: 'AES-256-GCM', remoteIp: '198.51.100.50', localCidr: '10.100.0.0/16', remoteCidr: '192.168.50.0/24', throughput: '500 Mbps', description: 'VPN tunnel to partner bank for payment processing. Secure B2B connectivity.' },
+      { id: 11, name: 'dr-site-vpn', type: 'vpn', status: 'down', region: 'us-west-2', owner: 'network-ops', created: '2024-03-15', monthlyCost: '$85', tunnels: '0/2', encryption: 'AES-256', remoteIp: '203.0.113.100', localCidr: '10.0.0.0/8', remoteCidr: '172.20.0.0/16', throughput: '0 Mbps', description: 'VPN to DR site. Currently in maintenance mode.' },
+      // Direct Connect
+      { id: 12, name: 'dx-primary', type: 'directconnect', status: 'available', region: 'us-east-1', owner: 'network-ops', created: '2024-01-25', monthlyCost: '$650', connection: '10 Gbps', vifs: 4, location: 'Equinix DC6', lagId: 'dxlag-abc123', jumboFrames: true, macSec: true, description: 'Primary Direct Connect to Equinix datacenter. Dedicated 10G link for low-latency connectivity.' },
+      { id: 13, name: 'dx-backup', type: 'directconnect', status: 'available', region: 'us-east-1', owner: 'network-ops', created: '2024-02-01', monthlyCost: '$330', connection: '1 Gbps', vifs: 2, location: 'CoreSite VA1', lagId: null, jumboFrames: true, macSec: false, description: 'Backup Direct Connect at alternate facility. Provides path diversity for resilience.' },
+      // Route 53 Hosted Zones
+      { id: 14, name: 'fanniemae.com', type: 'route53', zoneType: 'public', status: 'active', region: 'global', owner: 'platform-ops', created: '2024-01-01', monthlyCost: '$85', records: 245, queries: '12.5M/mo', healthChecks: 18, trafficPolicies: 3, description: 'Primary public hosted zone. Manages all public DNS records for fanniemae.com domain.' },
+      { id: 15, name: 'internal.fm.com', type: 'route53', zoneType: 'private', status: 'active', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-05', monthlyCost: '$45', records: 520, queries: '45M/mo', healthChecks: 42, vpcs: 4, description: 'Private hosted zone for internal services. Service discovery across all VPCs.' },
+      { id: 16, name: 'api.fanniemae.com', type: 'route53', zoneType: 'public', status: 'active', region: 'global', owner: 'platform-ops', created: '2024-02-15', monthlyCost: '$125', records: 85, queries: '28M/mo', healthChecks: 12, trafficPolicies: 5, description: 'API subdomain zone with latency-based routing. Serves API traffic with geo-aware DNS.' },
+      // Peering Connections
+      { id: 17, name: 'prod-to-shared', type: 'peering', status: 'active', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-25', monthlyCost: '$0', requester: 'prod-vpc', accepter: 'shared-services-vpc', requesterCidr: '10.0.0.0/16', accepterCidr: '10.10.0.0/16', description: 'VPC peering between production and shared services. Enables access to monitoring and logging.' },
+      { id: 18, name: 'staging-to-shared', type: 'peering', status: 'active', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-25', monthlyCost: '$0', requester: 'staging-vpc', accepter: 'shared-services-vpc', requesterCidr: '10.1.0.0/16', accepterCidr: '10.10.0.0/16', description: 'VPC peering between staging and shared services. Provides staging access to common tools.' },
+      // PrivateLink Endpoints
+      { id: 19, name: 's3-endpoint', type: 'privatelink', endpointType: 'Gateway', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-10', monthlyCost: '$0', service: 'com.amazonaws.us-east-1.s3', vpc: 'prod-vpc', subnets: 0, securityGroups: 0, description: 'Gateway endpoint for S3 access. Enables private connectivity to S3 without NAT gateway costs.' },
+      { id: 20, name: 'dynamodb-endpoint', type: 'privatelink', endpointType: 'Gateway', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-01-10', monthlyCost: '$0', service: 'com.amazonaws.us-east-1.dynamodb', vpc: 'prod-vpc', subnets: 0, securityGroups: 0, description: 'Gateway endpoint for DynamoDB. Provides free private access to DynamoDB tables.' },
+      { id: 21, name: 'secrets-manager-endpoint', type: 'privatelink', endpointType: 'Interface', status: 'available', region: 'us-east-1', owner: 'security-team', created: '2024-02-05', monthlyCost: '$21', service: 'com.amazonaws.us-east-1.secretsmanager', vpc: 'prod-vpc', subnets: 3, securityGroups: 2, eniCount: 3, privateDns: true, description: 'Interface endpoint for Secrets Manager. Secure access to secrets without internet exposure.' },
+      { id: 22, name: 'ecr-api-endpoint', type: 'privatelink', endpointType: 'Interface', status: 'available', region: 'us-east-1', owner: 'platform-ops', created: '2024-02-10', monthlyCost: '$21', service: 'com.amazonaws.us-east-1.ecr.api', vpc: 'prod-vpc', subnets: 3, securityGroups: 1, eniCount: 3, privateDns: true, description: 'ECR API endpoint for container registry access. Enables private Docker image pulls.' },
+      { id: 23, name: 'kms-endpoint', type: 'privatelink', endpointType: 'Interface', status: 'available', region: 'us-east-1', owner: 'security-team', created: '2024-01-15', monthlyCost: '$21', service: 'com.amazonaws.us-east-1.kms', vpc: 'prod-vpc', subnets: 3, securityGroups: 2, eniCount: 3, privateDns: true, description: 'KMS endpoint for encryption key operations. All encryption happens over private network.' },
+      { id: 24, name: 'payment-service-endpoint', type: 'privatelink', endpointType: 'Interface', status: 'available', region: 'us-east-1', owner: 'payments-team', created: '2024-03-20', monthlyCost: '$35', service: 'vpce-svc-payment-gateway', vpc: 'prod-vpc', subnets: 3, securityGroups: 3, eniCount: 3, privateDns: true, description: 'PrivateLink service for partner payment gateway. Secure B2B connectivity without VPN.' },
+    ];
+
+    // Istio Mesh Resources - Services, Virtual Services, Gateways, Policies
+    const mockMeshResources = [
+      // Services (backend services in the mesh)
+      { id: 1, name: 'loan-service', type: 'service', namespace: 'sf-loans', status: 'healthy', host: 'loan-service.sf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-15' },
+      { id: 2, name: 'user-service', type: 'service', namespace: 'eot-platform', status: 'healthy', host: 'user-service.eot-platform.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
+      { id: 3, name: 'payment-gateway', type: 'service', namespace: 'eot-integrations', status: 'degraded', host: 'payment-gateway.eot-integrations.svc.cluster.local', port: 8443, protocol: 'HTTPS', endpoints: 3, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-10' },
+      { id: 4, name: 'notification-service', type: 'service', namespace: 'eot-messaging', status: 'healthy', host: 'notification-service.eot-messaging.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-05' },
+      { id: 5, name: 'mortgage-calc-service', type: 'service', namespace: 'sf-mortgage', status: 'healthy', host: 'mortgage-calc-service.sf-mortgage.svc.cluster.local', port: 8080, protocol: 'gRPC', endpoints: 3, owner: 'sf-mortgage-team', bu: 'Single-Family', created: '2024-05-12' },
+      { id: 42, name: 'claims-processor', type: 'service', namespace: 'mf-claims', status: 'healthy', host: 'claims-processor.mf-claims.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-02-15' },
+      { id: 43, name: 'mf-loan-service', type: 'service', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service.mf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-20' },
+      // Virtual Services (traffic routing) - host is external, targetService is internal service
+      { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'sf-loans', status: 'healthy', host: 'api.sf-loans.fm.com', targetService: 'loan-service', gateway: 'sf-loans-gw-ingress', routes: 12, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-16' },
+      { id: 7, name: 'user-api-vs', type: 'virtualservice', namespace: 'eot-platform', status: 'healthy', host: 'api.platform.fm.com', targetService: 'user-service', gateway: 'platform-gw-ingress', routes: 8, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-21' },
+      { id: 8, name: 'payment-vs', type: 'virtualservice', namespace: 'eot-integrations', status: 'healthy', host: 'api.payments.fm.com', targetService: 'payment-gateway', gateway: 'integrations-gw-ingress', routes: 15, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-11' },
+      { id: 9, name: 'public-api-vs', type: 'virtualservice', namespace: 'istio-system', status: 'healthy', host: 'api.freddiemac.com', targetService: 'loan-service', gateway: 'public-gw-ingress', routes: 45, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
+      // Ingress Gateways (external traffic entry)
+      { id: 10, name: 'public-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.freddiemac.com', 'portal.freddiemac.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-05' },
+      { id: 11, name: 'sf-loans-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.sf-loans.fm.com'], tls: 'SIMPLE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-10' },
+      { id: 12, name: 'partner-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['partner-api.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-04-20' },
+      { id: 40, name: 'integrations-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.payments.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-08' },
+      { id: 41, name: 'platform-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.platform.fm.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-18' },
+      // Egress Gateways (controlled external calls)
+      { id: 13, name: 'bank-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.bankofamerica.com', '*.chase.com', '*.wellsfargo.com'], tls: 'ORIGINATE', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-15' },
+      { id: 14, name: 'credit-bureau-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], tls: 'ORIGINATE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
+      { id: 15, name: 'snowflake-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.snowflakecomputing.com'], tls: 'ORIGINATE', port: 443, owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
+      { id: 38, name: 'external-apis-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.stripe.com', 'api.plaid.com', 'api.twilio.com'], tls: 'ORIGINATE', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-18' },
+      // East-West Gateways (cross-cluster/namespace traffic)
+      { id: 28, name: 'sf-to-eot-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-integrations.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-01' },
+      { id: 29, name: 'platform-mesh-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-platform.svc.cluster.local', '*.sf-loans.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
+      { id: 30, name: 'cross-cluster-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.cluster-east.fm.com', '*.cluster-west.fm.com'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-03-05' },
+      // Destination Rules (load balancing, circuit breakers)
+      { id: 16, name: 'loan-service-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'loan-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-17' },
+      { id: 17, name: 'payment-gateway-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'warning', host: 'payment-gateway', trafficPolicy: 'LEAST_CONN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-12' },
+      { id: 39, name: 'user-service-dr', type: 'destinationrule', namespace: 'eot-platform', status: 'healthy', host: 'user-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: false, mtls: 'STRICT', owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-22' },
+      { id: 18, name: 'external-banks-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: '*.bankofamerica.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-16' },
+      { id: 31, name: 'stripe-api-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: 'api.stripe.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-21' },
+      { id: 32, name: 'credit-bureau-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.equifax.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-21' },
+      { id: 33, name: 'plaid-api-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.plaid.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-26' },
+      { id: 34, name: 'twilio-api-dr', type: 'destinationrule', namespace: 'eot-messaging', status: 'healthy', host: 'api.twilio.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-11' },
+      { id: 35, name: 'snowflake-dr', type: 'destinationrule', namespace: 'eot-data', status: 'healthy', host: '*.snowflakecomputing.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'data-platform', bu: 'Enterprise', created: '2024-05-02' },
+      // Authorization Policies (access control)
+      { id: 19, name: 'sf-loans-authz', type: 'authpolicy', namespace: 'sf-loans', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/eot-platform/sa/user-service'], rules: 5, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-18' },
+      { id: 20, name: 'integrations-authz', type: 'authpolicy', namespace: 'eot-integrations', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/sf-loans/sa/*'], rules: 8, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-13' },
+      { id: 21, name: 'deny-external-authz', type: 'authpolicy', namespace: 'istio-system', status: 'healthy', action: 'DENY', principals: ['*'], rules: 3, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-06' },
+      // ServiceEntry (external services registry)
+      { id: 22, name: 'stripe-api-se', type: 'serviceentry', namespace: 'eot-integrations', status: 'healthy', hosts: ['api.stripe.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-20' },
+      { id: 23, name: 'google-apis-se', type: 'serviceentry', namespace: 'istio-system', status: 'healthy', hosts: ['*.googleapis.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
+      { id: 24, name: 'plaid-api-se', type: 'serviceentry', namespace: 'sf-loans', status: 'healthy', hosts: ['api.plaid.com', 'sandbox.plaid.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-25' },
+      { id: 25, name: 'twilio-api-se', type: 'serviceentry', namespace: 'eot-messaging', status: 'healthy', hosts: ['api.twilio.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-10' },
+      { id: 26, name: 'datadog-intake-se', type: 'serviceentry', namespace: 'eot-platform', status: 'healthy', hosts: ['intake.logs.datadoghq.com', 'api.datadoghq.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
+      { id: 27, name: 'legacy-mainframe-se', type: 'serviceentry', namespace: 'eot-integrations', status: 'warning', hosts: ['mainframe.internal.fm.com'], location: 'MESH_INTERNAL', resolution: 'STATIC', ports: [{ number: 5250, protocol: 'TCP' }], endpoints: ['10.50.100.15', '10.50.100.16'], owner: 'integration-team', bu: 'Enterprise', created: '2024-05-05' },
+      { id: 36, name: 'credit-bureaus-se', type: 'serviceentry', namespace: 'sf-loans', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
+      { id: 37, name: 'snowflake-api-se', type: 'serviceentry', namespace: 'eot-data', status: 'healthy', hosts: ['*.snowflakecomputing.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
+    ];
+
+    // WASM Plugins for Envoy
+    const mockWasmPlugins = [
+      // rate-limiter module used by 3 plugins with different configs
+      { id: 1, name: 'rate-limiter-public', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/rate-limiter:v1.2.0', module: 'rate-limiter', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'istio': 'ingressgateway' } }, targetGateway: 'public-gw-ingress', priority: 100, owner: 'platform-ops', bu: 'Enterprise', created: '2024-08-15', config: { requests_per_minute: 1000, burst: 50 }, metrics: { requests: '1.2M', blocked: '2.4K' } },
+      { id: 7, name: 'rate-limiter-partner', namespace: 'integration', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/rate-limiter:v1.2.0', module: 'rate-limiter', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'gateway': 'partner' } }, targetGateway: 'partner-gw-ingress', priority: 100, owner: 'integration-team', bu: 'Enterprise', created: '2024-09-20', config: { requests_per_minute: 500, burst: 25 }, metrics: { requests: '340K', blocked: '890' } },
+      { id: 8, name: 'rate-limiter-internal', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/rate-limiter:v1.2.0', module: 'rate-limiter', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'gateway': 'internal' } }, targetGateway: 'internal-gw-ingress', priority: 100, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-01', config: { requests_per_minute: 5000, burst: 200 }, metrics: { requests: '4.5M', blocked: '120' } },
+      // jwt-validator module used by 2 plugins
+      { id: 2, name: 'jwt-validator-public', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/jwt-validator:v2.0.1', module: 'jwt-validator', version: 'v2.0.1', sourceType: 'OCI', pullPolicy: 'Always', selector: { matchLabels: { 'app': 'api-gateway' } }, targetGateway: 'public-gw-ingress', priority: 90, owner: 'identity-team', bu: 'Enterprise', created: '2024-07-20', config: { issuer: 'https://auth.fanniemae.com', audience: 'api.fanniemae.com' }, metrics: { requests: '890K', rejected: '1.2K' } },
+      { id: 9, name: 'jwt-validator-partner', namespace: 'integration', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/jwt-validator:v2.0.1', module: 'jwt-validator', version: 'v2.0.1', sourceType: 'OCI', pullPolicy: 'Always', selector: { matchLabels: { 'gateway': 'partner' } }, targetGateway: 'partner-gw-ingress', priority: 90, owner: 'identity-team', bu: 'Enterprise', created: '2024-08-15', config: { issuer: 'https://partner-auth.fanniemae.com', audience: 'partner-api.fanniemae.com' }, metrics: { requests: '125K', rejected: '340' } },
+      // Single-use modules
+      { id: 3, name: 'pii-redactor', namespace: 'lending', status: 'active', enabled: true, phase: 'STATS', image: 'oci://gcr.io/fm-wasm/pii-redactor:v1.0.3', module: 'pii-redactor', version: 'v1.0.3', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'loan-service' } }, targetGateway: 'lending-gw-ingress', priority: 200, owner: 'loans-origination', bu: 'Single-Family', created: '2024-09-01', config: { redact_fields: ['ssn', 'dob', 'account_number'], log_level: 'INFO' }, metrics: { requests: '450K', redacted: '12.5K' } },
+      { id: 4, name: 'header-injector', namespace: 'payments', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/header-injector:v1.1.0', module: 'header-injector', version: 'v1.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'payment-gateway' } }, targetGateway: 'payments-gw-ingress', priority: 150, owner: 'payments-team', bu: 'Enterprise', created: '2024-06-10', config: { headers: { 'X-Request-ID': 'uuid()', 'X-Correlation-ID': 'header(traceparent)' } }, metrics: { requests: '340K', injected: '340K' } },
+      { id: 5, name: 'request-transformer', namespace: 'integration', status: 'warning', enabled: false, phase: 'AUTHN', image: 'https://storage.fm.com/wasm/request-transformer-v0.9.0.wasm', module: 'request-transformer', version: 'v0.9.0', sourceType: 'HTTP', pullPolicy: 'Always', selector: { matchLabels: { 'gateway': 'partner' } }, targetGateway: 'partner-gw-ingress', priority: 80, owner: 'integration-team', bu: 'Enterprise', created: '2024-10-05', config: { transform_body: true, xml_to_json: true }, metrics: { requests: '0', errors: '0' } },
+      { id: 6, name: 'audit-logger', namespace: 'istio-system', status: 'active', enabled: true, phase: 'STATS', image: 'oci://gcr.io/fm-wasm/audit-logger:v1.3.2', module: 'audit-logger', version: 'v1.3.2', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'audit': 'enabled' } }, targetGateway: 'public-gw-ingress', priority: 250, owner: 'compliance-team', bu: 'Enterprise', created: '2024-05-25', config: { log_request: true, log_response: true, sensitive_headers: ['Authorization'] }, metrics: { requests: '2.1M', logged: '2.1M' } },
+      // Header augmenter - adds custom headers via 3rd party service polling with caching
+      { id: 10, name: 'header-augmenter', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/header-augmenter:v1.0.0', module: 'header-augmenter', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'api-gateway' } }, targetGateway: 'public-gw-ingress', priority: 95, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-15', config: { mgmt_cluster: 'auth-service', cache_ttl: '300s', headers: ['X-Auth-Token', 'X-Correlation-ID'] }, metrics: { requests: '1.8M', augmented: '1.8M' } },
+      // Header repairer - fixes illegal HTTP headers without Envoy recompile
+      { id: 11, name: 'header-repairer', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/header-repairer:v1.1.0', module: 'header-repairer', version: 'v1.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'istio': 'ingressgateway' } }, targetGateway: 'public-gw-ingress', priority: 50, owner: 'platform-ops', bu: 'Enterprise', created: '2024-09-05', config: { fix_underscore: true, lowercase_names: true, trim_whitespace: true }, metrics: { requests: '2.4M', repaired: '45K' } },
+      // Canary router - header-based routing for canary deployments
+      { id: 12, name: 'canary-router', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/canary-router:v2.0.0', module: 'canary-router', version: 'v2.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'canary': 'enabled' } }, targetGateway: 'public-gw-ingress', priority: 120, owner: 'platform-ops', bu: 'Enterprise', created: '2024-11-01', config: { canary_header: 'X-Canary', canary_percentage: 10, sticky_sessions: true }, metrics: { requests: '890K', routed_canary: '89K' } },
+      // ElastiCache response cache - caches API responses in Redis/ElastiCache
+      { id: 13, name: 'response-cache-api', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/elasticache-cache:v1.2.0', module: 'elasticache-cache', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'cache': 'enabled' } }, targetGateway: 'public-gw-ingress', priority: 60, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-20', config: { cluster_endpoint: 'prod-cache.xxxxx.use1.cache.amazonaws.com:6379', ttl_seconds: 300, cache_methods: ['GET'], cache_paths: ['/api/v1/products/*', '/api/v1/catalog/*'], bypass_header: 'X-Cache-Bypass' }, metrics: { requests: '3.2M', cache_hits: '2.8M', cache_misses: '400K' } },
+      { id: 14, name: 'response-cache-partner', namespace: 'integration', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/elasticache-cache:v1.2.0', module: 'elasticache-cache', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'gateway': 'partner' } }, targetGateway: 'partner-gw-ingress', priority: 60, owner: 'integration-team', bu: 'Enterprise', created: '2024-11-05', config: { cluster_endpoint: 'partner-cache.xxxxx.use1.cache.amazonaws.com:6379', ttl_seconds: 600, cache_methods: ['GET'], cache_paths: ['/partner/api/*'], bypass_header: 'X-Cache-Bypass' }, metrics: { requests: '890K', cache_hits: '756K', cache_misses: '134K' } },
+      // External Authorization - calls external auth service for fine-grained access control
+      { id: 15, name: 'ext-authz-loans', namespace: 'lending', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/ext-authz:v2.1.0', module: 'ext-authz', version: 'v2.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'loan-service' } }, targetGateway: 'lending-gw-ingress', priority: 85, owner: 'identity-team', bu: 'Single-Family', created: '2024-09-15', config: { auth_service: 'http://authz-service.identity:8080/authorize', timeout_ms: 100, cache_ttl: 60, include_headers: ['Authorization', 'X-User-ID', 'X-Tenant-ID'], include_body: false }, metrics: { requests: '1.2M', allowed: '1.19M', denied: '10K' } },
+      { id: 16, name: 'ext-authz-payments', namespace: 'payments', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/ext-authz:v2.1.0', module: 'ext-authz', version: 'v2.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'payment-gateway' } }, targetGateway: 'payments-gw-ingress', priority: 85, owner: 'identity-team', bu: 'Enterprise', created: '2024-10-01', config: { auth_service: 'http://authz-service.identity:8080/authorize', timeout_ms: 50, cache_ttl: 30, include_headers: ['Authorization', 'X-User-ID', 'X-Account-ID'], include_body: true }, metrics: { requests: '890K', allowed: '885K', denied: '5K' } },
+      // OPA Policy - Open Policy Agent integration for policy-as-code
+      { id: 17, name: 'opa-policy-api', namespace: 'istio-system', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/opa-policy:v1.0.0', module: 'opa-policy', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'opa': 'enabled' } }, targetGateway: 'public-gw-ingress', priority: 88, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-10', config: { opa_endpoint: 'http://opa.policy-system:8181/v1/data/authz/allow', policy_bundle: 's3://fm-policies/api-gateway/bundle.tar.gz', decision_path: 'result.allow', include_claims: true }, metrics: { requests: '2.4M', allowed: '2.38M', denied: '20K' } },
+      { id: 18, name: 'opa-policy-pci', namespace: 'payments', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/opa-policy:v1.0.0', module: 'opa-policy', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'pci': 'zone' } }, targetGateway: 'payments-gw-ingress', priority: 82, owner: 'compliance-team', bu: 'Enterprise', created: '2024-11-01', config: { opa_endpoint: 'http://opa.policy-system:8181/v1/data/pci/allow', policy_bundle: 's3://fm-policies/pci-dss/bundle.tar.gz', decision_path: 'result.allow', audit_log: true }, metrics: { requests: '450K', allowed: '448K', denied: '2K' } },
+      // Request Validator - JSON schema and OpenAPI spec validation
+      { id: 19, name: 'request-validator-loans-api', namespace: 'lending', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/request-validator:v1.3.0', module: 'request-validator', version: 'v1.3.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'validate': 'strict' } }, targetGateway: 'lending-gw-ingress', priority: 70, owner: 'loans-origination', bu: 'Single-Family', created: '2024-08-20', config: { openapi_spec: 's3://fm-specs/loans-api/v2/openapi.yaml', validate_request_body: true, validate_params: true, reject_unknown_fields: true, max_body_size: '1MB' }, metrics: { requests: '780K', valid: '775K', invalid: '5K' } },
+      { id: 20, name: 'request-validator-partner-api', namespace: 'integration', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/request-validator:v1.3.0', module: 'request-validator', version: 'v1.3.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'gateway': 'partner' } }, targetGateway: 'partner-gw-ingress', priority: 70, owner: 'integration-team', bu: 'Enterprise', created: '2024-09-05', config: { openapi_spec: 's3://fm-specs/partner-api/v1/openapi.yaml', validate_request_body: true, validate_params: true, reject_unknown_fields: false, max_body_size: '5MB' }, metrics: { requests: '340K', valid: '338K', invalid: '2K' } },
+      // AWS SigV4 - Signs outbound requests with AWS credentials for AWS service calls
+      { id: 21, name: 'aws-sigv4-s3', namespace: 'data', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/aws-sigv4:v1.1.0', module: 'aws-sigv4', version: 'v1.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'aws': 's3' } }, targetGateway: 'external-apis-gw-egress', priority: 110, owner: 'data-platform', bu: 'Enterprise', created: '2024-07-15', config: { service: 's3', region: 'us-east-1', credentials_source: 'irsa', role_arn: 'arn:aws:iam::123456789:role/s3-access-role', sign_headers: ['host', 'x-amz-date', 'x-amz-content-sha256'] }, metrics: { requests: '2.1M', signed: '2.1M', errors: '0' } },
+      { id: 22, name: 'aws-sigv4-dynamodb', namespace: 'data', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/aws-sigv4:v1.1.0', module: 'aws-sigv4', version: 'v1.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'aws': 'dynamodb' } }, targetGateway: 'external-apis-gw-egress', priority: 110, owner: 'data-platform', bu: 'Enterprise', created: '2024-08-01', config: { service: 'dynamodb', region: 'us-east-1', credentials_source: 'irsa', role_arn: 'arn:aws:iam::123456789:role/dynamodb-access-role', sign_headers: ['host', 'x-amz-date', 'x-amz-target'] }, metrics: { requests: '4.5M', signed: '4.5M', errors: '12' } },
+      { id: 23, name: 'aws-sigv4-sqs', namespace: 'messaging', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/aws-sigv4:v1.1.0', module: 'aws-sigv4', version: 'v1.1.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'aws': 'sqs' } }, targetGateway: 'external-apis-gw-egress', priority: 110, owner: 'platform-ops', bu: 'Enterprise', created: '2024-09-10', config: { service: 'sqs', region: 'us-east-1', credentials_source: 'irsa', role_arn: 'arn:aws:iam::123456789:role/sqs-access-role', sign_headers: ['host', 'x-amz-date'] }, metrics: { requests: '1.8M', signed: '1.8M', errors: '0' } },
+      // Secrets Injector - Fetches credentials from Secrets Manager/Vault and injects into requests
+      { id: 24, name: 'secrets-injector-stripe', namespace: 'payments', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/secrets-injector:v1.2.0', module: 'secrets-injector', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'egress': 'stripe' } }, targetGateway: 'bank-gw-egress', priority: 105, owner: 'payments-team', bu: 'Enterprise', created: '2024-06-20', config: { secrets_backend: 'aws-secrets-manager', secret_path: 'prod/payments/stripe-api-key', inject_as: 'header', header_name: 'Authorization', header_prefix: 'Bearer ', cache_ttl: 3600, refresh_before_expiry: 300 }, metrics: { requests: '340K', injected: '340K', refreshes: '24' } },
+      { id: 25, name: 'secrets-injector-twilio', namespace: 'comms', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/secrets-injector:v1.2.0', module: 'secrets-injector', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'egress': 'twilio' } }, targetGateway: 'external-apis-gw-egress', priority: 105, owner: 'platform-ops', bu: 'Enterprise', created: '2024-07-10', config: { secrets_backend: 'aws-secrets-manager', secret_path: 'prod/comms/twilio-auth', inject_as: 'basic-auth', cache_ttl: 7200, refresh_before_expiry: 600 }, metrics: { requests: '125K', injected: '125K', refreshes: '12' } },
+      { id: 26, name: 'secrets-injector-vault-db', namespace: 'data', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/secrets-injector:v1.2.0', module: 'secrets-injector', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'egress': 'external-db' } }, targetGateway: 'external-apis-gw-egress', priority: 105, owner: 'data-platform', bu: 'Enterprise', created: '2024-08-25', config: { secrets_backend: 'hashicorp-vault', vault_addr: 'https://vault.internal:8200', secret_path: 'database/creds/readonly', inject_as: 'header', header_name: 'X-DB-Credentials', cache_ttl: 1800, refresh_before_expiry: 300 }, metrics: { requests: '890K', injected: '890K', refreshes: '48' } },
+      // notification-service WASM filters (filter-only service)
+      { id: 27, name: 'pii-redactor-comms', namespace: 'comms', status: 'active', enabled: true, phase: 'STATS', image: 'oci://gcr.io/fm-wasm/pii-redactor:v1.0.3', module: 'pii-redactor', version: 'v1.0.3', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'notification-service' } }, targetService: 'notification-service', priority: 200, owner: 'platform-ops', bu: 'Enterprise', created: '2024-09-15', config: { redact_fields: ['phone', 'email', 'address'], log_level: 'INFO' }, metrics: { requests: '320K', redacted: '8.5K' } },
+      { id: 28, name: 'rate-limiter-notifications', namespace: 'comms', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/rate-limiter:v1.2.0', module: 'rate-limiter', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'notification-service' } }, targetService: 'notification-service', priority: 100, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-01', config: { requests_per_minute: 2000, burst: 100 }, metrics: { requests: '320K', blocked: '450' } },
+      // mortgage-calc-service WASM filter
+      { id: 29, name: 'grpc-validator-mortgage', namespace: 'lending', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/grpc-validator:v1.0.0', module: 'grpc-validator', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'mortgage-calc-service' } }, targetService: 'mortgage-calc-service', priority: 80, owner: 'loans-origination', bu: 'Single-Family', created: '2024-06-01', config: { proto_descriptor: 's3://fm-protos/mortgage-calc/v1/descriptor.pb', validate_requests: true, validate_responses: false }, metrics: { requests: '560K', valid: '558K', invalid: '2K' } },
+    ];
+
+    // Lua Filters (script definitions) - the global filter objects
+    const mockLuaFilterDefs = [
+      { name: 'custom-cors', version: 'v1.0.0', sourceType: 'inline', script: 'function envoy_on_request(handle)\n  handle:headers():add("Access-Control-Allow-Origin", "*")\nend', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-10' },
+      { name: 'response-enricher', version: 'v2.1.0', sourceType: 'configmap', script: 'function envoy_on_response(handle)\n  handle:headers():add("X-Served-By", os.getenv("SERVICE_NAME"))\nend', owner: 'loans-origination', bu: 'Single-Family', created: '2024-06-15' },
+      { name: 'debug-headers', version: 'v1.0.0', sourceType: 'inline', script: 'function envoy_on_request(handle)\n  handle:logInfo("Request: " .. handle:headers():get(":path"))\nend', owner: 'payments-team', bu: 'Enterprise', created: '2024-07-01' },
+      { name: 'path-rewriter', version: 'v1.2.0', sourceType: 'file', script: 'function envoy_on_request(handle)\n  local path = handle:headers():get(":path")\n  if string.match(path, "^/v1/") then\n    handle:headers():replace(":path", string.gsub(path, "^/v1/", "/api/"))\n  end\nend', owner: 'integration-team', bu: 'Enterprise', created: '2024-08-20' },
+      { name: 'tenant-router', version: 'v3.0.1', sourceType: 'inline', script: 'function envoy_on_request(handle)\n  local tenant = handle:headers():get("X-Tenant-ID")\n  if tenant then\n    handle:headers():add("X-Upstream-Cluster", tenant .. "-cluster")\n  end\nend\nfunction envoy_on_response(handle)\n  handle:headers():add("X-Processed-By", "tenant-router")\nend', owner: 'platform-ops', bu: 'Enterprise', created: '2024-09-10' },
+      { name: 'auth-enricher', version: 'v1.0.0-beta', sourceType: 'configmap', script: 'function envoy_on_request(handle)\n  -- TODO: Add auth enrichment\nend', owner: 'identity-team', bu: 'Enterprise', created: '2024-11-01' },
+    ];
+
+    // Lua Filter Configs (individual service configurations) - each is independent like WASM plugins
+    const mockLuaFilters = [
+      // custom-cors filter used by 2 services with different configs
+      { id: 1, name: 'custom-cors-public', filter: 'custom-cors', namespace: 'istio-system', target: 'public-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'request', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '1.5M', errors: '0' } },
+      { id: 2, name: 'custom-cors-partner', filter: 'custom-cors', namespace: 'integration', target: 'partner-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'request', operation: 'INSERT_AFTER', targetFilter: 'envoy.filters.http.jwt_authn', validated: true, targetExists: true, metrics: { invocations: '600K', errors: '0' } },
+      // response-enricher used by 2 services
+      { id: 3, name: 'response-enricher-loans', filter: 'response-enricher', namespace: 'lending', target: 'loan-service', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_OUTBOUND', listener: { portNumber: 8080 } }, hookType: 'response', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '450K', errors: '12' } },
+      { id: 4, name: 'response-enricher-payments', filter: 'response-enricher', namespace: 'payments', target: 'payment-gateway', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_OUTBOUND' }, hookType: 'response', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '280K', errors: '3' } },
+      // debug-headers - single service, disabled
+      { id: 5, name: 'debug-headers-payments', filter: 'debug-headers', namespace: 'payments', target: 'payment-gateway', status: 'inactive', enabled: false, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_INBOUND' }, hookType: 'request', operation: 'INSERT_FIRST', targetFilter: null, validated: true, targetExists: true, metrics: { invocations: '0', errors: '0' } },
+      // path-rewriter used by 2 gateways
+      { id: 6, name: 'path-rewriter-partner', filter: 'path-rewriter', namespace: 'integration', target: 'partner-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY', listener: { portNumber: 443 } }, hookType: 'request', operation: 'INSERT_AFTER', targetFilter: 'envoy.filters.http.jwt_authn', validated: true, targetExists: true, metrics: { invocations: '125K', errors: '0' } },
+      { id: 7, name: 'path-rewriter-public', filter: 'path-rewriter', namespace: 'istio-system', target: 'public-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'request', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '340K', errors: '2' } },
+      // tenant-router - used by 3 services
+      { id: 8, name: 'tenant-router-public', filter: 'tenant-router', namespace: 'istio-system', target: 'public-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'both', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '890K', errors: '5' } },
+      { id: 9, name: 'tenant-router-partner', filter: 'tenant-router', namespace: 'integration', target: 'partner-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'both', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '340K', errors: '1' } },
+      { id: 10, name: 'tenant-router-internal', filter: 'tenant-router', namespace: 'istio-system', target: 'internal-gw-ingress', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'GATEWAY' }, hookType: 'request', operation: 'INSERT_AFTER', targetFilter: 'envoy.filters.http.ext_authz', validated: true, targetExists: true, metrics: { invocations: '1.2M', errors: '0' } },
+      // auth-enricher - single service with warning
+      { id: 11, name: 'auth-enricher-users', filter: 'auth-enricher', namespace: 'identity', target: 'user-service', status: 'warning', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_INBOUND' }, hookType: 'request', operation: 'INSERT_AFTER', targetFilter: 'envoy.filters.http.ext_authz', validated: false, targetExists: false, metrics: { invocations: '0', errors: '0' } },
+      // notification-service filters (filter-only service - no DR, no VS)
+      { id: 12, name: 'pii-redactor-notifications', filter: 'pii-redactor', namespace: 'comms', target: 'notification-service', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_OUTBOUND' }, hookType: 'response', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '320K', errors: '0' } },
+      { id: 13, name: 'audit-logger-notifications', filter: 'audit-logger', namespace: 'comms', target: 'notification-service', status: 'active', enabled: true, applyTo: 'HTTP_FILTER', match: { context: 'SIDECAR_INBOUND' }, hookType: 'both', operation: 'INSERT_BEFORE', targetFilter: 'envoy.filters.http.router', validated: true, targetExists: true, metrics: { invocations: '320K', errors: '5' } },
+    ];
+
+    // Certificates (TLS, mTLS, cert-manager)
+    const mockCertificates = [
+      { id: 1, name: 'public-gateway-tls', namespace: 'istio-system', type: 'gateway', issuer: 'DigiCert', status: 'valid', dnsNames: ['api.fanniemae.com', 'portal.fanniemae.com'], notAfter: '2025-06-15', daysRemaining: 172, autoRenew: true, owner: 'platform-ops', created: '2024-06-15' },
+      { id: 2, name: 'lending-gateway-tls', namespace: 'lending', type: 'gateway', issuer: 'cert-manager/letsencrypt', status: 'valid', dnsNames: ['api.lending.fm.com'], notAfter: '2025-03-20', daysRemaining: 85, autoRenew: true, owner: 'loans-origination', created: '2024-12-20' },
+      { id: 3, name: 'partner-gateway-mtls', namespace: 'integration', type: 'mtls', issuer: 'cert-manager/internal-ca', status: 'valid', dnsNames: ['partner-api.fm.com'], notAfter: '2025-02-10', daysRemaining: 47, autoRenew: true, owner: 'integration-team', created: '2024-11-10' },
+      { id: 4, name: 'payments-client-cert', namespace: 'payments', type: 'client', issuer: 'cert-manager/internal-ca', status: 'expiring', dnsNames: ['payments.internal'], notAfter: '2025-01-15', daysRemaining: 21, autoRenew: false, owner: 'payments-team', created: '2024-01-15' },
+      { id: 5, name: 'mesh-ca-root', namespace: 'istio-system', type: 'ca', issuer: 'Self-signed', status: 'valid', dnsNames: ['istiod.istio-system.svc'], notAfter: '2026-01-01', daysRemaining: 372, autoRenew: false, owner: 'platform-ops', created: '2024-01-01' },
+      { id: 6, name: 'external-bank-mtls', namespace: 'payments', type: 'mtls', issuer: 'Bank of America CA', status: 'valid', dnsNames: ['*.bankofamerica.com'], notAfter: '2025-08-30', daysRemaining: 248, autoRenew: false, owner: 'payments-team', created: '2024-08-30' },
+      { id: 7, name: 'snowflake-client', namespace: 'data', type: 'client', issuer: 'Snowflake CA', status: 'valid', dnsNames: ['*.snowflakecomputing.com'], notAfter: '2025-05-01', daysRemaining: 127, autoRenew: false, owner: 'data-platform', created: '2024-05-01' },
+    ];
+
+    // Security resources (PeerAuth, RequestAuth)
+    const mockSecurityPolicies = [
+      { id: 1, name: 'mesh-strict-mtls', namespace: 'istio-system', type: 'PeerAuthentication', mode: 'STRICT', selector: null, status: 'enforced', owner: 'platform-ops', created: '2024-01-05' },
+      { id: 2, name: 'lending-mtls', namespace: 'lending', type: 'PeerAuthentication', mode: 'STRICT', selector: { app: 'loan-service' }, status: 'enforced', owner: 'loans-origination', created: '2024-03-15' },
+      { id: 3, name: 'payments-permissive', namespace: 'payments', type: 'PeerAuthentication', mode: 'PERMISSIVE', selector: { app: 'legacy-adapter' }, status: 'warning', owner: 'payments-team', created: '2024-02-10' },
+      { id: 4, name: 'jwt-auth-gateway', namespace: 'istio-system', type: 'RequestAuthentication', issuer: 'https://auth.fanniemae.com', jwksUri: 'https://auth.fanniemae.com/.well-known/jwks.json', status: 'active', owner: 'identity-team', created: '2024-01-10' },
+      { id: 5, name: 'partner-jwt-auth', namespace: 'integration', type: 'RequestAuthentication', issuer: 'https://partners.fanniemae.com', jwksUri: 'https://partners.fanniemae.com/.well-known/jwks.json', status: 'active', owner: 'integration-team', created: '2024-04-20' },
+      { id: 6, name: 'internal-jwt-auth', namespace: 'lending', type: 'RequestAuthentication', issuer: 'https://internal-auth.fm.com', jwksUri: 'https://internal-auth.fm.com/.well-known/jwks.json', status: 'active', owner: 'identity-team', created: '2024-03-01' },
+    ];
+
+    // Legacy reference for backward compatibility
+    const mockServices = mockMeshResources.filter(r => r.type === 'service');
+
+    // Mesh resource statistics
+    const getMeshStats = (resources) => ({
+      total: resources.length,
+      services: resources.filter(r => r.type === 'service').length,
+      virtualServices: resources.filter(r => r.type === 'virtualservice').length,
+      ingress: resources.filter(r => r.type === 'ingress').length,
+      egress: resources.filter(r => r.type === 'egress').length,
+      eastwest: resources.filter(r => r.type === 'eastwest').length,
+      destinationRules: resources.filter(r => r.type === 'destinationrule').length,
+      authPolicies: resources.filter(r => r.type === 'authpolicy').length,
+      serviceEntries: resources.filter(r => r.type === 'serviceentry').length,
+      healthy: resources.filter(r => r.status === 'healthy').length,
+      degraded: resources.filter(r => r.status === 'degraded' || r.status === 'warning').length,
+    });
+
+    // Find related resources for cross-linking badges
+    const getRelatedResources = (resource, allResources) => {
+      const related = { destRules: [], virtualServices: [], gateways: [], serviceEntries: [] };
+      const name = resource.name;
+      const host = resource.host || name;
+      const hosts = resource.hosts || [];
+      const resources = allResources || mockMeshResources;
+
+      resources.forEach(r => {
+        if (r.id === resource.id) return;
+
+        // Find DestRules that apply to this service/host
+        if (r.type === 'destinationrule') {
+          if (resource.type === 'service' && r.host === name) related.destRules.push(r);
+          if (resource.type === 'serviceentry' && hosts.some(h => r.host === h || r.host?.includes(h.split('.')[0]))) related.destRules.push(r);
+        }
+
+        // Find VirtualServices that route to this service
+        if (r.type === 'virtualservice') {
+          if (resource.type === 'service' && (r.host === host || r.name?.includes(name.split('-')[0]))) related.virtualServices.push(r);
+          if (resource.type === 'destinationrule' && r.name?.includes(resource.host?.split('-')[0] || '')) related.virtualServices.push(r);
+        }
+
+        // Find Gateways (ingress/egress) related to this resource
+        if (['ingress', 'egress', 'eastwest'].includes(r.type)) {
+          if (resource.type === 'virtualservice' && r.name === resource.gateway) related.gateways.push(r);
+          if (resource.type === 'serviceentry') {
+            const seHosts = resource.hosts || [];
+            const gwHosts = r.hosts || [];
+            if (seHosts.some(sh => gwHosts.some(gh => gh.includes(sh.split('.')[0]) || sh.includes(gh.split('.')[0])))) related.gateways.push(r);
+          }
+        }
+
+        // Find ServiceEntries related to egress gateways
+        if (r.type === 'serviceentry') {
+          if (resource.type === 'egress') {
+            const gwHosts = resource.hosts || [];
+            const seHosts = r.hosts || [];
+            if (gwHosts.some(gh => seHosts.some(sh => gh.includes(sh.split('.')[0]) || sh.includes(gh.split('.')[0])))) related.serviceEntries.push(r);
+          }
+        }
+      });
+
+      return related;
+    };
+
+    const mockMessaging = [
+      { id: 1, name: 'order-events', type: 'sns', namespace: 'eot-messaging', subscribers: 4, producers: 2, messagesDay: '45.2K', status: 'active', zone: 'local', region: 'us-east-1', owner: 'orders-team', created: '2024-05-12', monthlyCost: '$125', retention: '14 days', encryption: 'AWS KMS', targets: 6, description: 'Order lifecycle events topic. Publishes order created, updated, shipped, and delivered events.' },
+      { id: 2, name: 'payment-queue', type: 'sqs', namespace: 'eot-messaging', subscribers: 3, producers: 2, messagesDay: '12.8K', status: 'active', zone: 'local', region: 'us-east-1', owner: 'payments-team', created: '2024-06-01', monthlyCost: '$85', retention: '14 days', encryption: 'AWS KMS', targets: 4, description: 'Payment processing queue. Handles async payment authorization and capture requests.' },
+      { id: 3, name: 'enterprise-bus', type: 'eventbridge', namespace: 'eot-messaging', rules: 47, messagesDay: '892K', status: 'active', zone: 'central', region: 'us-east-2', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$450', retention: 'Archive enabled', encryption: 'AWS KMS', targets: 23, description: 'Central event bus for cross-domain integration. Routes events between business domains using content-based filtering.' },
+      { id: 4, name: 'data-stream', type: 'kafka', namespace: 'eot-messaging', subscribers: 8, producers: 5, messagesDay: '2.4M', status: 'active', zone: 'central', region: 'us-east-2', owner: 'data-platform', created: '2024-03-20', monthlyCost: '$680', retention: '7 days', encryption: 'TLS 1.3', targets: 12, description: 'High-throughput data stream for analytics and real-time processing. Powers dashboards and ML pipelines.' },
+      { id: 5, name: 'shipping-dlq', type: 'sqs', namespace: 'eot-messaging', subscribers: 1, producers: 3, messagesDay: '0.3K', status: 'warning', zone: 'local', region: 'us-east-1', owner: 'logistics-team', created: '2024-07-10', monthlyCost: '$12', retention: '14 days', encryption: 'AWS KMS', targets: 2, description: 'Dead letter queue for failed shipping notifications. Messages require manual investigation and replay.' },
+    ];
+
+    // Feature Flags
+    const FEATURE_FLAGS = {
+      enableAirflow: false  // Toggle Airflow/MWAA platform support
+    };
+
+    // Main App
+    export default function App() {
+      // Global Namespaces state
+      const [namespaces, setNamespaces] = useState(initialNamespaces);
+
+      // URL-based navigation
+      const getInitialNav = () => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('dashboard') || 'rosie';
+      };
+
+      const [activeNav, setActiveNavState] = useState(getInitialNav);
+      const [activeTab, setActiveTab] = useState('jobs');
+
+      // Update URL when navigation changes
+      const setActiveNav = (nav) => {
+        setActiveNavState(nav);
+        const url = new URL(window.location);
+        url.searchParams.set('dashboard', nav);
+        window.history.pushState({}, '', url);
+      };
+
+      // Handle browser back/forward
+      React.useEffect(() => {
+        const handlePopState = () => {
+          const params = new URLSearchParams(window.location.search);
+          setActiveNavState(params.get('dashboard') || 'rosie');
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+      }, []);
+
+      // ROSIE state
+      const [designerMode, setDesignerMode] = useState('visual');
+      const [filterStatus, setFilterStatus] = useState('all');
+      const [filterTarget, setFilterTarget] = useState('all');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedJob, setSelectedJob] = useState(null);
+      const [selectedRun, setSelectedRun] = useState(null);
+      // ROSIE Job Editor state
+      const [showJobEditor, setShowJobEditor] = useState(false);
+      const [jobEditorResource, setJobEditorResource] = useState(null);
+      const [jobEditorMode, setJobEditorMode] = useState('design'); // design, code, config
+      const [jobEditorNodes, setJobEditorNodes] = useState([]);
+      const [jobEditorSelectedNode, setJobEditorSelectedNode] = useState(null);
+      const [jobEditorOpCategory, setJobEditorOpCategory] = useState('actions');
+      const [jobEditorDragItem, setJobEditorDragItem] = useState(null);
+      const [jobEditorCode, setJobEditorCode] = useState('');
+      const [jobEditorConfig, setJobEditorConfig] = useState({ name: '', schedule: '0 2 * * *', scheduleType: 'cron', target: 'standard', type: 'STANDARD', logging: 'ALL', xray: true, tags: ['etl', 'production'] });
+      const [jobEditorInsertAt, setJobEditorInsertAt] = useState(null);
+      const [editingBranch, setEditingBranch] = useState(null); // { nodeId, branchIdx, stateIdx, state } when editing a branch state
+      const [showCronBuilder, setShowCronBuilder] = useState(false);
+      const [showTriggerModal, setShowTriggerModal] = useState(false);
+      const [showDeleteModal, setShowDeleteModal] = useState(false);
+      const [showFilterInfo, setShowFilterInfo] = useState(null); // { type: 'filter'|'wasm', id, name, desc, example }
+      const [jobToAction, setJobToAction] = useState(null);
+      const [jobs, setJobs] = useState([...mockJobs]); // Session-local copy of jobs
+      const [notification, setNotification] = useState(null);
+      const [editingJob, setEditingJob] = useState(null);
+      const [showDiagnostics, setShowDiagnostics] = useState(false);
+      const [enableAirflow, setEnableAirflow] = useState(false);
+      const [settingsSection, setSettingsSection] = useState('connections');
+      const [operatorCategory, setOperatorCategory] = useState('all');
+      const [selectedNode, setSelectedNode] = useState(null);
+      const [runLogExpanded, setRunLogExpanded] = useState(null);
+      const [runsFilter, setRunsFilter] = useState('all');
+      const [runsSearch, setRunsSearch] = useState('');
+      const [metricsResource, setMetricsResource] = useState(null);
+      const [metricsTimeRange, setMetricsTimeRange] = useState('1m');
+      const [viewMessagesResource, setViewMessagesResource] = useState(null);
+      const [datastoreMetrics, setDatastoreMetrics] = useState(null);
+      const [datastoreMetricsTimeRange, setDatastoreMetricsTimeRange] = useState('1h');
+
+      // M.O.M., D.A.D., A.U.N.T.I.E., U.N.C.L.E. state
+      const [selectedResource, setSelectedResource] = useState(null);
+      const [selectedService, setSelectedService] = useState(null);
+      const [selectedMessaging, setSelectedMessaging] = useState(null);
+      const [selectedDatastore, setSelectedDatastore] = useState(null);
+      const [uncleEditMode, setUncleEditMode] = useState(false);
+      const [uncleEditData, setUncleEditData] = useState({});
+      const [momFilter, setMomFilter] = useState('All');
+      const [infraResources, setInfraResources] = useState([...mockInfraResources]);
+      const [networkResources, setNetworkResources] = useState([...mockNetworkResources]);
+      const [broFilter, setBroFilter] = useState('All');
+      const [selectedNetworkResource, setSelectedNetworkResource] = useState(null);
+      const [editingDetailResource, setEditingDetailResource] = useState(null);
+      const [showNewNetworkResource, setShowNewNetworkResource] = useState(false);
+      const [newNetworkData, setNewNetworkData] = useState({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' });
+      const [uncleFilter, setUncleFilter] = useState('All');
+      const [dadFilter, setDadFilter] = useState('Virtual Services');
+      const [meshConfigSubTab, setMeshConfigSubTab] = useState('traffic'); // 'traffic' or 'external'
+      const [expandedSeId, setExpandedSeId] = useState(null);
+      const [expandedTrafficId, setExpandedTrafficId] = useState(null);
+      const [securityFilter, setSecurityFilter] = useState('All');
+      const [certFilter, setCertFilter] = useState('All');
+      const [wasmFilter, setWasmFilter] = useState('Enabled');
+      const [luaFilter, setLuaFilter] = useState('All');
+      const [dadActiveTab, setDadActiveTab] = useState('resources');
+      const [expandedWasmModules, setExpandedWasmModules] = useState([]);
+      const [expandedServices, setExpandedServices] = useState([]);
+      const [expandedLuaFilters, setExpandedLuaFilters] = useState([]);
+      const [editingLuaFilter, setEditingLuaFilter] = useState(null);
+      const [viewingLuaScript, setViewingLuaScript] = useState(null);
+      const [auntieFilter, setAuntieFilter] = useState('All');
+      const [showNewMessaging, setShowNewMessaging] = useState(false);
+      const [editingMessaging, setEditingMessaging] = useState(null);
+      const [messagingResources, setMessagingResources] = useState([...mockMessaging]);
+      const [newMessagingData, setNewMessagingData] = useState({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' });
+      const [newMessagingTab, setNewMessagingTab] = useState('blueprints');
+      const [selectedBlueprint, setSelectedBlueprint] = useState(null);
+      const [showNewDatastore, setShowNewDatastore] = useState(false);
+      const [newDatastoreData, setNewDatastoreData] = useState({ name: '', type: 'postgresql', engine: '', region: 'us-east-1', owner: '', description: '' });
+      const [showNewMomResource, setShowNewMomResource] = useState(false);
+      const [editingMomResource, setEditingMomResource] = useState(null);
+      const [momEditMode, setMomEditMode] = useState(false);
+      const [momEditData, setMomEditData] = useState({});
+      const [newMomData, setNewMomData] = useState({ name: '', type: 'ec2', region: 'us-east-1', owner: '', description: '',
+        // EC2 fields
+        ami: 'ami-0abcdef1234567890', instanceType: 't3.medium', subnetId: 'subnet-prod-01', keyName: 'prod-keypair', securityGroups: 'sg-default', iamInstanceProfile: '', volumeSize: 100, volumeType: 'gp3',
+        // Lambda fields
+        runtime: 'python3.11', handler: 'main.handler', memory: 512, timeout: 30, role: '', layers: '',
+        // ECS fields
+        cluster: 'prod-cluster', launchType: 'FARGATE', desiredCount: 2, cpu: 512, memoryMb: 1024, image: '', taskRole: '', executionRole: '',
+        // EMR fields
+        releaseLabel: 'emr-6.10.0', applications: 'Spark,Hive', masterInstanceType: 'm5.xlarge', coreInstanceType: 'r5.xlarge', coreCount: 2, serviceRole: '', ec2Role: '',
+        // API Gateway fields
+        protocolType: 'HTTP', endpointType: 'REGIONAL', defaultAuthorizer: 'NONE', corsEnabled: false,
+        // Pipe fields
+        sourceType: 'SQS', sourceArn: '', targetType: 'EventBridge', targetArn: '', enrichmentType: 'None', batchSize: 10
+      });
+      const [rosieStatusFilter, setRosieStatusFilter] = useState('All');
+      const [editingResource, setEditingResource] = useState(null);
+      const [editFormData, setEditFormData] = useState({});
+      const [creatingResource, setCreatingResource] = useState(false);
+      const [createResourceTab, setCreateResourceTab] = useState('pattern'); // 'pattern' or 'individual'
+      const [newResourceType, setNewResourceType] = useState('service');
+      const [newResourceData, setNewResourceData] = useState({ name: '', namespace: 'default' });
+      const [editingWasmPlugin, setEditingWasmPlugin] = useState(null);
+      const [editingVirtualService, setEditingVirtualService] = useState(null);
+      const [vsFilterTab, setVsFilterTab] = useState('details');
+      const [dadDetailEditMode, setDadDetailEditMode] = useState(false);
+      const [showServiceEditor, setShowServiceEditor] = useState(false);
+      const [serviceEditorResource, setServiceEditorResource] = useState(null);
+      const [editingAuthPolicy, setEditingAuthPolicy] = useState(null);
+      const [editingDestinationRule, setEditingDestinationRule] = useState(null);
+      const [editingGateway, setEditingGateway] = useState(null);
+      const [serviceEditorMode, setServiceEditorMode] = useState('visual');
+      const [serviceFilterCategory, setServiceFilterCategory] = useState('all');
+      const [selectedFilterNode, setSelectedFilterNode] = useState(null);
+      const [savedServiceFilters, setSavedServiceFilters] = useState({});
+      const [showSettings, setShowSettings] = useState(false);
+      const [settingsActiveTab, setSettingsActiveTab] = useState('namespaces');
+      const [editingNamespace, setEditingNamespace] = useState(null);
+      const [showPatternWizard, setShowPatternWizard] = useState(false);
+      const [patternWizardStep, setPatternWizardStep] = useState(0);
+      const [patternWizardType, setPatternWizardType] = useState(null);
+      const [patternWizardData, setPatternWizardData] = useState({});
+      const [featureFlags, setFeatureFlags] = useState({
+        mom: true,
+        uncle: true,
+        dad: true,
+        auntie: true,
+        rosie: true,
+        bro: true,
+        darkMode: true,
+        notifications: true,
+        autoRefresh: false,
+        dadSecurity: false,
+        dadCertificates: false,
+        dadLua: false
+      });
+
+      // Mesh resources state (initially loaded from mock data)
+      const [meshResources, setMeshResources] = useState([...mockMeshResources]);
+
+      const getServiceFilters = (resource) => {
+        const filters = savedServiceFilters[resource.name] ? [...savedServiceFilters[resource.name]] : [];
+        // Add WASM plugins targeting this service
+        mockWasmPlugins.filter(p => p.targetService === resource.name || p.selector?.matchLabels?.app === resource.name).forEach(p => {
+          if (!filters.find(f => f.name === p.name)) filters.push({ id: p.id, name: p.name, icon: 'cpu', phase: p.phase, type: 'wasm', module: p.module });
+        });
+        // Add Lua filters targeting this service
+        mockLuaFilters.filter(f => f.target === resource.name).forEach(f => {
+          if (!filters.find(x => x.name === f.name)) filters.push({ id: f.id, name: f.name, icon: 'code', phase: f.hookType === 'request' ? 'AUTHN' : f.hookType === 'response' ? 'STATS' : 'AUTHZ', type: 'lua', filter: f.filter });
+        });
+        return filters;
+      };
+      const availableFilters = [
+        { id: 'jwt', name: 'JWT Auth', icon: 'key', category: 'security', phase: 'AUTHN', desc: 'Validates JSON Web Tokens (JWT) for authentication. Verifies token signature, expiration, and claims against configured issuers.', example: 'issuer: https://auth.example.com\naudiences:\n  - api.example.com\njwks_uri: https://auth.example.com/.well-known/jwks.json\nforward_payload_header: x-jwt-payload' },
+        { id: 'oauth2', name: 'OAuth2', icon: 'lock', category: 'security', phase: 'AUTHN', desc: 'Implements OAuth 2.0 authorization flow. Handles token exchange, refresh tokens, and integration with identity providers.', example: 'token_endpoint: https://auth.example.com/oauth/token\nclient_id: my-service\nclient_secret_ref: oauth-secret\nscopes:\n  - read\n  - write' },
+        { id: 'mtls', name: 'mTLS', icon: 'shield', category: 'security', phase: 'AUTHN', desc: 'Enforces mutual TLS authentication. Requires both client and server to present valid certificates for secure communication.', example: 'mode: STRICT\nsubject_alt_names:\n  - spiffe://cluster.local/ns/prod/sa/api\ntrust_domain: cluster.local' },
+        { id: 'rbac', name: 'RBAC', icon: 'users', category: 'security', phase: 'AUTHZ', desc: 'Role-Based Access Control. Defines allow/deny rules based on request paths, methods, and authenticated principals.', example: 'rules:\n  - from:\n      principals: ["cluster.local/ns/prod/*"]\n    to:\n      methods: ["GET"]\n      paths: ["/api/v1/public/*"]\n  - from:\n      principals: ["cluster.local/ns/prod/sa/admin"]\n    to:\n      methods: ["*"]' },
+        { id: 'ratelimit', name: 'Rate Limit', icon: 'gauge', category: 'traffic', phase: 'AUTHZ', desc: 'Limits request throughput to protect services from overload. Configurable requests per second with burst allowance.', example: 'rate: 100\nunit: SECOND\nper: CLIENT_IP\nburst: 20\nresponse_headers:\n  include_limit: true\n  include_remaining: true' },
+        { id: 'spikearrest', name: 'Spike Arrest', icon: 'trending-down', category: 'traffic', phase: 'AUTHZ', desc: 'Smooths traffic spikes by enforcing a steady request rate. Prevents bursts from overwhelming services even when under quota.', example: 'rate: 10ps  # 10 per second = 1 every 100ms\nweight_header: x-request-weight\ndefault_weight: 1\nmax_weight: 10' },
+        { id: 'circuitbreaker', name: 'Circuit Breaker', icon: 'zap-off', category: 'traffic', phase: 'AUTHZ', desc: 'Prevents cascade failures by stopping requests to unhealthy services. Opens circuit after consecutive failures.', example: 'consecutive_errors: 5\ninterval: 30s\nbase_ejection_time: 60s\nmax_ejection_percent: 50\nsplit_external_local_errors: true' },
+        { id: 'retry', name: 'Retry', icon: 'refresh-cw', category: 'traffic', phase: 'AUTHZ', desc: 'Automatically retries failed requests with configurable attempts and backoff. Improves reliability for transient errors.', example: 'attempts: 3\nper_try_timeout: 2s\nretry_on: 5xx,reset,connect-failure\nretry_back_off:\n  base_interval: 100ms\n  max_interval: 1s' },
+        { id: 'timeout', name: 'Timeout', icon: 'clock', category: 'traffic', phase: 'UNSPECIFIED', desc: 'Sets maximum duration for requests. Prevents slow services from blocking resources indefinitely.', example: 'request_timeout: 30s\nidle_timeout: 60s\nstream_idle_timeout: 300s\nmax_stream_duration: 0s  # unlimited' },
+        { id: 'headers', name: 'Headers', icon: 'file-text', category: 'transform', phase: 'UNSPECIFIED', desc: 'Modifies HTTP headers on requests/responses. Add, remove, or modify headers for routing, security, or debugging.', example: 'request:\n  add:\n    x-request-id: "%REQ_ID%"\n    x-forwarded-service: my-service\n  remove:\n    - x-internal-debug\nresponse:\n  add:\n    x-served-by: "%HOSTNAME%"' },
+        { id: 'pathrewrite', name: 'Path Rewrite', icon: 'edit-3', category: 'transform', phase: 'UNSPECIFIED', desc: 'Transforms URL paths before forwarding. Maps external API paths to internal service endpoints.', example: 'match:\n  prefix: /api/v2/users\nrewrite:\n  prefix: /internal/user-service\nregex_rewrite:\n  pattern: /api/v(\\d+)/(.*)\n  substitution: /\\2?version=\\1' },
+        { id: 'cors', name: 'CORS', icon: 'globe', category: 'transform', phase: 'UNSPECIFIED', desc: 'Configures Cross-Origin Resource Sharing. Controls which domains can access your APIs from browsers.', example: 'allow_origins:\n  - exact: https://app.example.com\n  - regex: https://.*\\.example\\.com\nallow_methods:\n  - GET\n  - POST\nallow_headers:\n  - Authorization\n  - Content-Type\nmax_age: 86400s' },
+        { id: 'compression', name: 'Compression', icon: 'minimize-2', category: 'transform', phase: 'UNSPECIFIED', desc: 'Compresses response bodies using gzip or brotli. Reduces bandwidth usage and improves load times.', example: 'algorithms:\n  - gzip\n  - br\nmin_content_length: 1024\ncontent_types:\n  - application/json\n  - text/html\n  - text/css' },
+        { id: 'accesslog', name: 'Access Log', icon: 'clipboard', category: 'observability', phase: 'STATS', desc: 'Records detailed logs for each request. Captures method, path, status, latency, and custom fields.', example: 'format: JSON\nfields:\n  - timestamp\n  - method\n  - path\n  - status\n  - latency_ms\n  - user_agent\n  - x_request_id\nfilter:\n  status_code_filter:\n    comparison: GE\n    value: 400' },
+        { id: 'tracing', name: 'Tracing', icon: 'activity', category: 'observability', phase: 'STATS', desc: 'Enables distributed tracing with Jaeger/Zipkin. Tracks requests across services for debugging and performance analysis.', example: 'provider: JAEGER\nsampling_rate: 0.1  # 10% of requests\ncustom_tags:\n  environment: production\n  service_version: v1.2.3\npropagate_headers:\n  - x-request-id\n  - x-b3-traceid' },
+      ];
+
+      const [jobConfig, setJobConfig] = useState({
+        name: '', scheduleType: 'cron', cronExpression: '0 2 * * *',
+        rateValue: '5', rateUnit: 'minutes', timezone: 'America/New_York',
+        target: 'eventbridge', retries: 3, flexibleWindow: '15', tags: ['team:loans', 'env:prod']
+      });
+      const [workflowNodes, setWorkflowNodes] = useState([
+        { id: 1, type: 's3', name: 'Wait for S3 File', color: 'blue', config: { bucket: 'loan-data-bucket', prefix: 'raw/', wildcard: '*.parquet' } },
+        { id: 2, type: 'glue', name: 'Transform Data', color: 'amber', config: { job_name: 'loan-transform-glue', allocated_capacity: 2 } },
+        { id: 3, type: 'aurora', name: 'Load to DW', color: 'emerald', config: { connection: 'analytics-aurora', schema: 'analytics', table: 'loan_facts' } },
+        { id: 4, type: 'sns', name: 'Send Alert', color: 'cyan', config: { topic_arn: 'arn:aws:sns:us-east-1:loan-alerts', message: 'Pipeline completed' } },
+      ]);
+
+      // Filter jobs based on current filters
+      const filteredJobs = jobs.filter(job => {
+        // Hide MWAA jobs when Airflow feature is disabled
+        if (!enableAirflow && job.target === 'mwaa') return false;
+        const matchesStatus = filterStatus === 'all' || job.status === filterStatus;
+        const matchesTarget = filterTarget === 'all' || job.target === filterTarget;
+        const matchesSearch = !searchQuery || job.name.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesStatus && matchesTarget && matchesSearch;
+      });
+
+      // Calculate ROSIE stats (excluding MWAA jobs when Airflow is disabled)
+      const visibleJobs = jobs.filter(j => enableAirflow || j.target !== 'mwaa');
+      const rosieStats = {
+        active: visibleJobs.filter(j => j.status === 'active').length,
+        paused: visibleJobs.filter(j => j.status === 'paused').length,
+        failed24h: visibleJobs.filter(j => j.lastRunStatus === 'failed').length,
+        successRate: visibleJobs.length > 0 ? (visibleJobs.reduce((acc, j) => acc + j.successRate, 0) / visibleJobs.length).toFixed(1) : '0.0'
+      };
+
+      // Show notification helper
+      const showNotification = (message, type = 'success') => {
+        setNotification({ message, type });
+        setTimeout(() => setNotification(null), 3000);
+      };
+
+      // Handle trigger job
+      const handleTriggerJob = (job) => {
+        setJobToAction(job);
+        setShowTriggerModal(true);
+      };
+
+      // Handle delete job
+      const handleDeleteJob = (job) => {
+        setJobToAction(job);
+        setShowDeleteModal(true);
+      };
+
+      // Confirm trigger
+      const confirmTrigger = () => {
+        showNotification(`Job "${jobToAction.name}" triggered successfully`);
+        setShowTriggerModal(false);
+        setJobToAction(null);
+      };
+
+      // Confirm delete
+      const confirmDelete = () => {
+        setJobs(jobs.filter(j => j.id !== jobToAction.id));
+        showNotification(`Job "${jobToAction.name}" deleted`, 'warning');
+        setShowDeleteModal(false);
+        setJobToAction(null);
+      };
+
+      // Handle edit job - opens the DAG editor with job data
+      const handleEditJob = (job) => {
+        setEditingJob(job);
+        setJobConfig({
+          name: job.name,
+          description: job.description || '',
+          scheduleType: job.schedule.startsWith('rate') ? 'rate' : 'cron',
+          cronExpression: job.schedule.startsWith('rate') ? '0 2 * * *' : job.schedule,
+          rateValue: '1',
+          rateUnit: 'hours',
+          timezone: 'America/New_York',
+          target: job.target,
+          retries: 3,
+          flexibleWindow: '15',
+          tags: job.tags || []
+        });
+        // Load workflow nodes based on job type
+        if (job.type === 'dag') {
+          setWorkflowNodes([
+            { id: 1, type: 's3', name: 'Read Source' },
+            { id: 2, type: 'glue', name: 'Transform Data' },
+            { id: 3, type: 'aurora', name: 'Load to DW' },
+            { id: 4, type: 'sns', name: 'Send Alert' },
+          ]);
+        } else {
+          setWorkflowNodes([
+            { id: 1, type: 'lambda', name: job.name },
+          ]);
+        }
+        setSelectedJob(null);
+        setShowNewJob(true);
+      };
+
+      // Handle closing the designer
+      const handleCloseDesigner = () => {
+        setShowNewJob(false);
+        setEditingJob(null);
+        setSelectedNode(null);
+        setOperatorCategory('all');
+        // Reset job config
+        setJobConfig({
+          name: '', scheduleType: 'cron', cronExpression: '0 2 * * *',
+          rateValue: '5', rateUnit: 'minutes', timezone: 'America/New_York',
+          target: 'eventbridge', retries: 3, flexibleWindow: '15', tags: []
+        });
+      };
+
+      // Handle saving job
+      const handleSaveJob = () => {
+        if (!jobConfig.name && !editingJob) {
+          showNotification('Please enter a job name', 'error');
+          return;
+        }
+        const message = editingJob
+          ? `Job "${editingJob.name}" updated successfully`
+          : `Job "${jobConfig.name}" created successfully`;
+        showNotification(message);
+        handleCloseDesigner();
+      };
+
+      // Node management for designer
+      const nodeTypeConfigs = {
+        's3': { name: 'Wait for S3 File', color: 'blue', icon: 'hard-drive', operator: 'S3KeySensor', config: { bucket: '', prefix: '', wildcard: '*.csv' } },
+        'aurora': { name: 'Aurora Query', color: 'blue', icon: 'database', operator: 'AuroraOperator', config: { connection: '', query: '' } },
+        'api': { name: 'API Call', color: 'blue', icon: 'globe', operator: 'HTTPOperator', config: { endpoint: '', method: 'GET' } },
+        'lambda': { name: 'Lambda Function', color: 'amber', icon: 'zap', operator: 'LambdaOperator', config: { function_name: '', payload: '{}' } },
+        'glue': { name: 'Glue Job', color: 'amber', icon: 'refresh-cw', operator: 'GlueJobOperator', config: { job_name: '', allocated_capacity: 2 } },
+        'batch': { name: 'Batch Job', color: 'amber', icon: 'layers', operator: 'BatchOperator', config: { job_definition: '', job_queue: 'default' } },
+        'emr': { name: 'EMR Step', color: 'amber', icon: 'cpu', operator: 'EmrOperator', config: { cluster_id: '', step_name: '' } },
+        's3-write': { name: 'S3 Write', color: 'emerald', icon: 'hard-drive', operator: 'S3CopyOperator', config: { bucket: '', prefix: '' } },
+        'dsql': { name: 'DSQL Load', color: 'emerald', icon: 'server', operator: 'DSQLOperator', config: { connection: '', schema: '', table: '' } },
+        'dynamodb': { name: 'DynamoDB', color: 'emerald', icon: 'layers', operator: 'DynamoDBOperator', config: { table_name: '' } },
+        'sqs': { name: 'SQS Publish', color: 'emerald', icon: 'mail', operator: 'SQSOperator', config: { queue_url: '', message: '' } },
+        'branch': { name: 'Branch', color: 'cyan', icon: 'git-branch', operator: 'BranchOperator', config: { condition: '' } },
+        'join': { name: 'Join', color: 'cyan', icon: 'git-merge', operator: 'JoinOperator', config: { trigger_rule: 'all_success' } },
+        'sensor': { name: 'Wait/Sensor', color: 'cyan', icon: 'clock', operator: 'TimeSensor', config: { duration: 60 } },
+        'sns': { name: 'SNS Notify', color: 'cyan', icon: 'bell', operator: 'SnsPublishOperator', config: { topic_arn: '', message: '' } },
+      };
+
+      const handleAddNode = (type) => {
+        const typeConfig = nodeTypeConfigs[type] || { name: type, color: 'gray', icon: 'box', operator: 'Operator', config: {} };
+        const newNode = {
+          id: Date.now(),
+          type,
+          name: typeConfig.name,
+          color: typeConfig.color,
+          config: { ...typeConfig.config }
+        };
+        setWorkflowNodes([...workflowNodes, newNode]);
+        setSelectedNode(newNode);
+        showNotification(`Added ${typeConfig.name} operator`);
+      };
+
+      const handleRemoveNode = (nodeId) => {
+        setWorkflowNodes(workflowNodes.filter(n => n.id !== nodeId));
+        if (selectedNode?.id === nodeId) setSelectedNode(null);
+      };
+
+      const handleSelectNode = (node) => {
+        setSelectedNode(selectedNode?.id === node.id ? null : node);
+      };
+
+      const handleUpdateNodeConfig = (nodeId, key, value) => {
+        setWorkflowNodes(workflowNodes.map(n =>
+          n.id === nodeId ? { ...n, config: { ...n.config, [key]: value } } : n
+        ));
+        if (selectedNode?.id === nodeId) {
+          setSelectedNode({ ...selectedNode, config: { ...selectedNode.config, [key]: value } });
+        }
+      };
+
+      const handleUpdateNodeName = (nodeId, name) => {
+        setWorkflowNodes(workflowNodes.map(n =>
+          n.id === nodeId ? { ...n, name } : n
+        ));
+        if (selectedNode?.id === nodeId) {
+          setSelectedNode({ ...selectedNode, name });
+        }
+      };
+
+      const navItems = [
+        { id: 'home', icon: 'home', label: 'Home', color: 'violet' },
+        ...(featureFlags.mom ? [{ id: 'mom', icon: 'box', label: 'M.O.M.', subtitle: 'Infrastructure', color: 'violet' }] : []),
+        ...(featureFlags.uncle ? [{ id: 'uncle', icon: 'database', label: 'U.N.C.L.E.', subtitle: 'Data Storage', color: 'blue' }] : []),
+        ...(featureFlags.dad ? [{ id: 'dad', icon: 'shield', label: 'D.A.D.', subtitle: 'Service Mesh', color: 'amber' }] : []),
+        ...(featureFlags.auntie ? [{ id: 'auntie', icon: 'message-square', label: 'A.U.N.T.I.E.', subtitle: 'Messaging', color: 'emerald' }] : []),
+        ...(featureFlags.rosie ? [{ id: 'rosie', icon: 'clock', label: 'R.O.S.I.E.', subtitle: 'Scheduling', color: 'cyan' }] : []),
+        ...(featureFlags.bro ? [{ id: 'bro', icon: 'wifi', label: 'B.R.O.', subtitle: 'Networking', color: 'cyan' }] : []),
+      ];
+
+      const getTargetRecommendation = () => {
+        if (jobConfig.target !== 'auto') return null;
+        const hasComplexDeps = workflowNodes.length > 2;
+        if (hasComplexDeps && enableAirflow) {
+          return { platform: 'mwaa', reason: 'Complex workflow detected - MWAA recommended for DAG visualization and dependency management' };
+        }
+        return { platform: 'eventbridge', reason: 'Simple schedule - Step Function recommended for low latency and cost' };
+      };
+
+      // HOME VIEW
+      const HomeView = () => (
+        <div className="p-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold">Welcome back, Luke</h1>
+            <p className="text-gray-500 mt-1">Here's what's happening across your platform</p>
+          </div>
+
+          {/* Total Platform Cost Card */}
+          <div className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl p-5 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-gray-400 mb-2"><Icon name="dollar-sign" size={18} /><span className="text-sm font-medium">Total Monthly Platform Spend</span></div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-emerald-400">${platformTotal.toLocaleString()}</span>
+                  <span className="text-sm text-gray-500">vs ${platformCosts.legacyCost.toLocaleString()}/mo Control-M</span>
+                </div>
+                <div className="flex items-center gap-2 mt-2"><Icon name="trending-down" size={14} className="text-emerald-400" /><span className="text-sm text-emerald-400 font-medium">{platformSavings}% savings</span><span className="text-sm text-gray-400">from legacy migration</span></div>
+              </div>
+              <div className="flex gap-1">
+                {[
+                  { id: 'mom', label: 'M.O.M.', cost: platformCosts.mom.total, color: 'violet' },
+                  { id: 'uncle', label: 'U.N.C.L.E.', cost: platformCosts.uncle.total, color: 'blue' },
+                  { id: 'dad', label: 'D.A.D.', cost: platformCosts.dad.total, color: 'amber' },
+                  { id: 'auntie', label: 'A.U.N.T.I.E.', cost: platformCosts.auntie.total, color: 'emerald' },
+                  { id: 'rosie', label: 'R.O.S.I.E.', cost: platformCosts.rosie.total, color: 'cyan' },
+                  { id: 'bro', label: 'B.R.O.', cost: platformCosts.bro.total, color: 'cyan' },
+                ].map((item, i) => (
+                  <button key={i} onClick={() => setActiveNav(item.id)} className="text-center px-3 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors">
+                    <div className="text-sm text-gray-400">{item.label}</div>
+                    <div className={`text-sm font-semibold text-${item.color}-400`}>${(item.cost/1000).toFixed(1)}K</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Family Cards */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {[
+              { id: 'mom', label: 'M.O.M.', persona: 'The Builder', domain: 'Infrastructure', icon: 'box', darkBg: 'rgba(139, 92, 246, 0.2)', lightBg: 'rgba(139, 92, 246, 0.15)', textColor: '#a78bfa', cost: platformCosts.mom.total, stats: { compute: 5, lambda: 2, ecs: 2 } },
+              { id: 'uncle', label: 'U.N.C.L.E.', persona: 'The Storyteller', domain: 'Data Storage', icon: 'database', darkBg: 'rgba(59, 130, 246, 0.2)', lightBg: 'rgba(59, 130, 246, 0.15)', textColor: '#60a5fa', cost: platformCosts.uncle.total, stats: { datastores: 6, databases: 4, caches: 2 } },
+              { id: 'dad', label: 'D.A.D.', persona: 'The Gatekeeper', domain: 'Service Mesh', icon: 'shield', darkBg: 'rgba(245, 158, 11, 0.2)', lightBg: 'rgba(245, 158, 11, 0.15)', textColor: '#fbbf24', cost: platformCosts.dad.total, stats: { services: 28, meshed: 24, mtls: '86%' } },
+              { id: 'auntie', label: 'A.U.N.T.I.E.', persona: 'The Connector', domain: 'Messaging', icon: 'message-square', darkBg: 'rgba(16, 185, 129, 0.2)', lightBg: 'rgba(16, 185, 129, 0.15)', textColor: '#34d399', cost: platformCosts.auntie.total, stats: { topics: 156, queues: 89, events: '2.4M/day' } },
+              { id: 'rosie', label: 'R.O.S.I.E.', persona: 'The Housekeeper', domain: 'Scheduling', icon: 'clock', darkBg: 'rgba(6, 182, 212, 0.2)', lightBg: 'rgba(6, 182, 212, 0.15)', textColor: '#22d3ee', cost: platformCosts.rosie.total, stats: { jobs: 234, active: 198, success: '99.2%' } },
+              { id: 'bro', label: 'B.R.O.', persona: 'The Roadbuilder', domain: 'Networking', icon: 'wifi', darkBg: 'rgba(6, 182, 212, 0.2)', lightBg: 'rgba(6, 182, 212, 0.15)', textColor: '#22d3ee', cost: platformCosts.bro.total, stats: { vpcs: 4, tgw: 3, vpn: 4 } },
+            ].map(family => (
+              <button key={family.id} onClick={() => setActiveNav(family.id)} className="bg-gray-800/50 border border-gray-700 rounded-lg p-5 text-left hover:border-gray-600 transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: featureFlags.darkMode ? family.darkBg : family.lightBg, color: family.textColor}}>
+                      <Icon name={family.icon} size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2"><span className="font-semibold text-base">{family.label}</span><span className="text-sm text-gray-400">· {family.persona}</span></div>
+                      <div className="text-sm text-gray-400">{family.domain}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-semibold" style={{color: family.textColor}}>${(family.cost/1000).toFixed(1)}K</div>
+                    <div className="text-sm text-gray-400">monthly</div>
+                  </div>
+                </div>
+                <div className="flex gap-4 pt-3 border-t border-gray-700">
+                  {Object.entries(family.stats).map(([key, value]) => (
+                    <div key={key}><div className="text-base font-semibold" style={{color: family.textColor}}>{value}</div><div className="text-sm text-gray-400 capitalize">{key}</div></div>
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-5">
+            <h2 className="font-medium mb-4">Recent Activity</h2>
+            <div className="space-y-3">
+              {[
+                { icon: 'check-circle', color: 'emerald', text: 'loan-etl-daily completed successfully', time: '2 hours ago', family: 'ROSIE', navId: 'rosie' },
+                { icon: 'alert-triangle', color: 'amber', text: 'payment-gateway latency spike detected', time: '3 hours ago', family: 'DAD', navId: 'dad' },
+                { icon: 'database', color: 'blue', text: 'New RDS instance analytics-db provisioned', time: '5 hours ago', family: 'UNCLE', navId: 'uncle' },
+                { icon: 'mail', color: 'emerald', text: '156 messages in shipping-dlq require attention', time: '6 hours ago', family: 'AUNTIE', navId: 'auntie' },
+              ].map((activity, i) => (
+                <button key={i} onClick={() => setActiveNav(activity.navId)} className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/50 text-left transition-colors">
+                  <div className={`w-8 h-8 rounded-lg bg-${activity.color}-500/20 text-${activity.color}-400 flex items-center justify-center`}>
+                    <Icon name={activity.icon} size={16} />
+                  </div>
+                  <div className="flex-1"><div className="text-sm">{activity.text}</div><div className="text-sm text-gray-400">{activity.time}</div></div>
+                  <span className="text-sm text-gray-400 bg-gray-700 px-2 py-0.5 rounded">{activity.family}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+
+      // M.O.M. VIEW (Infrastructure)
+      const MOMView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
+                <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.mom.trend}</span>
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">${platformCosts.mom.total.toLocaleString()}</div>
+              <div className="text-sm text-gray-400 mt-1">EC2 + Lambda + ECS + EMR + API GW + Pipes</div>
+            </div>
+            <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Total Resources</span>
+                <Icon name="layers" size={14} className="text-violet-400" />
+              </div>
+              <div className="text-2xl font-semibold text-violet-300">{infraResources.length}</div>
+              <div className="text-sm text-gray-400 mt-1">{infraResources.filter(r => r.type === 'ec2').length} EC2, {infraResources.filter(r => r.type === 'lambda').length} Lambda, {infraResources.filter(r => r.type === 'ecs').length} ECS, {infraResources.filter(r => r.type === 'apigateway').length} API GW, {infraResources.filter(r => r.type === 'pipe').length} Pipes</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Health Score</span>
+                <Icon name="activity" size={14} className="text-blue-400" />
+              </div>
+              <div className="text-2xl font-semibold text-blue-300">{infraResources.length > 0 ? Math.round((infraResources.filter(r => ['active', 'running', 'waiting'].includes(r.status)).length / infraResources.length) * 100) : 0}%</div>
+              <div className="text-sm text-gray-400 mt-1">{infraResources.filter(r => ['active', 'running', 'waiting'].includes(r.status)).length} healthy resources</div>
+            </div>
+            <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
+                <Icon name="alert-triangle" size={14} className="text-red-400" />
+              </div>
+              <div className="text-2xl font-semibold text-red-300">1</div>
+              <div className="text-sm text-gray-400 mt-1">1 resource degraded</div>
+            </div>
+          </div>
+          {/* Filter Tabs with Counts */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'All', count: infraResources.length },
+              { id: 'EC2', count: infraResources.filter(r => r.type === 'ec2').length },
+              { id: 'Lambda', count: infraResources.filter(r => r.type === 'lambda').length },
+              { id: 'ECS', count: infraResources.filter(r => r.type === 'ecs').length },
+              { id: 'EMR', count: infraResources.filter(r => r.type === 'emr').length },
+              { id: 'API GW', count: infraResources.filter(r => r.type === 'apigateway').length },
+              { id: 'Pipes', count: infraResources.filter(r => r.type === 'pipe').length }
+            ].map(cat => (
+              <button key={cat.id} onClick={() => setMomFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${momFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                {cat.id}
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${momFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+            <table className="w-full">
+              <thead><tr className="border-b border-gray-700">
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Resource</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Region</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Cost</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+              </tr></thead>
+              <tbody>
+                {infraResources.filter(r => momFilter === 'All' || r.type.toLowerCase() === momFilter.toLowerCase() || (momFilter === 'API GW' && r.type === 'apigateway') || (momFilter === 'Pipes' && r.type === 'pipe')).map(r => (
+                  <tr key={r.id} onClick={() => setSelectedResource(r)} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                    <td className="px-4 py-3"><div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
+                        backgroundColor: r.type === 'ec2' ? 'rgba(6,182,212,0.2)' : r.type === 'apigateway' ? 'rgba(236,72,153,0.2)' : r.type === 'pipe' ? 'rgba(20,184,166,0.2)' : r.type === 'rds' ? 'rgba(59,130,246,0.2)' : r.type === 'elasticache' ? 'rgba(239,68,68,0.2)' : r.type === 'lambda' ? 'rgba(245,158,11,0.2)' : r.type === 'ecs' ? 'rgba(249,115,22,0.2)' : 'rgba(168,85,247,0.2)',
+                        color: r.type === 'ec2' ? '#22d3ee' : r.type === 'apigateway' ? '#22d3ee' : r.type === 'pipe' ? '#2dd4bf' : r.type === 'rds' ? '#60a5fa' : r.type === 'elasticache' ? '#f87171' : r.type === 'lambda' ? '#fbbf24' : r.type === 'ecs' ? '#fb923c' : '#c084fc'
+                      }}>
+                        <Icon name={r.type === 'ec2' ? 'monitor' : r.type === 'apigateway' ? 'globe' : r.type === 'pipe' ? 'git-merge' : r.type === 'rds' ? 'database' : r.type === 'elasticache' ? 'zap' : r.type === 'lambda' ? 'cloud-lightning' : r.type === 'ecs' ? 'server' : 'activity'} size={16} />
+                      </div>
+                      <div><div className="font-medium">{r.name}</div><div className="text-sm text-gray-400">{r.owner}</div></div>
+                    </div></td>
+                    <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{r.type === 'apigateway' ? 'API GW' : r.type}</span>{r.type !== 'ecs' && <div className="text-sm text-gray-400">{r.apiType || r.source || r.instanceType || r.engine || r.runtime || r.image || r.version}</div>}</div></td>
+                    <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded whitespace-nowrap">{r.region}</code></td>
+                    <td className="px-4 py-3"><StatusBadge status={['available', 'active', 'running', 'waiting'].includes(r.status) ? 'healthy' : 'warning'} size="sm" /></td>
+                    <td className="px-4 py-3 text-sm text-emerald-400">{r.monthlyCost}</td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => setSelectedResource(r)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => { setInfraResources(prev => prev.filter(res => res.id !== r.id)); showNotification(`Resource "${r.name}" deleted`, 'warning'); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Resource Detail Panel */}
+          {selectedResource && (
+            <div className="fixed inset-0 z-50 flex justify-end">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedResource(null)} />
+              <div className="relative z-10 w-[600px] bg-gray-900 border-l border-gray-700 overflow-auto pointer-events-auto">
+                <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => { setSelectedResource(null); setMomEditMode(false); }} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedResource.type === 'ec2' ? 'bg-cyan-500/20 text-cyan-400' : selectedResource.type === 'apigateway' ? 'bg-cyan-500/20 text-cyan-400' : selectedResource.type === 'pipe' ? 'bg-teal-500/20 text-teal-400' : selectedResource.type === 'rds' ? 'bg-blue-500/20 text-blue-400' : selectedResource.type === 'elasticache' ? 'bg-red-500/20 text-red-400' : selectedResource.type === 'lambda' ? 'bg-amber-500/20 text-amber-400' : selectedResource.type === 'ecs' ? 'bg-orange-500/20 text-orange-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                      <Icon name={selectedResource.type === 'ec2' ? 'monitor' : selectedResource.type === 'apigateway' ? 'globe' : selectedResource.type === 'pipe' ? 'git-merge' : selectedResource.type === 'rds' ? 'database' : selectedResource.type === 'elasticache' ? 'zap' : selectedResource.type === 'lambda' ? 'cloud-lightning' : selectedResource.type === 'ecs' ? 'server' : 'activity'} size={20} />
+                    </div>
+                    <div><div className="font-semibold">{momEditMode ? 'Edit Resource' : selectedResource.name}</div><div className="text-sm text-gray-400">{momEditMode ? selectedResource.name : selectedResource.owner}</div></div>
+                  </div>
+                  {momEditMode ? (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setMomEditMode(false)} className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                      <button onClick={() => {
+                        const d = momEditData;
+                        const updated = { ...selectedResource, name: d.name, region: d.region, description: d.description };
+                        if (selectedResource.type === 'ec2') Object.assign(updated, { instanceType: d.instanceType, ami: d.ami, subnetId: d.subnetId, keyName: d.keyName, securityGroups: d.securityGroups.split(',').map(s => s.trim()).filter(Boolean), iamInstanceProfile: d.iamInstanceProfile, ebsVolumes: [{ ...selectedResource.ebsVolumes?.[0], volumeSize: d.volumeSize, volumeType: d.volumeType }] });
+                        else if (selectedResource.type === 'lambda') Object.assign(updated, { runtime: d.runtime, handler: d.handler, memory: d.memory, timeout: d.timeout, role: d.role, layers: d.layers ? d.layers.split(',').map(s => s.trim()) : [] });
+                        else if (selectedResource.type === 'ecs') Object.assign(updated, { cluster: d.cluster, launchType: d.launchType, desiredCount: d.desiredCount, cpu: d.cpu, memoryMb: d.memoryMb, image: d.image, taskRole: d.taskRole, executionRole: d.executionRole });
+                        else if (selectedResource.type === 'emr') Object.assign(updated, { releaseLabel: d.releaseLabel, applications: d.applications.split(',').map(s => s.trim()), masterInstanceType: d.masterInstanceType, coreInstanceType: d.coreInstanceType, coreCount: d.coreCount, serviceRole: d.serviceRole, ec2Role: d.ec2Role });
+                        else if (selectedResource.type === 'apigateway') Object.assign(updated, { protocolType: d.protocolType, endpointType: d.endpointType, defaultAuthorizer: d.defaultAuthorizer, corsConfig: d.corsEnabled ? { allowOrigins: ['*'], allowMethods: ['GET','POST','PUT','DELETE'], enabled: true } : null });
+                        else if (selectedResource.type === 'pipe') Object.assign(updated, { sourceType: d.sourceType, sourceArn: d.sourceArn, targetType: d.targetType, targetArn: d.targetArn, enrichmentType: d.enrichmentType, batchSize: d.batchSize });
+                        setInfraResources(prev => prev.map(r => r.id === selectedResource.id ? updated : r));
+                        setSelectedResource(updated);
+                        setMomEditMode(false);
+                        showNotification('Resource "' + d.name + '" updated', 'success');
+                      }} className="px-3 py-1.5 text-sm bg-violet-600 hover:bg-violet-500 rounded-lg font-medium">Save Changes</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => { const id = selectedResource.id; setInfraResources(prev => prev.map(r => r.id === id ? {...r, status: 'restarting'} : r)); setSelectedResource(prev => ({...prev, status: 'restarting'})); showNotification('Restarting "' + selectedResource.name + '"...', 'info'); setTimeout(() => { setInfraResources(prev => prev.map(r => r.id === id ? {...r, status: 'running'} : r)); setSelectedResource(prev => prev && prev.id === id ? {...prev, status: 'running'} : prev); showNotification('"' + selectedResource.name + '" restarted successfully', 'success'); }, 2000); }} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Restart"><Icon name="refresh-cw" size={16} /></button>
+                      <button onClick={() => { const r = selectedResource; setMomEditData({ name: r.name, type: r.type, region: r.region, owner: r.owner || '', description: r.description || '', ami: r.ami || '', instanceType: r.instanceType || 't3.medium', subnetId: r.subnetId || '', keyName: r.keyName || '', securityGroups: Array.isArray(r.securityGroups) ? r.securityGroups.join(', ') : (r.securityGroups || ''), iamInstanceProfile: r.iamInstanceProfile || '', volumeSize: r.ebsVolumes?.[0]?.volumeSize || 100, volumeType: r.ebsVolumes?.[0]?.volumeType || 'gp3', runtime: r.runtime || 'python3.11', handler: r.handler || 'main.handler', memory: r.memory || 512, timeout: r.timeout || 30, role: r.role || '', layers: Array.isArray(r.layers) ? r.layers.join(', ') : (r.layers || ''), cluster: r.cluster || '', launchType: r.launchType || 'FARGATE', desiredCount: r.desiredCount || 2, cpu: r.cpu || 512, memoryMb: r.memoryMb || 1024, image: r.image || '', taskRole: r.taskRole || '', executionRole: r.executionRole || '', releaseLabel: r.releaseLabel || 'emr-6.10.0', applications: Array.isArray(r.applications) ? r.applications.join(', ') : (r.applications || ''), masterInstanceType: r.masterInstanceType || 'm5.xlarge', coreInstanceType: r.coreInstanceType || 'r5.xlarge', coreCount: r.coreCount || 2, serviceRole: r.serviceRole || '', ec2Role: r.ec2Role || '', protocolType: r.protocolType || 'HTTP', endpointType: r.endpointType || 'REGIONAL', defaultAuthorizer: r.defaultAuthorizer || 'NONE', corsEnabled: r.corsConfig?.enabled || false, sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.targetType || 'EventBridge', targetArn: r.targetArn || '', enrichmentType: r.enrichmentType || 'None', batchSize: r.batchSize || 10 }); setMomEditMode(true); }} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Edit"><Icon name="edit" size={16} /></button>
+                      <button onClick={() => { setInfraResources(prev => prev.filter(r => r.id !== selectedResource.id)); showNotification('Resource "' + selectedResource.name + '" deleted', 'warning'); setSelectedResource(null); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
+                      <button onClick={() => setSelectedResource(null)} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Close"><Icon name="x" size={16} /></button>
+                    </div>
+                  )}
+                </div>
+                {momEditMode ? (
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <label className="text-sm text-gray-400 mb-1.5 block">Resource Name</label>
+                      <input type="text" value={momEditData.name || ''} onChange={e => setMomEditData({...momEditData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500" />
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-400 mb-1.5 block">Region</label>
+                      <select value={momEditData.region || 'us-east-1'} onChange={e => setMomEditData({...momEditData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                        <option value="us-east-1">us-east-1</option><option value="us-west-2">us-west-2</option><option value="eu-west-1">eu-west-1</option><option value="ap-southeast-1">ap-southeast-1</option>
+                      </select>
+                    </div>
+                    {/* EC2 Edit Fields */}
+                    {selectedResource.type === 'ec2' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-cyan-400 font-medium">aws_instance configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">ami</label><input type="text" value={momEditData.ami || ''} onChange={e => setMomEditData({...momEditData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">instance_type</label><select value={momEditData.instanceType || 't3.medium'} onChange={e => setMomEditData({...momEditData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="r5.large">r5.large</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={momEditData.subnetId || ''} onChange={e => setMomEditData({...momEditData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={momEditData.keyName || ''} onChange={e => setMomEditData({...momEditData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">security_groups</label><input type="text" value={momEditData.securityGroups || ''} onChange={e => setMomEditData({...momEditData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="sg-xxx, sg-yyy" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={momEditData.iamInstanceProfile || ''} onChange={e => setMomEditData({...momEditData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Lambda Edit Fields */}
+                    {selectedResource.type === 'lambda' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-amber-400 font-medium">aws_lambda_function configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">runtime</label><select value={momEditData.runtime || 'python3.11'} onChange={e => setMomEditData({...momEditData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="go1.x">go1.x</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">handler</label><input type="text" value={momEditData.handler || ''} onChange={e => setMomEditData({...momEditData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">memory_size</label><select value={momEditData.memory || 512} onChange={e => setMomEditData({...momEditData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">timeout</label><input type="number" value={momEditData.timeout || 30} onChange={e => setMomEditData({...momEditData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role</label><input type="text" value={momEditData.role || ''} onChange={e => setMomEditData({...momEditData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers</label><input type="text" value={momEditData.layers || ''} onChange={e => setMomEditData({...momEditData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="comma-separated ARNs" /></div>
+                        </div>
+                      </div>
+                    )}
+                    {/* ECS Edit Fields */}
+                    {selectedResource.type === 'ecs' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-orange-400 font-medium">aws_ecs_service configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">cluster</label><input type="text" value={momEditData.cluster || ''} onChange={e => setMomEditData({...momEditData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">launch_type</label><select value={momEditData.launchType || 'FARGATE'} onChange={e => setMomEditData({...momEditData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={momEditData.desiredCount || 2} onChange={e => setMomEditData({...momEditData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">cpu</label><select value={momEditData.cpu || 512} onChange={e => setMomEditData({...momEditData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">memory</label><select value={momEditData.memoryMb || 1024} onChange={e => setMomEditData({...momEditData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option></select></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image</label><input type="text" value={momEditData.image || ''} onChange={e => setMomEditData({...momEditData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={momEditData.taskRole || ''} onChange={e => setMomEditData({...momEditData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={momEditData.executionRole || ''} onChange={e => setMomEditData({...momEditData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                        </div>
+                      </div>
+                    )}
+                    {/* EMR Edit Fields */}
+                    {selectedResource.type === 'emr' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-purple-400 font-medium">aws_emr_cluster configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">release_label</label><select value={momEditData.releaseLabel || 'emr-6.10.0'} onChange={e => setMomEditData({...momEditData, releaseLabel: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="emr-7.0.0">emr-7.0.0</option><option value="emr-6.15.0">emr-6.15.0</option><option value="emr-6.10.0">emr-6.10.0</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">applications</label><input type="text" value={momEditData.applications || ''} onChange={e => setMomEditData({...momEditData, applications: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" placeholder="Spark,Hive" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={momEditData.masterInstanceType || 'm5.xlarge'} onChange={e => setMomEditData({...momEditData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={momEditData.coreInstanceType || 'r5.xlarge'} onChange={e => setMomEditData({...momEditData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">core_count</label><input type="number" value={momEditData.coreCount || 2} onChange={e => setMomEditData({...momEditData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={momEditData.serviceRole || ''} onChange={e => setMomEditData({...momEditData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_role</label><input type="text" value={momEditData.ec2Role || ''} onChange={e => setMomEditData({...momEditData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                        </div>
+                      </div>
+                    )}
+                    {/* API Gateway Edit Fields */}
+                    {selectedResource.type === 'apigateway' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-cyan-400 font-medium">aws_apigatewayv2_api configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">protocol_type</label><select value={momEditData.protocolType || 'HTTP'} onChange={e => setMomEditData({...momEditData, protocolType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="HTTP">HTTP</option><option value="WEBSOCKET">WEBSOCKET</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">endpoint_type</label><select value={momEditData.endpointType || 'REGIONAL'} onChange={e => setMomEditData({...momEditData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="REGIONAL">REGIONAL</option><option value="EDGE">EDGE</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">default_authorizer</label><select value={momEditData.defaultAuthorizer || 'NONE'} onChange={e => setMomEditData({...momEditData, defaultAuthorizer: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="NONE">NONE</option><option value="JWT">JWT</option><option value="AWS_IAM">AWS_IAM</option></select></div>
+                          <div className="flex items-center gap-2 pt-5"><input type="checkbox" checked={momEditData.corsEnabled || false} onChange={e => setMomEditData({...momEditData, corsEnabled: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" /><label className="text-sm text-gray-400">Enable CORS</label></div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Pipe Edit Fields */}
+                    {selectedResource.type === 'pipe' && (
+                      <div className="space-y-3 border-t border-gray-700 pt-4">
+                        <div className="text-xs text-teal-400 font-medium">aws_pipes_pipe configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-sm text-gray-400 mb-1 block">source_type</label><select value={momEditData.sourceType || 'SQS'} onChange={e => setMomEditData({...momEditData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB</option><option value="Kinesis">Kinesis</option><option value="MSK">MSK</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">target_type</label><select value={momEditData.targetType || 'EventBridge'} onChange={e => setMomEditData({...momEditData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option></select></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source_arn</label><input type="text" value={momEditData.sourceArn || ''} onChange={e => setMomEditData({...momEditData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target_arn</label><input type="text" value={momEditData.targetArn || ''} onChange={e => setMomEditData({...momEditData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={momEditData.enrichmentType || 'None'} onChange={e => setMomEditData({...momEditData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={momEditData.batchSize || 10} onChange={e => setMomEditData({...momEditData, batchSize: parseInt(e.target.value) || 10})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" /></div>
+                        </div>
+                      </div>
+                    )}
+                    <div>
+                      <label className="text-sm text-gray-400 mb-1.5 block">Description</label>
+                      <textarea value={momEditData.description || ''} onChange={e => setMomEditData({...momEditData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500 resize-none" />
+                    </div>
+                  </div>
+                ) : (
+                <div className="p-6 space-y-6">
+                  {/* Status Overview */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Status</div><StatusBadge status={['available', 'active', 'running', 'waiting'].includes(selectedResource.status) ? 'healthy' : 'warning'} /></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Monthly Cost</div><div className="text-lg font-semibold text-emerald-400">{selectedResource.monthlyCost}</div></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Region</div><div className="text-sm text-gray-300">{selectedResource.region}</div></div>
+                  </div>
+
+                  {/* Lambda Configuration - aws_lambda_function */}
+                  {selectedResource.type === 'lambda' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="cloud-lightning" size={14} className="text-amber-400" />aws_lambda_function</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">function_name</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.name}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">runtime</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.runtime}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">handler</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.handler}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">memory_size</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.memory}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">timeout</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.timeout}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">role</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.role}</code></div>
+                      </div>
+                      {selectedResource.layers?.length > 0 && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">layers</div><div className="space-y-1">{selectedResource.layers.map((l, i) => <code key={i} className="block text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{l}</code>)}</div></div>}
+                      {selectedResource.vpcConfig && <div className="mt-3 grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-400 mb-1">subnet_ids</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.vpcConfig.subnetIds?.join(', ')}</code></div><div><div className="text-sm text-gray-400 mb-1">security_group_ids</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.vpcConfig.securityGroupIds?.join(', ')}</code></div></div>}
+                      {selectedResource.envVars && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">environment.variables</div><div className="bg-gray-900/50 rounded p-2 text-xs font-mono">{Object.entries(selectedResource.envVars).map(([k,v]) => <div key={k} className="text-gray-300"><span className="text-emerald-400">{k}</span> = "{v}"</div>)}</div></div>}
+                    </div>
+                  )}
+
+                  {/* EC2 Configuration - aws_instance */}
+                  {selectedResource.type === 'ec2' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="monitor" size={14} className="text-cyan-400" />aws_instance</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">ami</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.ami}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">instance_type</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.instanceType}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">subnet_id</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.subnetId}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">key_name</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.keyName}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">vpc_security_group_ids</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.securityGroups?.join(', ')}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">iam_instance_profile</div><code className="text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.iamInstanceProfile}</code></div>
+                      </div>
+                      {selectedResource.ebsVolumes?.length > 0 && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">ebs_block_device</div><div className="space-y-2">{selectedResource.ebsVolumes.map((v, i) => <div key={i} className="bg-gray-900/50 rounded p-2 text-xs font-mono grid grid-cols-4 gap-2"><span className="text-gray-400">device: <span className="text-gray-300">{v.deviceName}</span></span><span className="text-gray-400">size: <span className="text-gray-300">{v.volumeSize}GB</span></span><span className="text-gray-400">type: <span className="text-gray-300">{v.volumeType}</span></span><span className="text-gray-400">iops: <span className="text-gray-300">{v.iops}</span></span></div>)}</div></div>}
+                      {selectedResource.tags && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">tags</div><div className="bg-gray-900/50 rounded p-2 text-xs font-mono">{Object.entries(selectedResource.tags).map(([k,v]) => <div key={k} className="text-gray-300"><span className="text-emerald-400">{k}</span> = "{v}"</div>)}</div></div>}
+                    </div>
+                  )}
+
+                  {/* ECS Configuration - aws_ecs_service + aws_ecs_task_definition */}
+                  {selectedResource.type === 'ecs' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-orange-400" />aws_ecs_service / aws_ecs_task_definition</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">cluster</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.cluster}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">launch_type</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.launchType}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">desired_count</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.desiredCount}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">network_mode</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.networkMode}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">cpu</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.cpu}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">memory</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.memoryMb}</code></div>
+                        <div className="col-span-2"><div className="text-sm text-gray-400 mb-1">image</div><code className="text-xs text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.image}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">subnets</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.subnets?.join(', ')}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">security_groups</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.securityGroups?.join(', ')}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">task_role_arn</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.taskRole}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">execution_role_arn</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.executionRole}</code></div>
+                      </div>
+                      {selectedResource.loadBalancer && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">load_balancer</div><div className="bg-gray-900/50 rounded p-2 text-xs font-mono"><div className="text-gray-300">target_group_arn = <span className="text-cyan-300">"{selectedResource.loadBalancer.targetGroupArn}"</span></div><div className="text-gray-300">container_port = <span className="text-amber-300">{selectedResource.loadBalancer.containerPort}</span></div></div></div>}
+                    </div>
+                  )}
+
+                  {/* EMR Configuration - aws_emr_cluster */}
+                  {selectedResource.type === 'emr' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="activity" size={14} className="text-purple-400" />aws_emr_cluster</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">name</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.name}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">release_label</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.releaseLabel}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">applications</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.applications?.join(', ')}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">log_uri</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.logUri}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">service_role</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.serviceRole}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">ec2_attributes.instance_profile</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.ec2Role}</code></div>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-4 text-sm"><div className="bg-gray-900/50 rounded p-2"><div className="text-sm text-gray-400 mb-1">master_instance_group</div><div className="text-xs font-mono"><span className="text-gray-400">type:</span> <span className="text-gray-300">{selectedResource.masterInstanceType}</span><br/><span className="text-gray-400">count:</span> <span className="text-gray-300">{selectedResource.masterCount}</span></div></div><div className="bg-gray-900/50 rounded p-2"><div className="text-sm text-gray-400 mb-1">core_instance_group</div><div className="text-xs font-mono"><span className="text-gray-400">type:</span> <span className="text-gray-300">{selectedResource.coreInstanceType}</span><br/><span className="text-gray-400">count:</span> <span className="text-gray-300">{selectedResource.coreCount}</span></div></div></div>
+                      <div className="mt-3 grid grid-cols-2 gap-4 text-sm"><div><div className="text-sm text-gray-400 mb-1">ec2_attributes.subnet_id</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.subnetId}</code></div><div><div className="text-sm text-gray-400 mb-1">security_groups</div><code className="text-xs text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">master: {selectedResource.securityGroups?.master}, core: {selectedResource.securityGroups?.slave}</code></div></div>
+                    </div>
+                  )}
+
+                  {/* API Gateway Configuration - aws_apigatewayv2_api / aws_api_gateway_rest_api */}
+                  {selectedResource.type === 'apigateway' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="globe" size={14} className="text-cyan-400" />{selectedResource.protocolType === 'REST' ? 'aws_api_gateway_rest_api' : 'aws_apigatewayv2_api'}</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">name</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.name}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">protocol_type</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.protocolType}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">endpoint_type</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.endpointType}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">routes</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.routes}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">stages</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.stages?.join(', ')}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">default_authorizer</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.defaultAuthorizer}</code></div>
+                      </div>
+                      {selectedResource.corsConfig && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">cors_configuration</div><div className="bg-gray-900/50 rounded p-2 text-xs font-mono"><div className="text-gray-300">allow_origins = <span className="text-emerald-300">[{selectedResource.corsConfig.allowOrigins?.map(o => `"${o}"`).join(', ')}]</span></div><div className="text-gray-300">allow_methods = <span className="text-emerald-300">[{selectedResource.corsConfig.allowMethods?.map(m => `"${m}"`).join(', ')}]</span></div></div></div>}
+                      {selectedResource.usagePlans && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">usage_plans</div><div className="space-y-1">{selectedResource.usagePlans.map((p, i) => <div key={i} className="bg-gray-900/50 rounded p-2 text-xs font-mono"><span className="text-cyan-300">{p.name}</span>: rate={p.rateLimit}/s, burst={p.burstLimit}, quota={p.quota}/mo</div>)}</div></div>}
+                      {selectedResource.integrations && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">integrations (sample)</div><div className="space-y-1 max-h-24 overflow-y-auto">{selectedResource.integrations.slice(0, 3).map((ig, i) => <div key={i} className="bg-gray-900/50 rounded p-2 text-xs font-mono"><span className="text-amber-300">{ig.route}</span> <span className="text-gray-500">-&gt;</span> <span className="text-xs text-cyan-300">{ig.target.split(':function:')[1] || ig.target}</span></div>)}</div></div>}
+                    </div>
+                  )}
+
+                  {/* EventBridge Pipes Configuration - aws_pipes_pipe */}
+                  {selectedResource.type === 'pipe' && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="git-merge" size={14} className="text-teal-400" />aws_pipes_pipe</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">name</div><code className="text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.name}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">role_arn</div><code className="text-xs text-violet-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.roleArn?.split('/').pop()}</code></div>
+                        <div className="col-span-2"><div className="text-sm text-gray-400 mb-1">source ({selectedResource.sourceType})</div><code className="text-xs text-cyan-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.sourceArn}</code></div>
+                        <div className="col-span-2"><div className="text-sm text-gray-400 mb-1">target ({selectedResource.targetType})</div><code className="text-xs text-emerald-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.targetArn}</code></div>
+                        {selectedResource.enrichmentArn && <div className="col-span-2"><div className="text-sm text-gray-400 mb-1">enrichment ({selectedResource.enrichmentType})</div><code className="text-xs text-amber-300 bg-gray-700/50 px-2 py-0.5 rounded break-all">{selectedResource.enrichmentArn}</code></div>}
+                        <div><div className="text-sm text-gray-400 mb-1">source_parameters.batch_size</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.batchSize}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">{selectedResource.maxBatchWindow ? 'maximum_batching_window' : 'starting_position'}</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedResource.maxBatchWindow ? `${selectedResource.maxBatchWindow}s` : selectedResource.startingPosition}</code></div>
+                      </div>
+                      {selectedResource.filterPattern && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">source_parameters.filter_criteria</div><code className="block text-xs text-gray-300 bg-gray-900/50 px-2 py-1 rounded overflow-x-auto">{selectedResource.filterPattern}</code></div>}
+                      {selectedResource.logConfig && <div className="mt-3"><div className="text-sm text-gray-400 mb-1">log_configuration</div><div className="bg-gray-900/50 rounded p-2 text-xs font-mono"><span className="text-gray-400">level:</span> <span className="text-gray-300">{selectedResource.logConfig.level}</span>, <span className="text-gray-400">log_group:</span> <span className="text-gray-300">{selectedResource.logConfig.cloudwatchLogGroup}</span></div></div>}
+                    </div>
+                  )}
+
+                  {/* Metrics */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="activity" size={14} className="text-gray-400" />Runtime Metrics</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {selectedResource.cpuUtil && <div><div className="text-sm text-gray-400 mb-1">CPU</div><div className="text-emerald-400">{selectedResource.cpuUtil}</div></div>}
+                      {selectedResource.memUtil && <div><div className="text-sm text-gray-400 mb-1">Memory</div><div className="text-emerald-400">{selectedResource.memUtil}</div></div>}
+                      {selectedResource.invocations && <div><div className="text-sm text-gray-400 mb-1">Invocations</div><div className="text-gray-300">{selectedResource.invocations}</div></div>}
+                      {selectedResource.avgDuration && <div><div className="text-sm text-gray-400 mb-1">Avg Duration</div><div className="text-gray-300">{selectedResource.avgDuration}</div></div>}
+                      {selectedResource.errors && <div><div className="text-sm text-gray-400 mb-1">Error Rate</div><div className={parseFloat(selectedResource.errors) < 0.1 ? 'text-emerald-400' : 'text-amber-400'}>{selectedResource.errors}</div></div>}
+                      {selectedResource.requests && <div><div className="text-sm text-gray-400 mb-1">Requests</div><div className="text-gray-300">{selectedResource.requests}</div></div>}
+                      {selectedResource.latency && <div><div className="text-sm text-gray-400 mb-1">Latency</div><div className="text-emerald-400">{selectedResource.latency}</div></div>}
+                      {selectedResource.uptime && <div><div className="text-sm text-gray-400 mb-1">Uptime</div><div className="text-emerald-400">{selectedResource.uptime}</div></div>}
+                      {selectedResource.jobsRun !== undefined && <div><div className="text-sm text-gray-400 mb-1">Jobs Run</div><div className="text-gray-300">{selectedResource.jobsRun}</div></div>}
+                      {selectedResource.storage && <div><div className="text-sm text-gray-400 mb-1">Storage</div><div className="text-gray-300">{selectedResource.storage}</div></div>}
+                      {selectedResource.network && <div><div className="text-sm text-gray-400 mb-1">Network</div><div className="text-cyan-400">{selectedResource.network}</div></div>}
+                      {selectedResource.diskUtil && <div><div className="text-sm text-gray-400 mb-1">Disk Usage</div><div className={parseInt(selectedResource.diskUtil) > 70 ? 'text-amber-400' : 'text-emerald-400'}>{selectedResource.diskUtil}</div></div>}
+                      {selectedResource.throughput && <div><div className="text-sm text-gray-400 mb-1">Throughput</div><div className="text-emerald-400">{selectedResource.throughput}</div></div>}
+                      {selectedResource.connections && <div><div className="text-sm text-gray-400 mb-1">Connections</div><div className="text-gray-300">{selectedResource.connections}</div></div>}
+                      {selectedResource.messages && <div><div className="text-sm text-gray-400 mb-1">Messages</div><div className="text-gray-300">{selectedResource.messages}</div></div>}
+                      {selectedResource.runningCount !== undefined && <div><div className="text-sm text-gray-400 mb-1">Tasks Running</div><div className="text-gray-300">{selectedResource.runningCount}/{selectedResource.desiredCount}</div></div>}
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div><h3 className="text-sm font-medium mb-2">Description</h3><p className="text-sm text-gray-400">{selectedResource.description}</p></div>
+                </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
+      // B.R.O. VIEW (Networking)
+      const BROView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
+                <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.bro.trend}%</span>
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">${platformCosts.bro.total.toLocaleString()}</div>
+              <div className="text-sm text-gray-400 mt-1">VPC + TGW + VPN + DX + R53</div>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Total Resources</span>
+                <Icon name="wifi" size={14} className="text-cyan-400" />
+              </div>
+              <div className="text-2xl font-semibold text-cyan-300">{mockNetworkResources.length}</div>
+              <div className="text-sm text-gray-400 mt-1">{mockNetworkResources.filter(r => r.type === 'vpc').length} VPC, {mockNetworkResources.filter(r => r.type === 'tgw').length} TGW, {mockNetworkResources.filter(r => r.type === 'vpn').length} VPN, {mockNetworkResources.filter(r => r.type === 'directconnect').length} DX</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Connectivity</span>
+                <Icon name="activity" size={14} className="text-blue-400" />
+              </div>
+              <div className="text-2xl font-semibold text-blue-300">{Math.round((mockNetworkResources.filter(r => ['available', 'active', 'up'].includes(r.status)).length / mockNetworkResources.length) * 100)}%</div>
+              <div className="text-sm text-gray-400 mt-1">{mockNetworkResources.filter(r => ['available', 'active', 'up'].includes(r.status)).length} healthy connections</div>
+            </div>
+            <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
+                <Icon name="alert-triangle" size={14} className="text-red-400" />
+              </div>
+              <div className="text-2xl font-semibold text-red-300">{mockNetworkResources.filter(r => r.status === 'down').length}</div>
+              <div className="text-sm text-gray-400 mt-1">{mockNetworkResources.filter(r => r.status === 'down').length} connection down</div>
+            </div>
+          </div>
+          {/* Filter Tabs with Counts */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-900/80 border border-gray-700/50 rounded-lg">
+            {[
+              { id: 'All', count: mockNetworkResources.length },
+              { id: 'VPC', count: mockNetworkResources.filter(r => r.type === 'vpc').length },
+              { id: 'TGW', count: mockNetworkResources.filter(r => r.type === 'tgw').length },
+              { id: 'VPN', count: mockNetworkResources.filter(r => r.type === 'vpn').length },
+              { id: 'Direct Connect', count: mockNetworkResources.filter(r => r.type === 'directconnect').length },
+              { id: 'Route 53', count: mockNetworkResources.filter(r => r.type === 'route53').length },
+              { id: 'Peering', count: mockNetworkResources.filter(r => r.type === 'peering').length },
+              { id: 'PrivateLink', count: mockNetworkResources.filter(r => r.type === 'privatelink').length }
+            ].map(cat => (
+              <button key={cat.id} onClick={() => setBroFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${broFilter === cat.id ? 'bg-teal-600/30 text-teal-300 border border-teal-500/40' : 'text-gray-400 hover:bg-gray-800'}`}>
+                {cat.id}
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${broFilter === cat.id ? 'bg-teal-500/40 text-teal-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl overflow-hidden">
+            <table className="w-full bro-table">
+              <thead><tr className="bg-gray-900/80 border-b border-gray-700/50">
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Resource</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Configuration</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
+                <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
+              </tr></thead>
+              <tbody>
+                {networkResources.filter(r => broFilter === 'All' || r.type.toLowerCase() === broFilter.toLowerCase() || (broFilter === 'Direct Connect' && r.type === 'directconnect') || (broFilter === 'Route 53' && r.type === 'route53') || (broFilter === 'TGW' && r.type === 'tgw') || (broFilter === 'VPC' && r.type === 'vpc') || (broFilter === 'VPN' && r.type === 'vpn') || (broFilter === 'Peering' && r.type === 'peering') || (broFilter === 'PrivateLink' && r.type === 'privatelink')).map(r => (
+                  <tr key={r.id} onClick={() => { setSelectedNetworkResource(r); setEditingDetailResource({...r}); }} className="border-b border-gray-700/30 cursor-pointer">
+                    <td className="px-4 py-3"><div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.type === 'vpc' ? 'bg-cyan-500/20 text-cyan-400' : r.type === 'tgw' ? 'bg-purple-500/20 text-purple-400' : r.type === 'vpn' ? 'bg-amber-500/20 text-amber-400' : r.type === 'directconnect' ? 'bg-emerald-500/20 text-emerald-400' : r.type === 'route53' ? 'bg-blue-500/20 text-blue-400' : r.type === 'privatelink' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+                        <Icon name={r.type === 'vpc' ? 'grid' : r.type === 'tgw' ? 'share-2' : r.type === 'vpn' ? 'lock' : r.type === 'directconnect' ? 'zap' : r.type === 'route53' ? 'globe' : r.type === 'privatelink' ? 'key' : 'link'} size={16} />
+                      </div>
+                      <div><div className="text-base font-semibold text-gray-200">{r.name}</div><div className="text-sm text-gray-400">{r.owner}</div></div>
+                    </div></td>
+                    <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{r.type === 'directconnect' ? 'Direct Connect' : r.type === 'route53' ? 'Route 53' : r.type === 'privatelink' ? 'PrivateLink' : r.type.toUpperCase()}</span><div className="text-sm text-gray-400">{r.cidr || r.connection || r.zoneType || r.tunnels || r.endpointType || (r.requester && r.accepter ? `${r.requester} ↔ ${r.accepter}` : '')}</div></div></td>
+                    <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{r.service ? r.service.split('.').pop() : r.subnets && r.type === 'vpc' ? `${r.subnets} subnets` : r.attachments ? `${r.attachments} attachments` : r.vifs ? `${r.vifs} VIFs` : r.records ? `${r.records} records` : r.region}</code></td>
+                    <td className="px-4 py-3"><StatusBadge status={['available', 'active', 'up'].includes(r.status) ? 'healthy' : r.status === 'down' ? 'error' : 'warning'} size="sm" /></td>
+                    <td className="px-4 py-3 text-sm text-emerald-400">{r.monthlyCost}</td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => { setSelectedNetworkResource(r); setEditingDetailResource({...r}); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => showNotification(`Resource "${r.name}" deleted`, 'warning')} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Network Resource Detail Panel - Editable */}
+          {selectedNetworkResource && editingDetailResource && (
+            <div className="fixed inset-0 z-50 flex justify-end">
+              <div className="absolute inset-0 bg-black/50" onClick={() => { setSelectedNetworkResource(null); setEditingDetailResource(null); }} />
+              <div className="relative w-[600px] bg-gray-900 border-l border-gray-700 overflow-auto">
+                <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => { setSelectedNetworkResource(null); setEditingDetailResource(null); }} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedNetworkResource.type === 'vpc' ? 'bg-cyan-500/20 text-cyan-400' : selectedNetworkResource.type === 'tgw' ? 'bg-purple-500/20 text-purple-400' : selectedNetworkResource.type === 'vpn' ? 'bg-amber-500/20 text-amber-400' : selectedNetworkResource.type === 'directconnect' ? 'bg-emerald-500/20 text-emerald-400' : selectedNetworkResource.type === 'route53' ? 'bg-blue-500/20 text-blue-400' : selectedNetworkResource.type === 'privatelink' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+                      <Icon name={selectedNetworkResource.type === 'vpc' ? 'grid' : selectedNetworkResource.type === 'tgw' ? 'share-2' : selectedNetworkResource.type === 'vpn' ? 'lock' : selectedNetworkResource.type === 'directconnect' ? 'zap' : selectedNetworkResource.type === 'route53' ? 'globe' : selectedNetworkResource.type === 'privatelink' ? 'key' : 'link'} size={20} />
+                    </div>
+                    <div>
+                      <input type="text" value={editingDetailResource.name} onChange={e => setEditingDetailResource({...editingDetailResource, name: e.target.value})} className="bg-transparent border-b border-gray-600 focus:border-cyan-500 outline-none font-semibold text-lg" />
+                      <div className="text-sm text-gray-400">{selectedNetworkResource.owner}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setNetworkResources(networkResources.map(r => r.id === editingDetailResource.id ? editingDetailResource : r)); setSelectedNetworkResource(editingDetailResource); showNotification(`"${editingDetailResource.name}" saved`, 'success'); setSelectedNetworkResource(null); setEditingDetailResource(null); }} className="px-3 py-1.5 text-sm bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg"><Icon name="check" size={14} className="inline mr-1.5" />Save</button>
+                    <button onClick={() => setEditingDetailResource({...selectedNetworkResource})} className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg">Reset</button>
+                    <button onClick={() => { if(confirm(`Delete "${selectedNetworkResource.name}"? This cannot be undone.`)) { setNetworkResources(networkResources.filter(x => x.id !== selectedNetworkResource.id)); showNotification(`Resource "${selectedNetworkResource.name}" deleted`, 'warning'); setSelectedNetworkResource(null); setEditingDetailResource(null); }}} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-6">
+                  {/* Status Overview */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Status</div>
+                      <select value={editingDetailResource.status} onChange={e => setEditingDetailResource({...editingDetailResource, status: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full">
+                        <option value="available">Available</option>
+                        <option value="active">Active</option>
+                        <option value="up">Up</option>
+                        <option value="down">Down</option>
+                        <option value="pending">Pending</option>
+                      </select>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Monthly Cost</div>
+                      <div className="text-emerald-400 font-semibold">{selectedNetworkResource.monthlyCost}</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Region</div>
+                      <select value={editingDetailResource.region} onChange={e => setEditingDetailResource({...editingDetailResource, region: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full">
+                        <option value="us-east-1">us-east-1</option>
+                        <option value="us-west-2">us-west-2</option>
+                        <option value="eu-west-1">eu-west-1</option>
+                        <option value="ap-southeast-1">ap-southeast-1</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Resource Info */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="settings" size={14} className="text-gray-400" />Configuration</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {/* Type - Read Only */}
+                      <div><div className="text-sm text-gray-400 mb-1">Type</div><div className="text-gray-300 uppercase bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.type === 'directconnect' ? 'Direct Connect' : selectedNetworkResource.type === 'route53' ? 'Route 53' : selectedNetworkResource.type}</div></div>
+                      {/* Owner - Read Only */}
+                      <div><div className="text-sm text-gray-400 mb-1">Owner</div><div className="text-gray-300 bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.owner}</div></div>
+                      {editingDetailResource.cidr !== undefined && <div><div className="text-sm text-gray-400 mb-1">CIDR Block</div><input type="text" value={editingDetailResource.cidr || ''} onChange={e => setEditingDetailResource({...editingDetailResource, cidr: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.subnets !== undefined && <div><div className="text-sm text-gray-400 mb-1">Subnets</div><input type="number" value={editingDetailResource.subnets || ''} onChange={e => setEditingDetailResource({...editingDetailResource, subnets: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.routeTables !== undefined && <div><div className="text-sm text-gray-400 mb-1">Route Tables</div><input type="number" value={editingDetailResource.routeTables || ''} onChange={e => setEditingDetailResource({...editingDetailResource, routeTables: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.attachments !== undefined && <div><div className="text-sm text-gray-400 mb-1">Attachments</div><input type="number" value={editingDetailResource.attachments || ''} onChange={e => setEditingDetailResource({...editingDetailResource, attachments: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.connection !== undefined && <div><div className="text-sm text-gray-400 mb-1">Connection Speed</div><input type="text" value={editingDetailResource.connection || ''} onChange={e => setEditingDetailResource({...editingDetailResource, connection: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.tunnels !== undefined && <div><div className="text-sm text-gray-400 mb-1">Tunnels</div><input type="number" value={editingDetailResource.tunnels || ''} onChange={e => setEditingDetailResource({...editingDetailResource, tunnels: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.records !== undefined && <div><div className="text-sm text-gray-400 mb-1">DNS Records</div><input type="number" value={editingDetailResource.records || ''} onChange={e => setEditingDetailResource({...editingDetailResource, records: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      <div><div className="text-sm text-gray-400 mb-1">Created</div><div className="text-gray-300 bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.created}</div></div>
+                    </div>
+                  </div>
+
+                  {/* Security & Features */}
+                  {(editingDetailResource.flowLogs !== undefined || editingDetailResource.macSec !== undefined || editingDetailResource.jumboFrames !== undefined || editingDetailResource.privateDns !== undefined) && (
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="shield" size={14} className="text-gray-400" />Security & Features</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {editingDetailResource.flowLogs !== undefined && <div><div className="text-sm text-gray-400 mb-1">Flow Logs</div><select value={editingDetailResource.flowLogs ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, flowLogs: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.macSec !== undefined && <div><div className="text-sm text-gray-400 mb-1">MACsec</div><select value={editingDetailResource.macSec ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, macSec: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.jumboFrames !== undefined && <div><div className="text-sm text-gray-400 mb-1">Jumbo Frames</div><select value={editingDetailResource.jumboFrames ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, jumboFrames: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.privateDns !== undefined && <div><div className="text-sm text-gray-400 mb-1">Private DNS</div><select value={editingDetailResource.privateDns ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, privateDns: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  <div><h3 className="text-sm font-medium mb-2">Description</h3><textarea value={editingDetailResource.description || ''} onChange={e => setEditingDetailResource({...editingDetailResource, description: e.target.value})} className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm text-gray-300 resize-none" rows={3} /></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
+      // SETTINGS VIEW (Global Configuration)
+      const SettingsView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Namespaces</span>
+                <Icon name="folder" size={14} className="text-gray-400" />
+              </div>
+              <div className="text-2xl font-semibold text-gray-300">{namespaces.length}</div>
+              <div className="text-sm text-gray-400 mt-1">Kubernetes namespaces</div>
+            </div>
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Single-Family</span>
+                <Icon name="home" size={14} className="text-emerald-400" />
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">{namespaces.filter(n => n.bu === 'Single-Family').length}</div>
+              <div className="text-sm text-gray-400 mt-1">SF business unit</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Multi-Family</span>
+                <Icon name="building" size={14} className="text-blue-400" />
+              </div>
+              <div className="text-2xl font-semibold text-blue-300">{namespaces.filter(n => n.bu === 'Multi-Family').length}</div>
+              <div className="text-sm text-gray-400 mt-1">MF business unit</div>
+            </div>
+            <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-gray-400">Enterprise</span>
+                <Icon name="server" size={14} className="text-violet-400" />
+              </div>
+              <div className="text-2xl font-semibold text-violet-300">{namespaces.filter(n => n.bu === 'Enterprise').length}</div>
+              <div className="text-sm text-gray-400 mt-1">EOT business unit</div>
+            </div>
+          </div>
+
+          {/* Settings Tabs */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'namespaces', label: 'Namespaces', icon: 'folder' },
+              { id: 'modules', label: 'Dashboard Modules', icon: 'layout' },
+              { id: 'general', label: 'General', icon: 'sliders' }
+            ].map(tab => (
+              <button key={tab.id} onClick={() => setSettingsActiveTab(tab.id)} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${settingsActiveTab === tab.id ? 'bg-gray-500/20 text-gray-200 border border-gray-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                <Icon name={tab.icon} size={16} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Namespaces Tab */}
+          {settingsActiveTab === 'namespaces' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+                <h3 className="font-medium">Kubernetes Namespaces</h3>
+                <button onClick={() => setEditingNamespace({ id: Date.now(), name: '', description: '', bu: 'Enterprise', owner: '', environment: 'production', created: new Date().toISOString().split('T')[0], isNew: true })} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium">
+                  <Icon name="plus" size={14} />Add Namespace
+                </button>
+              </div>
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-700">
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Namespace</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Description</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Business Unit</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Owner</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Created</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {namespaces.map(ns => (
+                    <tr key={ns.id} className="border-b border-gray-700/50 hover:bg-gray-800/30">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${ns.bu === 'Single-Family' ? 'bg-emerald-500/20 text-emerald-400' : ns.bu === 'Multi-Family' ? 'bg-blue-500/20 text-blue-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                            <Icon name="folder" size={16} />
+                          </div>
+                          <code className="text-sm font-mono text-gray-300">{ns.name}</code>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{ns.description}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${ns.bu === 'Single-Family' ? 'bg-emerald-500/20 text-emerald-300' : ns.bu === 'Multi-Family' ? 'bg-blue-500/20 text-blue-300' : 'bg-violet-500/20 text-violet-300'}`}>
+                          {ns.bu}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{ns.owner}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{ns.created}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => setEditingNamespace({...ns})} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                          <button onClick={() => { setNamespaces(prev => prev.filter(n => n.id !== ns.id)); showNotification(`Namespace "${ns.name}" deleted`, 'warning'); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Dashboard Modules Tab */}
+          {settingsActiveTab === 'modules' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+              <div className="space-y-2">
+                {[
+                  { key: 'mom', label: 'M.O.M.', desc: 'Multi-Cloud Orchestration Manager', icon: 'cloud', color: 'emerald' },
+                  { key: 'uncle', label: 'U.N.C.L.E.', desc: 'Unified Notification & Communication Layer Engine', icon: 'bell', color: 'blue' },
+                  { key: 'dad', label: 'D.A.D.', desc: 'Distributed Application Director', icon: 'shield', color: 'amber' },
+                  { key: 'auntie', label: 'A.U.N.T.I.E.', desc: 'Advanced Unified Network Traffic Inspection Engine', icon: 'cpu', color: 'purple' },
+                  { key: 'rosie', label: 'R.O.S.I.E.', desc: 'Routine Operations Scheduling & Integration Engine', icon: 'clock', color: 'rose' },
+                  { key: 'bro', label: 'B.R.O.', desc: 'Backbone Routing Operations', icon: 'network', color: 'cyan' }
+                ].map(mod => (
+                  <div key={mod.key} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-lg bg-${mod.color}-500/20 flex items-center justify-center`}>
+                        <Icon name={mod.icon} size={16} className={`text-${mod.color}-400`} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">{mod.label}</div>
+                        <div className="text-sm text-gray-400">{mod.desc}</div>
+                      </div>
+                    </div>
+                    <button onClick={() => setFeatureFlags({...featureFlags, [mod.key]: !featureFlags[mod.key]})}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags[mod.key] ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags[mod.key] ? 'translate-x-7' : 'translate-x-1'}`} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* General Tab */}
+          {settingsActiveTab === 'general' && (
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium flex items-center gap-2">
+                      <Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={16} />
+                      {featureFlags.darkMode ? 'Dark Mode' : 'Light Mode'}
+                    </div>
+                    <div className="text-sm text-gray-400">{featureFlags.darkMode ? 'Switch to light theme with Freddie Mac colors' : 'Currently using light theme'}</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.darkMode ? 'bg-violet-500' : 'bg-blue-500'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium">Notifications</div>
+                    <div className="text-sm text-gray-400">Show system notifications and alerts</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, notifications: !featureFlags.notifications})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.notifications ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.notifications ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <div>
+                    <div className="text-sm font-medium">Auto Refresh</div>
+                    <div className="text-sm text-gray-400">Automatically refresh data every 30 seconds</div>
+                  </div>
+                  <button onClick={() => setFeatureFlags({...featureFlags, autoRefresh: !featureFlags.autoRefresh})}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.autoRefresh ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.autoRefresh ? 'translate-x-7' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Namespace Editor Modal */}
+          {editingNamespace && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setEditingNamespace(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <h2 className="text-lg font-semibold">{editingNamespace.isNew ? 'Create Namespace' : 'Edit Namespace'}</h2>
+                  <button onClick={() => setEditingNamespace(null)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Name</label>
+                    <input type="text" value={editingNamespace.name} onChange={e => setEditingNamespace({...editingNamespace, name: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500 font-mono" placeholder="my-namespace" />
+                    <p className="text-sm text-gray-400 mt-1">Lowercase letters, numbers, and hyphens only</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Description</label>
+                    <input type="text" value={editingNamespace.description} onChange={e => setEditingNamespace({...editingNamespace, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" placeholder="Purpose of this namespace" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Business Unit</label>
+                      <select value={editingNamespace.bu} onChange={e => setEditingNamespace({...editingNamespace, bu: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                        <option value="Single-Family">Single-Family</option>
+                        <option value="Multi-Family">Multi-Family</option>
+                        <option value="Enterprise">Enterprise</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Owner</label>
+                      <input type="text" value={editingNamespace.owner} onChange={e => setEditingNamespace({...editingNamespace, owner: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" placeholder="team-name" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
+                    <select value={editingNamespace.environment} onChange={e => setEditingNamespace({...editingNamespace, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                      <option value="production">Production</option>
+                      <option value="staging">Staging</option>
+                      <option value="development">Development</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 p-4 border-t border-gray-700">
+                  <button onClick={() => setEditingNamespace(null)} className="px-4 py-2 text-gray-400 hover:bg-gray-800 rounded-lg text-sm">Cancel</button>
+                  <button onClick={() => {
+                    if (editingNamespace.isNew) {
+                      setNamespaces(prev => [...prev, {...editingNamespace, isNew: undefined}]);
+                      showNotification(`Namespace "${editingNamespace.name}" created`, 'success');
+                    } else {
+                      setNamespaces(prev => prev.map(n => n.id === editingNamespace.id ? editingNamespace : n));
+                      showNotification(`Namespace "${editingNamespace.name}" updated`, 'success');
+                    }
+                    setEditingNamespace(null);
+                  }} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium">
+                    {editingNamespace.isNew ? 'Create' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
+      // U.N.C.L.E. VIEW (Data Storage)
+      const UNCLEView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
+                <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.uncle.trend}</span>
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">${platformCosts.uncle.total.toLocaleString()}</div>
+              <div className="text-sm text-gray-400 mt-1">RDS + ElastiCache + DynamoDB</div>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Total Datastores</span>
+                <Icon name="database" size={14} className="text-blue-400" />
+              </div>
+              <div className="text-2xl font-semibold text-blue-300">{mockDatastores.length}</div>
+              <div className="text-sm text-gray-400 mt-1">{mockDatastores.filter(d => ['postgresql', 'dsql'].includes(d.type)).length} SQL, {mockDatastores.filter(d => ['mongodb', 'documentdb'].includes(d.type)).length} Document, {mockDatastores.filter(d => d.type === 'dynamodb').length} NoSQL</div>
+            </div>
+            <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Availability</span>
+                <Icon name="activity" size={14} className="text-violet-400" />
+              </div>
+              <div className="text-2xl font-semibold text-violet-300">{Math.round((mockDatastores.filter(d => ['available', 'active'].includes(d.status)).length / mockDatastores.length) * 100)}%</div>
+              <div className="text-sm text-gray-400 mt-1">{mockDatastores.filter(d => ['available', 'active'].includes(d.status)).length} of {mockDatastores.length} available</div>
+            </div>
+            <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
+                <Icon name="alert-triangle" size={14} className="text-red-400" />
+              </div>
+              <div className="text-2xl font-semibold text-red-300">0</div>
+              <div className="text-sm text-gray-400 mt-1">All datastores healthy</div>
+            </div>
+          </div>
+          {/* Filter Tabs with Counts */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'All', count: mockDatastores.length },
+              { id: 'PostgreSQL', count: mockDatastores.filter(d => d.type === 'postgresql').length },
+              { id: 'DocumentDB', count: mockDatastores.filter(d => d.type === 'documentdb').length },
+              { id: 'MongoDB', count: mockDatastores.filter(d => d.type === 'mongodb').length },
+              { id: 'DynamoDB', count: mockDatastores.filter(d => d.type === 'dynamodb').length },
+              { id: 'DSQL', count: mockDatastores.filter(d => d.type === 'dsql').length }
+            ].map(cat => (
+              <button key={cat.id} onClick={() => setUncleFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${uncleFilter === cat.id ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                {cat.id}
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${uncleFilter === cat.id ? 'bg-blue-500/30 text-blue-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+            <table className="w-full">
+              <thead><tr className="border-b border-gray-700">
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Datastore</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Size</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
+                <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
+              </tr></thead>
+              <tbody>
+                {mockDatastores.filter(d => uncleFilter === 'All' || d.type.toLowerCase() === uncleFilter.toLowerCase()).map(d => (
+                  <tr key={d.id} onClick={() => setSelectedDatastore(d)} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                    <td className="px-4 py-3"><div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
+                        backgroundColor: d.type === 'postgresql' ? 'rgba(59,130,246,0.2)' : d.type === 'documentdb' ? 'rgba(20,184,166,0.2)' : d.type === 'mongodb' ? 'rgba(16,185,129,0.2)' : d.type === 'dynamodb' ? 'rgba(245,158,11,0.2)' : 'rgba(139,92,246,0.2)',
+                        color: d.type === 'postgresql' ? '#60a5fa' : d.type === 'documentdb' ? '#2dd4bf' : d.type === 'mongodb' ? '#34d399' : d.type === 'dynamodb' ? '#fbbf24' : '#a78bfa'
+                      }}>
+                        <Icon name={d.type === 'postgresql' ? 'database' : d.type === 'documentdb' ? 'clipboard' : d.type === 'mongodb' ? 'file-text' : d.type === 'dynamodb' ? 'layers' : 'server'} size={16} />
+                      </div>
+                      <div><div className="font-medium">{d.name}</div><div className="text-sm text-gray-400">{d.owner}</div></div>
+                    </div></td>
+                    <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{d.type}</span><div className="text-sm text-gray-400">{d.engine || d.version || d.mode}</div></div></td>
+                    <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{d.size || d.mode || d.version}</code></td>
+                    <td className="px-4 py-3"><StatusBadge status={['available', 'active'].includes(d.status) ? 'healthy' : 'warning'} size="sm" /></td>
+                    <td className="px-4 py-3 text-sm text-emerald-400">{d.monthlyCost}</td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => showNotification(`Refreshing ${d.name}...`, 'success')} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={14} /></button>
+                        <button onClick={() => showNotification(`Creating backup for ${d.name}...`, 'success')} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={14} /></button>
+                        <button onClick={() => setDatastoreMetrics(d)} className="p-1.5 hover:bg-blue-500/20 rounded-lg text-gray-400 hover:text-blue-400" title="View Metrics"><Icon name="activity" size={14} /></button>
+                        <button onClick={() => { setSelectedDatastore(d); setUncleEditMode(true); setUncleEditData({ size: d.size || d.mode || '', storage: d.storage || '500 GB', engine: d.engine || d.version || '' }); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => showNotification(`Datastore "${d.name}" deleted`, 'warning')} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Datastore Detail Panel */}
+          {selectedDatastore && (
+            <div className="fixed inset-0 z-50 flex justify-end">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedDatastore(null)} />
+              <div className="relative w-[600px] bg-gray-900 border-l border-gray-700 overflow-auto">
+                <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setSelectedDatastore(null)} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedDatastore.type === 'postgresql' ? 'bg-blue-500/20 text-blue-400' : selectedDatastore.type === 'documentdb' ? 'bg-teal-500/20 text-teal-400' : selectedDatastore.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : selectedDatastore.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                      <Icon name={selectedDatastore.type === 'postgresql' ? 'database' : selectedDatastore.type === 'documentdb' ? 'clipboard' : selectedDatastore.type === 'mongodb' ? 'file-text' : selectedDatastore.type === 'dynamodb' ? 'layers' : 'server'} size={20} />
+                    </div>
+                    <div><div className="font-semibold">{selectedDatastore.name}</div><div className="text-sm text-gray-400">{selectedDatastore.owner}</div></div>
+                  </div>
+                  {uncleEditMode ? (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => { setUncleEditMode(false); showNotification(`${selectedDatastore.name} configuration saved`, 'success'); }} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium">Save</button>
+                      <button onClick={() => setUncleEditMode(false)} className="px-3 py-1.5 hover:bg-gray-800 rounded-lg text-sm text-gray-400">Cancel</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => showNotification(`Refreshing ${selectedDatastore.name}...`, 'success')} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={16} /></button>
+                      <button onClick={() => showNotification(`Creating backup for ${selectedDatastore.name}...`, 'success')} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={16} /></button>
+                      <button onClick={() => { setUncleEditMode(true); setUncleEditData({ size: selectedDatastore.size || selectedDatastore.mode || '', storage: selectedDatastore.storage || '500 GB', engine: selectedDatastore.engine || selectedDatastore.version || '' }); }} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Edit"><Icon name="edit" size={16} /></button>
+                      <button onClick={() => { showNotification(`Datastore "${selectedDatastore.name}" deleted`, 'warning'); setSelectedDatastore(null); }} className="p-2 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
+                      <button onClick={() => { setSelectedDatastore(null); setUncleEditMode(false); }} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Close"><Icon name="x" size={16} /></button>
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 space-y-6">
+                  {/* Status Overview */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Status</div><StatusBadge status={['available', 'active'].includes(selectedDatastore.status) ? 'healthy' : 'warning'} /></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Monthly Cost</div><div className="text-lg font-semibold text-emerald-400">{selectedDatastore.monthlyCost}</div></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Mode</div><div className="text-sm text-emerald-400 font-medium">Active-Active</div></div>
+                  </div>
+
+                  {/* Configuration - at top, editable */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="settings" size={14} className="text-gray-400" />Configuration</h3>
+                    {uncleEditMode ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Type</label>
+                            <div className="text-gray-400 uppercase text-sm bg-gray-700/30 px-3 py-2 rounded-lg">{selectedDatastore.type}</div>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Size/Mode</label>
+                            <input type="text" value={uncleEditData.size} onChange={e => setUncleEditData({...uncleEditData, size: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Engine</label>
+                            <input type="text" value={uncleEditData.engine} onChange={e => setUncleEditData({...uncleEditData, engine: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Storage</label>
+                            <input type="text" value={uncleEditData.storage} onChange={e => setUncleEditData({...uncleEditData, storage: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-400">Created: {selectedDatastore.created}</div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><div className="text-sm text-gray-400 mb-1">Type</div><div className="text-gray-300 uppercase">{selectedDatastore.type}</div></div>
+                        <div><div className="text-sm text-gray-400 mb-1">Size/Mode</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedDatastore.size || selectedDatastore.mode || selectedDatastore.version}</code></div>
+                        <div><div className="text-sm text-gray-400 mb-1">Engine</div><div className="text-gray-300">{selectedDatastore.engine || selectedDatastore.version || selectedDatastore.mode}</div></div>
+                        <div><div className="text-sm text-gray-400 mb-1">Storage</div><div className="text-gray-300">{selectedDatastore.storage || '500 GB'}</div></div>
+                        <div><div className="text-sm text-gray-400 mb-1">Created</div><div className="text-gray-300">{selectedDatastore.created}</div></div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Metrics */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="activity" size={14} className="text-gray-400" />Metrics</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div><div className="text-sm text-gray-400 mb-1">RAM</div><div className="text-emerald-400">{selectedDatastore.size === 'M30' ? '8 GB' : selectedDatastore.size === 'M40' ? '16 GB' : selectedDatastore.size?.includes('large') ? '16 GB' : selectedDatastore.size?.includes('xlarge') ? '32 GB' : '8 GB'}</div></div>
+                      {selectedDatastore.connections !== undefined && <div><div className="text-sm text-gray-400 mb-1">Connections</div><div className="text-gray-300">{selectedDatastore.connections}</div></div>}
+                      {selectedDatastore.cpu && <div><div className="text-sm text-gray-400 mb-1">CPU</div><div className="text-emerald-400">{selectedDatastore.cpu}</div></div>}
+                      {selectedDatastore.iops && <div><div className="text-sm text-gray-400 mb-1">IOPS</div><div className="text-gray-300">{selectedDatastore.iops}</div></div>}
+                      {selectedDatastore.nodes !== undefined && <div><div className="text-sm text-gray-400 mb-1">Nodes</div><div className="text-gray-300">{selectedDatastore.nodes}</div></div>}
+                      {selectedDatastore.hitRate && <div><div className="text-sm text-gray-400 mb-1">Hit Rate</div><div className="text-emerald-400">{selectedDatastore.hitRate}</div></div>}
+                      {selectedDatastore.memory && <div><div className="text-sm text-gray-400 mb-1">Memory Usage</div><div className="text-emerald-400">{selectedDatastore.memory}</div></div>}
+                      {selectedDatastore.evictions !== undefined && <div><div className="text-sm text-gray-400 mb-1">Evictions</div><div className={selectedDatastore.evictions === 0 ? 'text-emerald-400' : 'text-amber-400'}>{selectedDatastore.evictions}</div></div>}
+                      {selectedDatastore.reads && <div><div className="text-sm text-gray-400 mb-1">Reads</div><div className="text-gray-300">{selectedDatastore.reads}</div></div>}
+                      {selectedDatastore.writes && <div><div className="text-sm text-gray-400 mb-1">Writes</div><div className="text-gray-300">{selectedDatastore.writes}</div></div>}
+                      {selectedDatastore.items && <div><div className="text-sm text-gray-400 mb-1">Items</div><div className="text-gray-300">{selectedDatastore.items}</div></div>}
+                      {selectedDatastore.queries && <div><div className="text-sm text-gray-400 mb-1">Queries</div><div className="text-gray-300">{selectedDatastore.queries}</div></div>}
+                      {selectedDatastore.users !== undefined && <div><div className="text-sm text-gray-400 mb-1">Users</div><div className="text-gray-300">{selectedDatastore.users}</div></div>}
+                      {selectedDatastore.collections !== undefined && <div><div className="text-sm text-gray-400 mb-1">Collections</div><div className="text-gray-300">{selectedDatastore.collections}</div></div>}
+                      {selectedDatastore.documents && <div><div className="text-sm text-gray-400 mb-1">Documents</div><div className="text-gray-300">{selectedDatastore.documents}</div></div>}
+                    </div>
+                  </div>
+
+                  {/* Active-Active Regions */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="globe" size={14} className="text-gray-400" />Active-Active Regions</h3>
+                    <div className="space-y-3">
+                      {(selectedDatastore.type === 'mongodb' ? ['us-east-1', 'us-east-2', 'us-west-1'] : ['us-east-1', 'us-east-2']).map((region, idx) => (
+                        <div key={region} className="bg-gray-900/50 border border-gray-700 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-emerald-400' : idx === 1 ? 'bg-blue-400' : 'bg-violet-400'}`}></span>
+                              <span className="text-sm font-medium">{region}</span>
+                              {idx === 0 && <span className="text-xs bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">Primary</span>}
+                            </div>
+                            <StatusBadge status="healthy" size="sm" />
+                          </div>
+                          <div className="text-sm text-gray-400 mb-1">ARN</div>
+                          <code className="text-sm text-gray-400 bg-gray-800 px-2 py-1 rounded block mb-2 font-mono">arn:aws:{selectedDatastore.type === 'dynamodb' ? 'dynamodb' : selectedDatastore.type === 'mongodb' ? 'docdb' : 'rds'}:{region}:123456789012:{selectedDatastore.type === 'dynamodb' ? 'table' : 'cluster'}/{selectedDatastore.name}</code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Connection */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="link" size={14} className="text-gray-400" />Connection</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1">Global Connection String</div>
+                        <code className="text-xs text-blue-400 bg-gray-900 px-2 py-1.5 rounded block font-mono break-all">{selectedDatastore.type === 'mongodb' ? `mongodb+srv://${selectedDatastore.name}.global.mongodb.net/?retryWrites=true&w=majority` : selectedDatastore.type === 'dynamodb' ? `dynamodb.global.amazonaws.com` : `${selectedDatastore.name}.cluster-global.${selectedDatastore.type}.amazonaws.com:5432`}</code>
+                      </div>
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1">Vault Secret Path</div>
+                        <div className="flex items-center gap-2">
+                          <code className="text-xs text-amber-400 bg-gray-900 px-2 py-1.5 rounded flex-1 font-mono">secret/data/databases/{selectedDatastore.name}/credentials</code>
+                          <button onClick={() => showNotification('Secret path copied to clipboard')} className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-gray-200"><Icon name="copy" size={14} /></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div><h3 className="text-sm font-medium mb-2">Description</h3><p className="text-sm text-gray-400">{selectedDatastore.description}</p></div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New Datastore Modal */}
+          {showNewDatastore && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowNewDatastore(false)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <h2 className="text-lg font-semibold">Create New Datastore</h2>
+                  <button onClick={() => setShowNewDatastore(false)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Name</label>
+                    <input type="text" value={newDatastoreData.name} onChange={e => setNewDatastoreData({...newDatastoreData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="my-database" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Type</label>
+                    <div className="grid grid-cols-5 gap-2">
+                      <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'postgresql'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'postgresql' ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="database" size={20} className="text-blue-400" />
+                          <span className="text-xs text-white">PostgreSQL</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'mongodb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'mongodb' ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="file-text" size={20} className="text-emerald-400" />
+                          <span className="text-xs text-white">MongoDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'documentdb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'documentdb' ? 'border-teal-500 bg-teal-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="clipboard" size={20} className="text-teal-400" />
+                          <span className="text-xs text-white">DocumentDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'dynamodb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'dynamodb' ? 'border-amber-500 bg-amber-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="layers" size={20} className="text-amber-400" />
+                          <span className="text-xs text-white">DynamoDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'dsql'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'dsql' ? 'border-violet-500 bg-violet-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="server" size={20} className="text-violet-400" />
+                          <span className="text-xs text-white">DSQL</span>
+                        </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
+                    <select value={newDatastoreData.environment || 'prod'} onChange={e => setNewDatastoreData({...newDatastoreData, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                      <option value="prod">Production</option>
+                      <option value="np">Non-Production</option>
+                    </select>
+                  </div>
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <label className="block text-sm text-gray-400 mb-3">Ownership</label>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Admin</label>
+                        <input type="text" value={newDatastoreData.ldapAdmin || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapAdmin: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-admins,ou=groups,dc=corp" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Dev</label>
+                        <input type="text" value={newDatastoreData.ldapDev || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapDev: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-developers,ou=groups,dc=corp" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Read</label>
+                        <input type="text" value={newDatastoreData.ldapRead || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapRead: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-readonly,ou=groups,dc=corp" />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Description</label>
+                    <textarea value={newDatastoreData.description} onChange={e => setNewDatastoreData({...newDatastoreData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 resize-none" placeholder="What is this datastore for?" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700">
+                  <button onClick={() => setShowNewDatastore(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                  <button onClick={() => { showNotification(`Datastore "${newDatastoreData.name}" created successfully`); setShowNewDatastore(false); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-lg">Create Datastore</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Datastore Metrics Modal */}
+          {datastoreMetrics && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => setDatastoreMetrics(null)} />
+              <div className="relative w-[900px] max-h-[90vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${datastoreMetrics.type === 'aurora' ? 'bg-blue-500/20 text-blue-400' : datastoreMetrics.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : datastoreMetrics.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                      <Icon name={datastoreMetrics.type === 'aurora' ? 'database' : datastoreMetrics.type === 'mongodb' ? 'file-text' : datastoreMetrics.type === 'dynamodb' ? 'layers' : 'server'} size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{datastoreMetrics.name}</div>
+                      <div className="text-sm text-gray-400">Database Metrics Dashboard</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1 p-1 bg-gray-800 rounded-lg border border-gray-700">
+                      {[
+                        { id: '1h', label: '1 Hour' },
+                        { id: '6h', label: '6 Hours' },
+                        { id: '24h', label: '24 Hours' },
+                        { id: '7d', label: '7 Days' }
+                      ].map(t => (
+                        <button key={t.id} onClick={() => setDatastoreMetricsTimeRange(t.id)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${datastoreMetricsTimeRange === t.id ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:text-gray-200'}`}>{t.label}</button>
+                      ))}
+                    </div>
+                    <button onClick={() => setDatastoreMetrics(null)} className="p-2 hover:bg-gray-700 rounded-lg"><Icon name="x" size={18} /></button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-6 max-h-[calc(90vh-80px)] overflow-y-auto">
+                  {/* Key Stats */}
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">CPU Utilization</div>
+                      <div className="text-2xl font-semibold text-blue-400">{datastoreMetricsTimeRange === '1h' ? '34%' : datastoreMetricsTimeRange === '6h' ? '42%' : datastoreMetricsTimeRange === '24h' ? '38%' : '35%'}</div>
+                      <div className="text-xs text-emerald-400 mt-1">-8% vs prev period</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Memory Utilization</div>
+                      <div className="text-2xl font-semibold text-emerald-400">{datastoreMetricsTimeRange === '1h' ? '67%' : datastoreMetricsTimeRange === '6h' ? '71%' : datastoreMetricsTimeRange === '24h' ? '68%' : '65%'}</div>
+                      <div className="text-sm text-gray-400 mt-1">Of allocated RAM</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Connections</div>
+                      <div className="text-2xl font-semibold text-cyan-400">{datastoreMetricsTimeRange === '1h' ? '124' : datastoreMetricsTimeRange === '6h' ? '156' : datastoreMetricsTimeRange === '24h' ? '142' : '138'}</div>
+                      <div className="text-sm text-gray-400 mt-1">Active connections</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Avg Latency</div>
+                      <div className="text-2xl font-semibold text-amber-400">{datastoreMetricsTimeRange === '1h' ? '2.4ms' : datastoreMetricsTimeRange === '6h' ? '3.1ms' : datastoreMetricsTimeRange === '24h' ? '2.8ms' : '2.6ms'}</div>
+                      <div className="text-xs text-emerald-400 mt-1">p50 response time</div>
+                    </div>
+                  </div>
+
+                  {/* Query Performance Chart */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-medium flex items-center gap-2"><Icon name="activity" size={16} className="text-blue-400" />Query Throughput (queries/sec)</h3>
+                      <span className="text-sm text-gray-400">{datastoreMetricsTimeRange === '1h' ? 'Last 60 minutes' : datastoreMetricsTimeRange === '6h' ? 'Last 6 hours' : datastoreMetricsTimeRange === '24h' ? 'Last 24 hours' : 'Last 7 days'}</span>
+                    </div>
+                    <FakeGraph color="blue" height={120} data={Array.from({ length: datastoreMetricsTimeRange === '1h' ? 60 : datastoreMetricsTimeRange === '6h' ? 72 : datastoreMetricsTimeRange === '24h' ? 96 : 168 }, (_, i) => 1200 + Math.sin(i * 0.2) * 400 + Math.random() * 200)} />
+                  </div>
+
+                  {/* Two Column Charts */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="cpu" size={16} className="text-cyan-400" />CPU & Memory</h3>
+                      </div>
+                      <FakeGraph color="cyan" height={100} data={Array.from({ length: 30 }, (_, i) => 30 + Math.sin(i * 0.3) * 20 + Math.random() * 10)} />
+                      <div className="flex items-center justify-center gap-6 mt-2 text-xs">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400"></span> CPU</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400"></span> Memory</span>
+                      </div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="clock" size={16} className="text-amber-400" />Query Latency (p99)</h3>
+                      </div>
+                      <FakeGraph color="amber" height={100} data={Array.from({ length: 30 }, (_, i) => 5 + Math.sin(i * 0.3) * 3 + Math.random() * 2)} />
+                    </div>
+                  </div>
+
+                  {/* IOPS & Storage */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="hard-drive" size={16} className="text-violet-400" />IOPS</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-semibold text-emerald-400">{datastoreMetricsTimeRange === '1h' ? '4.2K' : '3.8K'}</div>
+                          <div className="text-sm text-gray-400">Read IOPS</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-semibold text-blue-400">{datastoreMetricsTimeRange === '1h' ? '1.8K' : '1.5K'}</div>
+                          <div className="text-sm text-gray-400">Write IOPS</div>
+                        </div>
+                      </div>
+                      <FakeGraph color="violet" height={80} data={Array.from({ length: 30 }, (_, i) => 3000 + Math.sin(i * 0.4) * 1500 + Math.random() * 500)} />
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="database" size={16} className="text-cyan-400" />Storage</h3>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-gray-400">Used: 156 GB</span>
+                          <span className="text-gray-500">/ 500 GB</span>
+                        </div>
+                        <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full" style={{width: '31%'}}></div>
+                        </div>
+                        <div className="text-sm text-gray-400 mt-1">31% utilized</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <div className="text-gray-500">Free Space</div>
+                          <div className="text-gray-300 font-medium">344 GB</div>
+                        </div>
+                        <div className="bg-gray-900/50 rounded p-2">
+                          <div className="text-gray-500">Growth Rate</div>
+                          <div className="text-amber-400 font-medium">+2.1 GB/day</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slow Queries */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium flex items-center gap-2 mb-4"><Icon name="alert-triangle" size={16} className="text-amber-400" />Slow Queries (&gt; 100ms)</h3>
+                    <div className="space-y-2">
+                      {[
+                        { query: 'SELECT * FROM orders WHERE customer_id = ? AND status IN (...)', time: '245ms', calls: 156, table: 'orders' },
+                        { query: 'UPDATE inventory SET quantity = quantity - ? WHERE product_id = ?', time: '189ms', calls: 89, table: 'inventory' },
+                        { query: 'SELECT u.*, p.* FROM users u JOIN profiles p ON u.id = p.user_id', time: '167ms', calls: 234, table: 'users' },
+                        { query: 'INSERT INTO audit_log (action, entity_id, timestamp, data) VALUES ...', time: '134ms', calls: 412, table: 'audit_log' }
+                      ].map((q, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg hover:bg-gray-900 cursor-pointer" onClick={() => showNotification(`Query details: ${q.query.slice(0, 50)}...`)}>
+                          <div className="flex-1 min-w-0">
+                            <code className="text-sm text-gray-400 font-mono truncate block">{q.query}</code>
+                            <div className="text-sm text-gray-400 mt-1">Table: {q.table}</div>
+                          </div>
+                          <div className="flex items-center gap-4 ml-4">
+                            <div className="text-right">
+                              <div className="text-sm text-amber-400 font-medium">{q.time}</div>
+                              <div className="text-sm text-gray-400">{q.calls} calls</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Replication Status */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium flex items-center gap-2 mb-4"><Icon name="refresh-cw" size={16} className="text-emerald-400" />Active-Active Replication</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {['us-east-1', 'us-east-2'].map((region, i) => (
+                        <div key={region} className="bg-gray-900/50 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <Icon name="server" size={14} className="text-gray-400" />
+                              <span className="font-medium">{region}</span>
+                            </div>
+                            <span className="px-2 py-0.5 text-sm rounded-full bg-emerald-500/20 text-emerald-400">{i === 0 ? 'Primary' : 'Replica'}</span>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Status</span>
+                              <span className="text-emerald-400">Healthy</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Replication Lag</span>
+                              <span className="text-gray-300">{i === 0 ? 'N/A' : '< 1ms'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Transactions/sec</span>
+                              <span className="text-gray-300">{i === 0 ? '1,247' : '1,243'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
+      // D.A.D. VIEW (Service Mesh)
+      const DADView = () => {
+        const meshStats = getMeshStats(meshResources);
+        const filteredResources = meshResources.filter(r => {
+          if (r.type === 'authpolicy') return false; // Auth policies shown in Services tab
+          if (r.type === 'service') return false; // Services in Services tab
+          if (r.type === 'destinationrule') return false; // DRs shown in expanded views
+          if (dadFilter === 'Virtual Services') return r.type === 'virtualservice';
+          if (dadFilter === 'Ingress') return r.type === 'ingress';
+          if (dadFilter === 'Egress') return r.type === 'egress';
+          if (dadFilter === 'East-West') return r.type === 'eastwest';
+          if (dadFilter === 'Svc Entries') return r.type === 'serviceentry';
+          return true;
+        });
+        return (
+        <div className="p-6">
+          {/* Tab Navigation */}
+          <div className="flex gap-1 mb-6 border-b-2 border-gray-600">
+            {[
+              { id: 'services', label: 'Services', icon: 'server' },
+              { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
+              { id: 'patterns', label: 'Patterns', icon: 'layers' },
+              ...(featureFlags.dadSecurity ? [{ id: 'security', label: 'Security', icon: 'shield' }] : []),
+              ...(featureFlags.dadCertificates ? [{ id: 'certs', label: 'Certificates', icon: 'lock' }] : []),
+              { id: 'wasm', label: 'WASM Filters', icon: 'cpu' },
+              ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua', icon: 'code' }] : []),
+            ].map(tab => (
+              <button key={tab.id} onClick={() => setDadActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2.5 text-base font-semibold border-b-2 -mb-px transition-colors ${dadActiveTab === tab.id ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>
+                <Icon name={tab.icon} size={18} />{tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Services Tab - Service-centric hub view with expander */}
+          {dadActiveTab === 'services' && (() => {
+            // Get all services with their Istio features
+            const servicesWithPolicies = meshResources.filter(r => r.type === 'service').map(svc => {
+              const filters = getServiceFilters(svc);
+              const dr = meshResources.find(r => r.type === 'destinationrule' && r.host === svc.name);
+              const vs = meshResources.filter(r => r.type === 'virtualservice' && r.targetService === svc.name);
+              const gateways = meshResources.filter(r => ['ingress', 'egress'].includes(r.type) && vs.some(v => v.gateway === r.name));
+              const authPolicies = meshResources.filter(r => r.type === 'authpolicy' && r.namespace === svc.namespace);
+              const hasIstioFeatures = filters.length > 0 || dr || vs.length > 0 || gateways.length > 0 || authPolicies.length > 0;
+              return { svc, filters, dr, vs, gateways, authPolicies, hasIstioFeatures };
+            });
+
+            return (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold">Mesh Services</h2>
+                  <p className="text-sm text-gray-500">All services in the mesh with their attached policies</p>
+                </div>
+                <span className="text-sm text-gray-400">{servicesWithPolicies.filter(s => s.hasIstioFeatures).length} of {servicesWithPolicies.length} with policies</span>
+              </div>
+              {servicesWithPolicies.length === 0 ? (
+                <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-8 text-center">
+                  <Icon name="server" size={32} className="text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 mb-2">No services with Istio policies</p>
+                  <p className="text-sm text-gray-500">Use the Pattern Wizard to add routing, traffic policies, or filters to your services</p>
+                </div>
+              ) : (
+              <div className="space-y-2">
+                {servicesWithPolicies.map(({ svc, filters, dr, vs, gateways, authPolicies }) => {
+                  const isExpanded = expandedServices.includes(svc.name);
+                  const featureCount = filters.length + (dr ? 1 : 0) + vs.length + gateways.length + authPolicies.length;
+                  return (
+                    <div key={svc.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                      {/* Service Header Row */}
+                      <div
+                        className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
+                        onClick={() => setExpandedServices(prev => isExpanded ? prev.filter(s => s !== svc.name) : [...prev, svc.name])}
+                      >
+                        <div className="flex items-center gap-3">
+                          <button className={`w-6 h-6 flex items-center justify-center rounded transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                            <Icon name="chevron-right" size={16} className="text-gray-400" />
+                          </button>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${svc.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : svc.status === 'warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
+                            <Icon name="server" size={20} />
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-200 flex items-center gap-2">
+                              {svc.name}
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">{svc.namespace}</span>
+                            </div>
+                            <div className="text-sm text-gray-400">{svc.protocol} :{svc.port} • {svc.endpoints} endpoints</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          {/* Summary badges */}
+                          <div className="flex items-center gap-2">
+                            {filters.length > 0 && <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded text-sm flex items-center gap-1"><Icon name="filter" size={12} />{filters.length} filters</span>}
+                            {dr && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-sm flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
+                            {vs.length > 0 && <span className="px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded text-sm flex items-center gap-1"><Icon name="git-branch" size={12} />{vs.length} VS</span>}
+                            {gateways.length > 0 && <span className="px-2 py-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 rounded text-sm flex items-center gap-1"><Icon name="log-in" size={12} />{gateways.length} GW</span>}
+                            {authPolicies.length > 0 && <span className="px-2 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded text-sm flex items-center gap-1"><Icon name="shield" size={12} />{authPolicies.length} AuthZ</span>}
+                          </div>
+                          <StatusBadge status={svc.status} size="sm" />
+                        </div>
+                      </div>
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            {/* Auth Policies Column - First since AuthZ is first check */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})</div>
+                              {authPolicies.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {authPolicies.map((ap, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <Icon name={ap.action === 'ALLOW' ? 'check-circle' : 'x-circle'} size={12} className={ap.action === 'ALLOW' ? 'text-emerald-400' : 'text-red-400'} />
+                                        <span className="text-gray-300">{ap.name}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-xs px-1.5 py-0.5 rounded ${ap.action === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>{ap.action}</span>
+                                        <button onClick={(e) => { e.stopPropagation(); setEditingAuthPolicy({...ap, rules: Array.isArray(ap.rules) ? ap.rules : []}); }} className="p-1 hover:bg-rose-500/20 rounded text-gray-500 hover:text-rose-400"><Icon name="edit" size={12} /></button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">No auth policies</span>}
+                            </div>
+                            {/* Filters Column */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="filter" size={12} className="text-cyan-400" />Filters ({filters.length})</div>
+                              {filters.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {filters.map((f, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <Icon name={f.icon || (f.type === 'wasm' ? 'cpu' : f.type === 'lua' ? 'code' : 'filter')} size={12} className="text-cyan-400" />
+                                        <span className="text-gray-300">{f.name}</span>
+                                      </div>
+                                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">{f.phase || f.type}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">No filters</span>}
+                            </div>
+                            {/* Destination Rule Column */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule</div>
+                              {dr ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-gray-300">{dr.name}</span>
+                                    <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...dr, subsets: dr.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={12} /></button>
+                                  </div>
+                                  <div className="text-xs text-gray-500 space-y-1">
+                                    <div>LB: <span className="text-gray-400">{dr.trafficPolicy}</span></div>
+                                    <div>mTLS: <span className="text-gray-400">{dr.mtls}</span></div>
+                                    {dr.circuitBreaker && <div className="text-amber-400">Circuit Breaker Enabled</div>}
+                                    {dr.subsets && <div>Subsets: <span className="text-amber-400">{dr.subsets.map(s => s.name).join(', ')}</span></div>}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-center py-2">
+                                  <span className="text-xs text-gray-600">No destination rule</span>
+                                </div>
+                              )}
+                            </div>
+                            {/* Routing Column */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="git-branch" size={12} className="text-blue-400" />Virtual Services ({vs.length})</div>
+                              {vs.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {vs.map((v, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-gray-300">{v.name}</span>
+                                        {v.gateway && <span className="text-xs text-gray-500">via {v.gateway}</span>}
+                                      </div>
+                                      <button onClick={(e) => { e.stopPropagation(); setEditingVirtualService({...v, routes: v.routes || []}); }} className="p-1 hover:bg-blue-500/20 rounded text-gray-500 hover:text-blue-400"><Icon name="edit" size={12} /></button>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">Direct mesh routing</span>}
+                            </div>
+                            {/* Gateways Column */}
+                            <div className="bg-gray-800/50 rounded-lg p-3">
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="log-in" size={12} className="text-orange-400" />Gateways ({gateways.length})</div>
+                              {gateways.length > 0 ? (
+                                <div className="space-y-1.5">
+                                  {gateways.map((gw, i) => (
+                                    <div key={i} className="flex items-center justify-between text-xs">
+                                      <div className="flex items-center gap-2">
+                                        <Icon name={gw.type === 'ingress' ? 'log-in' : 'log-out'} size={12} className={gw.type === 'ingress' ? 'text-cyan-400' : 'text-orange-400'} />
+                                        <span className="text-gray-300">{gw.name}</span>
+                                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">{gw.type}</span>
+                                      </div>
+                                      <button onClick={(e) => { e.stopPropagation(); setEditingGateway({...gw}); }} className={`p-1 rounded text-gray-500 ${gw.type === 'ingress' ? 'hover:bg-cyan-500/20 hover:text-cyan-400' : 'hover:bg-orange-500/20 hover:text-orange-400'}`}><Icon name="edit" size={12} /></button>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : <span className="text-xs text-gray-600">Not exposed</span>}
+                            </div>
+                          </div>
+                          {/* Actions Row */}
+                          <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
+                            <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(svc); setShowServiceEditor(true); }} className="text-sm text-gray-400 hover:text-cyan-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="edit" size={12} />Edit Service</button>
+                            <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(svc); setShowServiceEditor(true); }} className="text-sm text-gray-400 hover:text-amber-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />Filter</button>
+                            {!dr && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: svc.namespace, host: svc.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />DR</button>}
+                            <button onClick={(e) => { e.stopPropagation(); setEditingAuthPolicy({ isNew: true, namespace: svc.namespace, targetService: svc.name, action: 'ALLOW', rules: [] }); }} className="text-sm text-gray-400 hover:text-rose-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />AuthZ</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              )}
+            </div>
+          ); })()}
+
+          {/* Mesh Config Tab (formerly Resources/Traffic) */}
+          {dadActiveTab === 'resources' && (() => {
+            const resourceTypeInfo = {
+              'Virtual Services': { desc: 'Istio routing rules that define how requests are routed to services. Use for traffic splitting, canary deployments, header-based routing, retries, and timeouts.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: VirtualService\nmetadata:\n  name: loan-service-vs\nspec:\n  hosts:\n    - loan-service\n  http:\n    - match:\n        - headers:\n            x-canary:\n              exact: "true"\n      route:\n        - destination:\n            host: loan-service\n            subset: canary\n    - route:\n        - destination:\n            host: loan-service\n            subset: stable' },
+              'Ingress': { desc: 'Ingress Gateways handle external traffic entering the mesh. Configure TLS termination, host-based routing, and expose services to external clients securely.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: api-gateway\nspec:\n  selector:\n    istio: ingressgateway\n  servers:\n    - port:\n        number: 443\n        name: https\n        protocol: HTTPS\n      tls:\n        mode: SIMPLE\n        credentialName: api-tls-cert\n      hosts:\n        - api.example.com' },
+              'Egress': { desc: 'Egress Gateways control traffic leaving the mesh to external services. Use for security policies, traffic monitoring, and ensuring all external calls go through approved exit points.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: external-apis-egress\nspec:\n  selector:\n    istio: egressgateway\n  servers:\n    - port:\n        number: 443\n        name: https\n        protocol: HTTPS\n      hosts:\n        - api.stripe.com\n        - api.twilio.com\n      tls:\n        mode: PASSTHROUGH' },
+              'East-West': { desc: 'East-West Gateways enable cross-cluster service mesh communication. Use in multi-cluster deployments to route traffic between clusters securely.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: cross-cluster-gateway\nspec:\n  selector:\n    istio: eastwestgateway\n  servers:\n    - port:\n        number: 15443\n        name: tls\n        protocol: TLS\n      tls:\n        mode: AUTO_PASSTHROUGH\n      hosts:\n        - "*.local"' },
+              'Dest Rules': { desc: 'Destination Rules define policies applied after routing. Configure load balancing, connection pool settings, outlier detection, and TLS settings for service-to-service communication.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: DestinationRule\nmetadata:\n  name: loan-service-dr\nspec:\n  host: loan-service\n  trafficPolicy:\n    connectionPool:\n      tcp:\n        maxConnections: 100\n      http:\n        h2UpgradePolicy: UPGRADE\n    outlierDetection:\n      consecutive5xxErrors: 5\n      interval: 30s\n      baseEjectionTime: 60s\n  subsets:\n    - name: stable\n      labels:\n        version: v1\n    - name: canary\n      labels:\n        version: v2' },
+              'Svc Entries': { desc: 'Service Entries add external services to the mesh registry. Use to enable mesh features (mTLS, observability) for external APIs, databases, or legacy systems outside the cluster.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: ServiceEntry\nmetadata:\n  name: stripe-api\nspec:\n  hosts:\n    - api.stripe.com\n  location: MESH_EXTERNAL\n  ports:\n    - number: 443\n      name: https\n      protocol: TLS\n  resolution: DNS\n  endpoints:\n    - address: api.stripe.com' }
+            };
+            return <>
+          {/* Sub-tabs: Traffic Config | External Services */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex bg-gray-800/50 border border-gray-700 rounded-lg p-1">
+              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? 'text-cyan-400' : ''} />Traffic Configuration
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'traffic' ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-700 text-gray-300'}`}>{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
+              </button>
+              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? 'text-cyan-400' : ''} />External Services
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'external' ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-700 text-gray-300'}`}>{meshStats.serviceEntries}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Traffic Config Sub-tab */}
+          {meshConfigSubTab === 'traffic' && (
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'Virtual Services', count: meshStats.virtualServices, icon: 'git-branch' },
+              { id: 'divider1' },
+              { id: 'Ingress', count: meshStats.ingress, sublabel: 'Gateway', icon: 'log-in' },
+              { id: 'Egress', count: meshStats.egress, sublabel: 'Gateway', icon: 'log-out' },
+              { id: 'East-West', count: meshStats.eastwest, sublabel: 'Gateway', icon: 'repeat' }
+            ].map(cat => (
+              cat.id.startsWith('divider') ? (
+                <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
+              ) : (
+                <div key={cat.id} className="flex items-center gap-1">
+                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? 'text-cyan-400' : ''} />
+                    <div className="flex flex-col items-center">
+                      <span>{cat.id}</span>
+                      {cat.sublabel && <span className={`text-sm ${dadFilter === cat.id ? 'text-gray-300' : 'text-gray-500'}`}>{cat.sublabel}</span>}
+                    </div>
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${dadFilter === cat.id ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-600 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                  <button className="p-1 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'resource', id: cat.id, name: cat.id + (cat.sublabel ? ' ' + cat.sublabel : ''), desc: resourceTypeInfo[cat.id].desc, example: resourceTypeInfo[cat.id].example })}><Icon name="help-circle" size={14} /></button>
+                </div>
+              )
+            ))}
+          </div>
+          )}
+          {meshConfigSubTab === 'traffic' && (
+          <div className="space-y-3">
+            {filteredResources.map(r => {
+              const typeConfig = {
+                virtualservice: { icon: 'git-branch', label: 'Virtual Service', color: 'violet' },
+                ingress: { icon: 'log-in', label: 'Ingress Gateway', color: 'cyan' },
+                egress: { icon: 'log-out', label: 'Egress Gateway', color: 'orange' },
+                eastwest: { icon: 'repeat', label: 'East-West Gateway', color: 'teal' }
+              }[r.type] || { icon: 'box', label: r.type, color: 'gray' };
+
+              const relatedDR = meshResources.find(dr => dr.type === 'destinationrule' && (dr.host === r.host || dr.namespace === r.namespace));
+              const isExpanded = expandedTrafficId === r.id;
+
+              const getDetails = () => {
+                switch(r.type) {
+                  case 'virtualservice': return `${r.routes} routes`;
+                  case 'ingress': return `${r.tls} TLS • Port ${r.port}`;
+                  case 'egress': return `${r.hosts?.length || 0} hosts`;
+                  case 'eastwest': return `${r.hosts?.length || 0} hosts`;
+                  default: return '';
+                }
+              };
+
+              return (
+                <div key={r.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                  <div onClick={() => setExpandedTrafficId(isExpanded ? null : r.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
+                    <div className="flex items-center gap-4">
+                      <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${typeConfig.color}-500/20 text-${typeConfig.color}-400`}><Icon name={typeConfig.icon} size={20} /></div>
+                      <div>
+                        <div className="text-base font-semibold">{r.name}</div>
+                        <div className="text-sm text-gray-400">{r.namespace}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-2.5 py-1 rounded text-sm font-medium bg-${typeConfig.color}-500/10 text-${typeConfig.color}-400 border border-${typeConfig.color}-500/20`}>{typeConfig.label}</span>
+                      <span className="text-sm text-gray-300">{getDetails()}</span>
+                      {r.gateway && <span className="text-sm text-gray-300 whitespace-nowrap">via {r.gateway}</span>}
+                      {relatedDR && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-sm flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
+                      <StatusBadge status={r.status} size="sm" />
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/40">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Resource Details Column */}
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name={typeConfig.icon} size={16} className={`text-${typeConfig.color}-400`} />Details</div>
+                          {r.type === 'virtualservice' && (
+                            <div className="space-y-2 text-base">
+                              <div><span className="text-gray-400 font-semibold">Host:</span> <span className="text-gray-200">{r.host}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Routes:</span> <span className="text-gray-200">{r.routes}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Gateway:</span> <span className="text-gray-200">{r.gateway || 'mesh'}</span></div>
+                            </div>
+                          )}
+                          {['ingress', 'egress', 'eastwest'].includes(r.type) && (
+                            <div className="space-y-2 text-base">
+                              <div><span className="text-gray-400 font-semibold">Hosts:</span></div>
+                              {r.hosts?.map((h, i) => <div key={i} className="text-gray-200 bg-gray-700/30 px-2 py-1 rounded">{h}</div>)}
+                              <div><span className="text-gray-400 font-semibold">TLS:</span> <span className="text-gray-200">{r.tls}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Port:</span> <span className="text-gray-200">{r.port}</span></div>
+                            </div>
+                          )}
+                        </div>
+                        {/* Destination Rule Column */}
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={16} className="text-violet-400" />Destination Rule</div>
+                          {relatedDR ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-base text-gray-200">{relatedDR.name}</span>
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={14} /></button>
+                              </div>
+                              <div className="text-base text-gray-400 space-y-1">
+                                <div><span className="font-semibold">LB:</span> <span className="text-gray-200">{relatedDR.trafficPolicy}</span></div>
+                                <div><span className="font-semibold">mTLS:</span> <span className="text-gray-200">{relatedDR.mtls}</span></div>
+                                {relatedDR.circuitBreaker && <div className="text-amber-400 font-semibold">Circuit Breaker Enabled</div>}
+                                {relatedDR.subsets && <div><span className="font-semibold">Subsets:</span> <span className="text-amber-300">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-2">
+                              <span className="text-base text-gray-600">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-base text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={14} className="inline mr-1" />Add DR</button>
+                            </div>
+                          )}
+                        </div>
+                        {/* Metadata Column */}
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="info" size={16} className="text-gray-400" />Metadata</div>
+                          <div className="space-y-2 text-base">
+                            <div><span className="text-gray-400 font-semibold">Owner:</span> <span className="text-gray-200">{r.owner}</span></div>
+                            <div><span className="text-gray-400 font-semibold">BU:</span> <span className="text-gray-200">{r.bu}</span></div>
+                            <div><span className="text-gray-400 font-semibold">Created:</span> <span className="text-gray-200">{r.created}</span></div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Actions Row */}
+                      <div className="mt-3 pt-3 flex items-center gap-3">
+                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(r); setShowServiceEditor(true); }} className="text-base font-semibold text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit</button>
+                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm font-semibold text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />DR</button>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          )}
+
+          {/* External Services Sub-tab */}
+          {meshConfigSubTab === 'external' && (
+          <div className="space-y-3">
+            {meshResources.filter(r => r.type === 'serviceentry').map(se => {
+              const relatedDR = meshResources.find(r => r.type === 'destinationrule' && se.hosts?.some(h => r.host?.includes(h.replace('*.', '')) || h.includes(r.host?.replace('*.', '') || '')));
+              const relatedEgress = meshResources.filter(r => r.type === 'egress' && r.hosts?.some(h => se.hosts?.some(sh => h.includes(sh.replace('*.', '')) || sh.includes(h.replace('*.', '')))));
+              const isExpanded = expandedSeId === se.id;
+              return (
+                <div key={se.id} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                  <div onClick={() => setExpandedSeId(isExpanded ? null : se.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
+                    <div className="flex items-center gap-4">
+                      <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${se.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}><Icon name="external-link" size={20} /></div>
+                      <div>
+                        <div className="font-medium">{se.name}</div>
+                        <div className="text-sm text-gray-400">{se.namespace}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400">{se.hosts?.length || 0} hosts</span>
+                        <span className="px-2 py-0.5 rounded text-sm bg-slate-600 text-slate-200 font-medium">{se.location}</span>
+                        <span className="px-2 py-0.5 rounded text-sm bg-slate-700 text-slate-300">{se.resolution}</span>
+                      </div>
+                      {relatedDR && <span className="px-2 py-1 bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 rounded text-sm flex items-center gap-1 font-medium"><Icon name="sliders" size={12} />DR</span>}
+                      {relatedEgress.length > 0 && <span className="px-2 py-1 bg-violet-500/15 text-violet-400 border border-violet-500/30 rounded text-sm flex items-center gap-1 font-medium"><Icon name="log-out" size={12} />{relatedEgress.length} GW</span>}
+                      <StatusBadge status={se.status} size="sm" />
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div className="px-4 pb-4 pt-3 border-t border-gray-700/50" style={{backgroundColor: featureFlags.darkMode ? 'rgba(30,41,59,0.5)' : '#F8FAFC'}}>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Hosts Column */}
+                        <div className="rounded-lg p-3 border" style={{backgroundColor: featureFlags.darkMode ? 'rgba(51,65,85,0.5)' : '#FFFFFF', borderColor: featureFlags.darkMode ? 'rgba(71,85,105,0.5)' : '#E2E8F0'}}>
+                          <div className="text-sm mb-2 flex items-center gap-1.5 font-medium" style={{color: featureFlags.darkMode ? '#94A3B8' : '#475569'}}><Icon name="globe" size={14} className="text-cyan-500" />Hosts</div>
+                          <div className="space-y-1.5">
+                            {se.hosts?.map((h, i) => (
+                              <div key={i} className="text-sm font-mono px-2.5 py-1.5 rounded" style={{backgroundColor: featureFlags.darkMode ? 'rgba(71,85,105,0.3)' : '#F1F5F9', color: featureFlags.darkMode ? '#E2E8F0' : '#334155'}}>{h}</div>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Ports Column */}
+                        <div className="rounded-lg p-3 border" style={{backgroundColor: featureFlags.darkMode ? 'rgba(51,65,85,0.5)' : '#FFFFFF', borderColor: featureFlags.darkMode ? 'rgba(71,85,105,0.5)' : '#E2E8F0'}}>
+                          <div className="text-sm mb-2 flex items-center gap-1.5 font-medium" style={{color: featureFlags.darkMode ? '#94A3B8' : '#475569'}}><Icon name="radio" size={14} className="text-blue-500" />Ports</div>
+                          <div className="space-y-1.5">
+                            {se.ports?.map((p, i) => (
+                              <div key={i} className="text-sm flex items-center gap-2" style={{color: featureFlags.darkMode ? '#E2E8F0' : '#334155'}}>
+                                <span className="text-cyan-500 font-semibold">{p.number}</span>
+                                <span className="px-2 py-0.5 rounded text-xs font-medium" style={{backgroundColor: featureFlags.darkMode ? 'rgba(71,85,105,0.5)' : '#E2E8F0', color: featureFlags.darkMode ? '#CBD5E1' : '#475569'}}>{p.protocol}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Destination Rule Column */}
+                        <div className="rounded-lg p-3 border" style={{backgroundColor: featureFlags.darkMode ? 'rgba(51,65,85,0.5)' : '#FFFFFF', borderColor: featureFlags.darkMode ? 'rgba(71,85,105,0.5)' : '#E2E8F0'}}>
+                          <div className="text-sm mb-2 flex items-center gap-1.5 font-medium" style={{color: featureFlags.darkMode ? '#94A3B8' : '#475569'}}><Icon name="sliders" size={14} className="text-violet-500" />Destination Rule</div>
+                          {relatedDR ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-200">{relatedDR.name}</span>
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={14} /></button>
+                              </div>
+                              <div className="text-sm text-gray-400 space-y-1">
+                                <div>LB: <span className="text-gray-300">{relatedDR.trafficPolicy}</span></div>
+                                <div>mTLS: <span className="text-gray-300">{relatedDR.mtls}</span></div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-2">
+                              <span className="text-sm text-gray-500">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: se.namespace, host: se.hosts?.[0] || se.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'SIMPLE', subsets: [] }); }} className="block mt-2 text-sm text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={14} className="inline mr-1" />Add DR</button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Actions Row */}
+                      <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
+                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(se); }} className="text-sm text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit Entry</button>
+                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: se.namespace, host: se.hosts?.[0] || se.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'SIMPLE', subsets: [] }); }} className="text-sm text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />Add DR</button>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          )}
+
+          {/* Edit Sidebar for Dest Rules and Svc Entries */}
+          {serviceEditorResource && ['destinationrule', 'serviceentry'].includes(serviceEditorResource.type) && (
+            <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setServiceEditorResource(null)}>
+              <div className="absolute inset-0 bg-black/50" />
+              <div className="relative w-[550px] bg-gray-900 border-l border-gray-700 overflow-auto" onClick={e => e.stopPropagation()}>
+                <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between z-10">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setServiceEditorResource(null)} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${serviceEditorResource.type === 'destinationrule' ? 'bg-violet-500/20 text-violet-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+                      <Icon name={serviceEditorResource.type === 'destinationrule' ? 'sliders' : 'external-link'} size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{serviceEditorResource.name}</div>
+                      <div className="text-sm text-gray-400">{serviceEditorResource.type === 'destinationrule' ? 'Destination Rule' : 'Service Entry'}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { showNotification(`${serviceEditorResource.name} saved`, 'success'); setServiceEditorResource(null); }} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium">Save</button>
+                    <button onClick={() => setServiceEditorResource(null)} className="px-3 py-1.5 hover:bg-gray-800 rounded-lg text-sm text-gray-400">Cancel</button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-6">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Name</label>
+                      <input type="text" defaultValue={serviceEditorResource.name} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-base text-white focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Namespace</label>
+                      <input type="text" defaultValue={serviceEditorResource.namespace} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-base text-white focus:outline-none focus:border-blue-500" />
+                    </div>
+                  </div>
+
+                  {/* DestinationRule Configuration */}
+                  {serviceEditorResource.type === 'destinationrule' && (
+                    <>
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Host Configuration</h3>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Host</label>
+                          <input type="text" defaultValue={serviceEditorResource.host} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="service.namespace.svc.cluster.local" />
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="sliders" size={14} className="text-gray-400" />Traffic Policy</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Load Balancer</label>
+                            <select defaultValue={serviceEditorResource.trafficPolicy} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                              <option value="ROUND_ROBIN">ROUND_ROBIN</option>
+                              <option value="LEAST_CONN">LEAST_CONN</option>
+                              <option value="RANDOM">RANDOM</option>
+                              <option value="PASSTHROUGH">PASSTHROUGH</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">TLS Mode</label>
+                            <select defaultValue={serviceEditorResource.mtls} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                              <option value="DISABLE">DISABLE</option>
+                              <option value="SIMPLE">SIMPLE</option>
+                              <option value="MUTUAL">MUTUAL</option>
+                              <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                              <option value="STRICT">STRICT</option>
+                              <option value="PERMISSIVE">PERMISSIVE</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Circuit Breaker (Outlier Detection)</h3>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <label className="text-sm text-gray-300">Enable Circuit Breaker</label>
+                            <input type="checkbox" defaultChecked={serviceEditorResource.circuitBreaker} className="w-4 h-4 rounded bg-gray-700 border-gray-600" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Consecutive 5xx Errors</label>
+                              <input type="number" defaultValue="5" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Interval</label>
+                              <input type="text" defaultValue="10s" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Base Ejection Time</label>
+                              <input type="text" defaultValue="30s" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Max Ejection %</label>
+                              <input type="number" defaultValue="100" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="link" size={14} className="text-gray-400" />Connection Pool</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Max Connections (TCP)</label>
+                            <input type="number" defaultValue="1000" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Connect Timeout</label>
+                            <input type="text" defaultValue="10s" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">HTTP1 Max Pending</label>
+                            <input type="number" defaultValue="1024" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">HTTP2 Max Requests</label>
+                            <input type="number" defaultValue="1000" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="git-branch" size={14} className="text-gray-400" />Subsets (for Canary/Traffic Splitting)</h3>
+                        <div className="space-y-3">
+                          {(serviceEditorResource.subsets || [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }]).map((subset, i) => (
+                            <div key={i} className="bg-gray-900/50 border border-gray-600 rounded-lg p-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <input type="text" defaultValue={subset.name} placeholder="Subset name" className="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white font-medium focus:outline-none focus:border-blue-500" />
+                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash2" size={14} /></button>
+                              </div>
+                              <div className="space-y-1">
+                                <label className="block text-sm text-gray-400">Labels (key: value)</label>
+                                {Object.entries(subset.labels || {}).map(([k, v], j) => (
+                                  <div key={j} className="flex items-center gap-2">
+                                    <input type="text" defaultValue={k} className="flex-1 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="key" />
+                                    <span className="text-gray-500">:</span>
+                                    <input type="text" defaultValue={v} className="flex-1 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="value" />
+                                    <button className="p-1 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="x" size={12} /></button>
+                                  </div>
+                                ))}
+                                <button className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"><Icon name="plus" size={12} />Add Label</button>
+                              </div>
+                            </div>
+                          ))}
+                          <button className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"><Icon name="plus" size={14} />Add Subset</button>
+                        </div>
+                        <div className="mt-3 p-2 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                          <div className="text-xs text-violet-300 flex items-center gap-2"><Icon name="info" size={12} />Subsets enable canary deployments. Route traffic with VirtualService weight rules.</div>
+                        </div>
+                      </div>
+
+                      {/* Related Resources */}
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="share-2" size={14} className="text-gray-400" />Related Resources</h3>
+                        {(() => {
+                          const relatedService = mockMeshResources.find(r => r.type === 'service' && r.name === serviceEditorResource.host);
+                          const relatedVS = mockMeshResources.find(r => r.type === 'virtualservice' && r.namespace === serviceEditorResource.namespace);
+                          return (
+                            <div className="space-y-2">
+                              {relatedService && (
+                                <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center"><Icon name="server" size={12} className="text-blue-400" /></div>
+                                    <div><div className="text-sm">{relatedService.name}</div><div className="text-sm text-gray-400">Service</div></div>
+                                  </div>
+                                  <button className="text-xs text-cyan-400 hover:text-cyan-300">View →</button>
+                                </div>
+                              )}
+                              {relatedVS && (
+                                <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center"><Icon name="git-branch" size={12} className="text-violet-400" /></div>
+                                    <div><div className="text-sm">{relatedVS.name}</div><div className="text-sm text-gray-400">Virtual Service</div></div>
+                                  </div>
+                                  <button className="text-xs text-cyan-400 hover:text-cyan-300">View →</button>
+                                </div>
+                              )}
+                              {!relatedService && !relatedVS && <div className="text-sm text-gray-400">No related resources found</div>}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </>
+                  )}
+
+                  {/* ServiceEntry Configuration */}
+                  {serviceEditorResource.type === 'serviceentry' && (
+                    <>
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="globe" size={16} className="text-gray-300" />Hosts</h3>
+                        <div className="space-y-2">
+                          {serviceEditorResource.hosts?.map((h, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                              <input type="text" defaultValue={h} className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                              <button className="p-2 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400"><Icon name="trash2" size={14} /></button>
+                            </div>
+                          ))}
+                          <button className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"><Icon name="plus" size={14} />Add Host</button>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="settings" size={16} className="text-gray-300" />Resolution</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Location</label>
+                            <select defaultValue={serviceEditorResource.location} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                              <option value="MESH_EXTERNAL">MESH_EXTERNAL</option>
+                              <option value="MESH_INTERNAL">MESH_INTERNAL</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Resolution</label>
+                            <select defaultValue={serviceEditorResource.resolution} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                              <option value="NONE">NONE</option>
+                              <option value="STATIC">STATIC</option>
+                              <option value="DNS">DNS</option>
+                              <option value="DNS_ROUND_ROBIN">DNS_ROUND_ROBIN</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="radio" size={16} className="text-gray-300" />Ports</h3>
+                        <div className="space-y-3">
+                          {serviceEditorResource.ports?.map((p, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                              <div className="flex-1 grid grid-cols-3 gap-2">
+                                <input type="number" defaultValue={p.number} placeholder="Port" className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                                <select defaultValue={p.protocol} className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                                  <option>HTTP</option>
+                                  <option>HTTPS</option>
+                                  <option>HTTP2</option>
+                                  <option>GRPC</option>
+                                  <option>TCP</option>
+                                  <option>TLS</option>
+                                  <option>MONGO</option>
+                                  <option>MYSQL</option>
+                                  <option>REDIS</option>
+                                </select>
+                                <input type="text" defaultValue={p.name || `port-${p.number}`} placeholder="Name" className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                              </div>
+                              <button className="p-2 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400"><Icon name="trash2" size={14} /></button>
+                            </div>
+                          ))}
+                          <button className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"><Icon name="plus" size={14} />Add Port</button>
+                        </div>
+                      </div>
+
+                      {serviceEditorResource.resolution === 'STATIC' && (
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                          <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="server" size={16} className="text-gray-300" />Endpoints</h3>
+                          <div className="space-y-2">
+                            {(serviceEditorResource.endpoints || []).map((e, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <input type="text" defaultValue={e} placeholder="IP Address" className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                                <button className="p-2 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400"><Icon name="trash2" size={14} /></button>
+                              </div>
+                            ))}
+                            <button className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300"><Icon name="plus" size={14} />Add Endpoint</button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="share-2" size={16} className="text-gray-300" />Export To</h3>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Namespaces (comma-separated, or * for all)</label>
+                          <input type="text" defaultValue="*" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="*, namespace1, namespace2" />
+                        </div>
+                      </div>
+
+                      {/* Related Resources for ServiceEntry */}
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-base font-semibold mb-4 flex items-center gap-2"><Icon name="link-2" size={16} className="text-gray-300" />Related Resources</h3>
+                        {(() => {
+                          const seHosts = serviceEditorResource.hosts || [];
+                          const relatedEgress = mockMeshResources.filter(r => r.type === 'egress' && r.hosts?.some(h => seHosts.some(sh => h.includes(sh.replace('*.', '')) || sh.includes(h.replace('*.', '')))));
+                          const relatedDR = mockMeshResources.filter(r => r.type === 'destinationrule' && seHosts.some(h => r.host?.includes(h.replace('*.', '')) || h.includes(r.host?.replace('*.', '') || '')));
+                          return (
+                            <div className="space-y-2">
+                              {relatedEgress.map(eg => (
+                                <div key={eg.id} className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center"><Icon name="log-out" size={12} className="text-orange-400" /></div>
+                                    <div><div className="text-sm">{eg.name}</div><div className="text-sm text-gray-400">Egress Gateway</div></div>
+                                  </div>
+                                  <button className="text-xs text-cyan-400 hover:text-cyan-300">View →</button>
+                                </div>
+                              ))}
+                              {relatedDR.map(dr => (
+                                <div key={dr.id} className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded bg-violet-500/20 flex items-center justify-center"><Icon name="sliders" size={12} className="text-violet-400" /></div>
+                                    <div><div className="text-sm">{dr.name}</div><div className="text-sm text-gray-400">Destination Rule</div></div>
+                                  </div>
+                                  <button className="text-xs text-cyan-400 hover:text-cyan-300">View →</button>
+                                </div>
+                              ))}
+                              {relatedEgress.length === 0 && relatedDR.length === 0 && (
+                                <div className="text-center py-4">
+                                  <div className="text-sm text-gray-400 mb-2">No related resources found</div>
+                                  <div className="text-xs text-amber-400">Consider adding an Egress Gateway and Destination Rule for this external service</div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Metadata */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-4 flex items-center gap-2"><Icon name="tag" size={14} className="text-gray-400" />Metadata</h3>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Created</label>
+                      <div className="text-sm text-gray-400 bg-gray-700/30 px-3 py-2 rounded-lg">{serviceEditorResource.created}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          </>})()}
+
+          {/* Patterns Tab */}
+          {dadActiveTab === 'patterns' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold">Common Istio Patterns</h2>
+                  <p className="text-sm text-gray-500">Learn how resources work together with visual diagrams</p>
+                </div>
+                <button onClick={() => setShowPatternWizard(true)} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm font-medium flex items-center gap-2">
+                  <Icon name="plus" size={16} />Create Pattern
+                </button>
+              </div>
+
+              {/* Pattern Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* External API Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                      <Icon name="external-link" size={20} className="text-orange-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">External API Integration</h3>
+                      <p className="text-sm text-gray-400">Call external services securely</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-1"><Icon name="server" size={20} className="text-blue-400" /></div>
+                        <span className="text-sm text-gray-400">Service</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-blue-500/50 via-gray-500 to-orange-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center mb-1"><Icon name="log-out" size={20} className="text-orange-400" /></div>
+                        <span className="text-sm text-gray-400">Egress GW</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-orange-500/50 via-gray-500 to-cyan-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center mb-1"><Icon name="file-text" size={20} className="text-cyan-400" /></div>
+                        <span className="text-sm text-gray-400">Svc Entry</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-emerald-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="globe" size={20} className="text-emerald-400" /></div>
+                        <span className="text-sm text-gray-400">External</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-700 flex items-center gap-2">
+                      <div className="w-8 h-8 rounded bg-violet-500/20 flex items-center justify-center"><Icon name="sliders" size={14} className="text-violet-400" /></div>
+                      <span className="text-sm text-gray-400">+ Destination Rule (circuit breaker, retries)</span>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Required resources: ServiceEntry + Egress Gateway + DestinationRule</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Examples:</span>
+                    {mockMeshResources.filter(r => r.type === 'serviceentry' && r.location === 'MESH_EXTERNAL').slice(0, 3).map(se => (
+                      <span key={se.id} className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 rounded text-sm">{se.name}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Expose Service Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                      <Icon name="log-in" size={20} className="text-cyan-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Expose Internal Service</h3>
+                      <p className="text-sm text-gray-400">Expose services to external clients</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="globe" size={20} className="text-emerald-400" /></div>
+                        <span className="text-sm text-gray-400">Client</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 via-gray-500 to-cyan-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center mb-1"><Icon name="log-in" size={20} className="text-cyan-400" /></div>
+                        <span className="text-sm text-gray-400">Ingress GW</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 via-gray-500 to-violet-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-1"><Icon name="git-branch" size={20} className="text-violet-400" /></div>
+                        <span className="text-sm text-gray-400">Virtual Svc</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-violet-500/50 to-blue-500/50 mx-2 relative">
+                        <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-1"><Icon name="server" size={20} className="text-blue-400" /></div>
+                        <span className="text-sm text-gray-400">Service</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Required resources: Ingress Gateway + VirtualService + Service</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Examples:</span>
+                    {mockMeshResources.filter(r => r.type === 'ingress').slice(0, 3).map(gw => (
+                      <span key={gw.id} className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 rounded text-sm">{gw.name}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Canary Deployment Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                      <Icon name="git-branch" size={20} className="text-violet-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Canary Deployment</h3>
+                      <p className="text-sm text-gray-400">Traffic splitting for safe rollouts</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-center gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-1"><Icon name="git-branch" size={20} className="text-violet-400" /></div>
+                        <span className="text-sm text-gray-400">Virtual Svc</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="h-px w-8 bg-emerald-500/50"></div>
+                          <span className="text-xs text-emerald-400">90%</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-4">
+                          <div className="h-px w-8 bg-amber-500/50"></div>
+                          <span className="text-xs text-amber-400">10%</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center"><Icon name="server" size={16} className="text-emerald-400" /></div>
+                          <span className="text-sm text-gray-400">stable (v1)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center"><Icon name="server" size={16} className="text-amber-400" /></div>
+                          <span className="text-sm text-gray-400">canary (v2)</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-700 flex items-center gap-2">
+                      <div className="w-8 h-8 rounded bg-violet-500/20 flex items-center justify-center"><Icon name="sliders" size={14} className="text-violet-400" /></div>
+                      <span className="text-sm text-gray-400">DestinationRule with subsets (stable, canary)</span>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Required resources: VirtualService + DestinationRule (with subsets)</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Configured:</span>
+                    {mockMeshResources.filter(r => r.type === 'destinationrule' && r.subsets).slice(0, 3).map(dr => (
+                      <span key={dr.id} className="px-2 py-0.5 bg-violet-500/10 text-violet-300 rounded text-sm">{dr.name}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cross-Cluster Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-teal-500/20 flex items-center justify-center">
+                      <Icon name="repeat" size={20} className="text-teal-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Cross-Cluster Communication</h3>
+                      <p className="text-sm text-gray-400">Multi-cluster service mesh</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-center p-2 border border-dashed border-blue-500/30 rounded-lg">
+                        <span className="text-xs text-blue-400 mb-1">Cluster A</span>
+                        <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center"><Icon name="server" size={16} className="text-blue-400" /></div>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center gap-2">
+                        <div className="h-px flex-1 bg-teal-500/50"></div>
+                        <div className="w-10 h-10 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center"><Icon name="repeat" size={16} className="text-teal-400" /></div>
+                        <div className="h-px flex-1 bg-teal-500/50"></div>
+                      </div>
+                      <div className="flex flex-col items-center p-2 border border-dashed border-emerald-500/30 rounded-lg">
+                        <span className="text-xs text-emerald-400 mb-1">Cluster B</span>
+                        <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center"><Icon name="server" size={16} className="text-emerald-400" /></div>
+                      </div>
+                    </div>
+                    <div className="text-center text-sm text-gray-400 mt-2">East-West Gateway</div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Required resources: East-West Gateway + ServiceEntry + DestinationRule</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Gateways:</span>
+                    {mockMeshResources.filter(r => r.type === 'eastwest').slice(0, 3).map(gw => (
+                      <span key={gw.id} className="px-2 py-0.5 bg-teal-500/10 text-teal-300 rounded text-sm">{gw.name}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Linked Resources Summary */}
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                <h3 className="font-medium mb-4 flex items-center gap-2"><Icon name="link" size={16} className="text-amber-400" />Complete Patterns in Your Mesh</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(() => {
+                    const patterns = [];
+                    mockMeshResources.filter(r => r.type === 'serviceentry' && r.location === 'MESH_EXTERNAL').forEach(se => {
+                      const egress = mockMeshResources.find(r => r.type === 'egress' && r.hosts?.some(h => se.hosts?.some(sh => h.includes(sh.replace('*.', '')) || sh.includes(h.replace('*.', '')))));
+                      const dr = mockMeshResources.find(r => r.type === 'destinationrule' && se.hosts?.some(h => r.host?.includes(h.replace('*.', '')) || h.includes(r.host?.replace('*.', '') || '')));
+                      if (egress || dr) {
+                        patterns.push({ se, egress, dr, complete: !!(egress && dr) });
+                      }
+                    });
+                    return patterns.slice(0, 6).map((p, i) => (
+                      <div key={i} className={`p-3 rounded-lg border ${p.complete ? 'bg-emerald-500/5 border-emerald-500/30' : 'bg-amber-500/5 border-amber-500/30'}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Icon name={p.complete ? 'check-circle' : 'alert-circle'} size={14} className={p.complete ? 'text-emerald-400' : 'text-amber-400'} />
+                          <span className="text-sm font-medium">{p.se.name}</span>
+                        </div>
+                        <div className="space-y-1 text-xs">
+                          <div className="flex items-center gap-2">
+                            <Icon name="external-link" size={10} className="text-cyan-400" />
+                            <span className="text-gray-400">ServiceEntry:</span>
+                            <span className="text-cyan-300 flex-1">{p.se.name}</span>
+                            <button onClick={() => setServiceEditorResource(p.se)} className="p-0.5 hover:bg-cyan-500/20 rounded text-gray-500 hover:text-cyan-400" title="View details"><Icon name="link" size={10} /></button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Icon name="log-out" size={10} className={p.egress ? 'text-orange-400' : 'text-gray-600'} />
+                            <span className="text-gray-400">Egress:</span>
+                            <span className={`flex-1 ${p.egress ? 'text-orange-300' : 'text-gray-600'}`}>{p.egress?.name || 'Missing'}</span>
+                            {p.egress && <button onClick={() => { setServiceEditorResource(p.egress); setShowServiceEditor(true); }} className="p-0.5 hover:bg-orange-500/20 rounded text-gray-500 hover:text-orange-400" title="View details"><Icon name="link" size={10} /></button>}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Icon name="sliders" size={10} className={p.dr ? 'text-violet-400' : 'text-gray-600'} />
+                            <span className="text-gray-400">Dest Rule:</span>
+                            <span className={`flex-1 ${p.dr ? 'text-violet-300' : 'text-gray-600'}`}>{p.dr?.name || 'Missing'}</span>
+                            {p.dr && <button onClick={() => setServiceEditorResource(p.dr)} className="p-0.5 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400" title="View details"><Icon name="link" size={10} /></button>}
+                          </div>
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* WASM Plugins Tab */}
+          {dadActiveTab === 'wasm' && (() => {
+            // WASM module descriptions with examples
+            const wasmModuleDescs = {
+              'rate-limiter': { desc: 'Limits request throughput to protect services. Configurable requests/sec with burst allowance and Redis-backed distributed counting.', example: 'requests_per_second: 100\nburst_size: 20\nredis_cluster: redis://elasticache.internal:6379\nkey_prefix: ratelimit\nheader_key: x-api-key' },
+              'jwt-validator': { desc: 'Validates JWT tokens for authentication. Verifies signature, expiration, issuer and audience claims.', example: 'issuers:\n  - https://auth.example.com\naudiences:\n  - api.example.com\njwks_cache_ttl: 300s\nclock_skew: 60s' },
+              'pii-redactor': { desc: 'Redacts personally identifiable information from logs and responses. Supports SSN, DOB, account numbers.', example: 'patterns:\n  - name: ssn\n    regex: "\\\\d{3}-\\\\d{2}-\\\\d{4}"\n    replacement: "[SSN REDACTED]"\n  - name: account\n    regex: "\\\\d{12,16}"\n    replacement: "[ACCOUNT REDACTED]"\napply_to: [logs, response_body]' },
+              'header-injector': { desc: 'Injects custom headers into requests. Adds request IDs, correlation IDs, and tracing context.', example: 'headers:\n  x-request-id: "%REQ_ID%"\n  x-correlation-id: "%TRACE_ID%"\n  x-forwarded-service: loan-service\n  x-environment: production' },
+              'request-transformer': { desc: 'Transforms request/response bodies. Supports XML to JSON conversion and field mapping.', example: 'request:\n  content_type: application/json\n  transform: xml_to_json\nresponse:\n  field_mapping:\n    customerId: customer_id\n    accountNum: account_number' },
+              'audit-logger': { desc: 'Logs all requests and responses for compliance. Configurable field masking for sensitive data.', example: 'destination: s3://audit-logs/api/\nformat: json\nmask_fields:\n  - password\n  - ssn\n  - credit_card\ninclude_request_body: true\ninclude_response_body: false' },
+              'header-augmenter': { desc: 'Augments requests with headers from external services. Polls auth service with caching for tokens.', example: 'auth_service: http://token-service.internal/token\ncache_ttl: 300s\nheader_name: Authorization\nheader_prefix: "Bearer "\nrefresh_before_expiry: 30s' },
+              'header-repairer': { desc: 'Fixes illegal HTTP headers without Envoy recompile. Handles underscore, case, and whitespace issues.', example: 'rules:\n  - match: "X_Custom_Header"\n    replace: "X-Custom-Header"\n  - match: "content_type"\n    replace: "Content-Type"\nnormalize_case: true\ntrim_whitespace: true' },
+              'canary-router': { desc: 'Routes traffic to canary deployments based on headers. Supports percentage-based and sticky routing.', example: 'canary_header: x-canary\ncanary_percentage: 10\nsticky_cookie: canary_session\ncanary_upstream: loan-service-canary\nstable_upstream: loan-service' },
+              'elasticache-cache': { desc: 'Caches API responses in ElastiCache/Redis. Configurable TTL, cache keys, and bypass headers.', example: 'redis_cluster: redis://elasticache.internal:6379\ndefault_ttl: 300s\ncache_key_headers:\n  - x-api-key\n  - accept\nbypass_header: x-cache-bypass\ncacheable_status: [200, 304]' },
+              'ext-authz': { desc: 'External authorization. Calls auth service for fine-grained access control decisions.', example: 'authz_service: grpc://authz.internal:9001\ntimeout: 100ms\nfailure_mode: deny\ninclude_headers:\n  - authorization\n  - x-api-key\ncache_ttl: 60s' },
+              'opa-policy': { desc: 'Open Policy Agent integration. Evaluates Rego policies for authorization decisions.', example: 'opa_url: http://opa.internal:8181/v1/data/authz/allow\npolicy_path: /policies/api-authz.rego\ninput_mapping:\n  user: jwt.sub\n  path: request.path\n  method: request.method' },
+              'request-validator': { desc: 'Validates requests against OpenAPI specs. Rejects malformed JSON and unknown fields.', example: 'openapi_spec: /specs/loans-api-v1.yaml\nvalidate_request_body: true\nvalidate_response: false\nreject_unknown_fields: true\nmax_body_size: 1MB' },
+              'aws-sigv4': { desc: 'Signs outbound requests with AWS SigV4. Uses IRSA for credential management.', example: 'service: s3\nregion: us-east-1\ncredential_source: irsa\nrole_arn: arn:aws:iam::123456789:role/api-s3-access\nsession_duration: 3600s' },
+              'secrets-injector': { desc: 'Injects credentials from Secrets Manager or Vault into egress requests.', example: 'source: aws_secrets_manager\nsecret_name: prod/api/stripe-key\nheader_name: Authorization\nheader_template: "Bearer ${secret}"\nrefresh_interval: 300s' }
+            };
+            // Group plugins by module
+            const moduleGroups = mockWasmPlugins.reduce((acc, p) => {
+              if (!acc[p.module]) {
+                acc[p.module] = { module: p.module, image: p.image.split(':')[0], version: p.version, sourceType: p.sourceType, plugins: [] };
+              }
+              acc[p.module].plugins.push(p);
+              return acc;
+            }, {});
+            const modules = Object.values(moduleGroups);
+
+            return <>
+            {/* Filter Tabs with Counts */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                {[
+                  { id: 'Enabled', label: 'Enabled', count: mockWasmPlugins.filter(p => p.enabled).length },
+                  { id: 'Disabled', label: 'Disabled', count: mockWasmPlugins.filter(p => !p.enabled).length }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setWasmFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${wasmFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    {cat.label}
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${wasmFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Modules with Expandable Plugins */}
+            <div className="space-y-3 mb-6">
+              {modules.filter(mod => {
+                if (wasmFilter === 'Enabled') return mod.plugins.some(p => p.enabled);
+                if (wasmFilter === 'Disabled') return mod.plugins.some(p => !p.enabled);
+                return true;
+              }).map(mod => {
+                const isExpanded = expandedWasmModules.includes(mod.module);
+                const activeCount = mod.plugins.filter(p => p.enabled).length;
+                const gateways = [...new Set(mod.plugins.map(p => p.targetGateway || p.targetService).filter(Boolean))];
+                return (
+                  <div key={mod.module} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                    {/* Module Header Row */}
+                    <div
+                      className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
+                      onClick={() => setExpandedWasmModules(prev => isExpanded ? prev.filter(m => m !== mod.module) : [...prev, mod.module])}
+                    >
+                      <div className="flex items-center gap-3">
+                        <button className={`w-6 h-6 flex items-center justify-center rounded transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                          <Icon name="chevron-right" size={16} className="text-gray-400" />
+                        </button>
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                          <Icon name="package" size={20} className="text-purple-400" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-200 flex items-center gap-2">
+                            {mod.module}
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">{mod.version}</span>
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${mod.sourceType === 'OCI' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-amber-500/20 text-amber-300'}`}>{mod.sourceType}</span>
+                            {wasmModuleDescs[mod.module] && <button className="p-0.5 text-gray-400 hover:text-cyan-400" onClick={e => { e.stopPropagation(); setShowFilterInfo({ type: 'wasm', id: mod.module, name: mod.module, desc: wasmModuleDescs[mod.module].desc, example: wasmModuleDescs[mod.module].example }); }}><Icon name="help-circle" size={14} /></button>}
+                          </div>
+                          <div className="text-sm text-gray-400 font-mono truncate max-w-md">{mod.image}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-300">{mod.plugins.length} plugin{mod.plugins.length !== 1 ? 's' : ''}</div>
+                          <div className="text-sm text-gray-400">{activeCount} active</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {gateways.slice(0, 3).map(gw => (
+                            <span key={gw} className="text-xs px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">{gw.replace('-gateway', '')}</span>
+                          ))}
+                          {gateways.length > 3 && <span className="text-xs text-gray-500">+{gateways.length - 3}</span>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expanded Plugins */}
+                    {isExpanded && (
+                      <div className="border-t border-gray-700">
+                        <table className="w-full">
+                          <thead><tr className="border-b border-gray-700/50 bg-gray-900/30">
+                            <th className="w-10"></th>
+                            <th className="text-left px-4 py-2 text-sm font-medium text-gray-500">Plugin Instance</th>
+                            <th className="text-left px-4 py-2 text-sm font-medium text-gray-500">Phase</th>
+                            <th className="text-left px-4 py-2 text-sm font-medium text-gray-500">Target Gateway</th>
+                            <th className="text-left px-4 py-2 text-sm font-medium text-gray-500">Config</th>
+                            <th className="text-left px-4 py-2 text-sm font-medium text-gray-500">Metrics</th>
+                            <th className="text-center px-4 py-2 text-sm font-medium text-gray-500">Enabled</th>
+                            <th className="px-4 py-2 text-right text-sm font-medium text-gray-500">Actions</th>
+                          </tr></thead>
+                          <tbody>
+                            {mod.plugins.map(p => (
+                              <tr key={p.id} className={`border-b border-gray-700/30 hover:bg-gray-800/30 ${!p.enabled ? 'opacity-50' : ''}`}>
+                                <td className="w-10"></td>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-6 h-6 rounded flex items-center justify-center ${p.enabled ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700 text-gray-500'}`}>
+                                      <Icon name="cpu" size={12} />
+                                    </div>
+                                    <div>
+                                      <div className="text-sm font-medium text-gray-300">{p.name}</div>
+                                      <div className="text-xs text-gray-500">{p.namespace} • P{p.priority}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-sm font-medium ${
+                                    p.phase === 'AUTHN' ? 'bg-blue-500/20 text-blue-300' :
+                                    p.phase === 'AUTHZ' ? 'bg-emerald-500/20 text-emerald-300' :
+                                    'bg-violet-500/20 text-violet-300'
+                                  }`}>{p.phase}</span>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center gap-1.5">
+                                    <Icon name="log-in" size={10} className="text-teal-400" />
+                                    <span className="text-xs text-gray-300">{p.targetGateway || p.targetService}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="text-xs text-gray-400 font-mono max-w-[150px] truncate" title={JSON.stringify(p.config)}>
+                                    {Object.entries(p.config).slice(0, 2).map(([k, v]) => `${k}: ${typeof v === 'object' ? '...' : v}`).join(', ')}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="text-xs">
+                                    <span className="text-emerald-400">{p.metrics.requests}</span>
+                                    <span className="text-gray-600 mx-1">|</span>
+                                    <span className="text-amber-400">{Object.values(p.metrics)[1]}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2.5 text-center">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); showNotification(`${p.enabled ? 'Disabling' : 'Enabling'} ${p.name}...`); }}
+                                    className={`relative w-8 h-4 rounded-full transition-colors ${p.enabled ? 'bg-emerald-500' : 'bg-gray-600'}`}
+                                  >
+                                    <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-transform ${p.enabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                                  </button>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button onClick={() => setEditingWasmPlugin(p)} className="p-1 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={12} /></button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Info Box */}
+            <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+              <h4 className="text-sm font-medium text-purple-400 mb-2 flex items-center gap-2"><Icon name="info" size={14} />WASM Module Reuse</h4>
+              <p className="text-sm text-gray-400">One WASM module can be reused by multiple WasmPlugin resources with different scopes and configs. This allows the same compiled logic (e.g., rate-limiter) to run on different gateways with tenant-specific settings. Plugins execute in priority order within their phase (AUTHN → AUTHZ → STATS).</p>
+            </div>
+          </>;
+          })()}
+
+          {/* Lua Filters Tab */}
+          {dadActiveTab === 'lua' && featureFlags.dadLua && (() => {
+            // Group configs by filter name
+            const luaFilterGroups = mockLuaFilterDefs.map(def => ({
+              ...def,
+              configs: mockLuaFilters.filter(c => c.filter === def.name)
+            }));
+
+            return <>
+            {/* Filter Tabs with Counts */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                {[
+                  { id: 'All', label: 'All Filters', count: mockLuaFilterDefs.length },
+                  { id: 'Inline', label: 'Inline', count: mockLuaFilterDefs.filter(f => f.sourceType === 'inline').length },
+                  { id: 'ConfigMap', label: 'ConfigMap', count: mockLuaFilterDefs.filter(f => f.sourceType === 'configmap').length }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setLuaFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${luaFilter === cat.id ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    {cat.label}
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${luaFilter === cat.id ? 'bg-indigo-500/30 text-indigo-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                {[
+                  { id: 'AllConfigs', label: 'All Configs', count: mockLuaFilters.length },
+                  { id: 'Enabled', label: 'Enabled', count: mockLuaFilters.filter(f => f.enabled).length },
+                  { id: 'Disabled', label: 'Disabled', count: mockLuaFilters.filter(f => !f.enabled).length }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setLuaFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${luaFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    {cat.label}
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${luaFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Expandable Lua Filters List - grouped by filter like WASM */}
+            <div className="space-y-3 mb-6">
+              {luaFilterGroups.filter(filterDef => {
+                if (luaFilter === 'All' || luaFilter === 'AllConfigs') return true;
+                if (luaFilter === 'Inline') return filterDef.sourceType === 'inline';
+                if (luaFilter === 'ConfigMap') return filterDef.sourceType === 'configmap';
+                if (luaFilter === 'Enabled') return filterDef.configs.some(c => c.enabled);
+                if (luaFilter === 'Disabled') return filterDef.configs.some(c => !c.enabled);
+                return true;
+              }).map(filterDef => {
+                const isExpanded = expandedLuaFilters.includes(filterDef.name);
+                const configs = filterDef.configs;
+                const activeCount = configs.filter(c => c.enabled).length;
+                const totalInvocations = configs.reduce((sum, c) => {
+                  const val = c.metrics?.invocations || '0';
+                  const num = parseFloat(val.replace(/[KM]/g, '')) * (val.includes('M') ? 1000000 : val.includes('K') ? 1000 : 1);
+                  return sum + num;
+                }, 0);
+                const hasWarnings = configs.some(c => !c.validated || !c.targetExists);
+
+                return (
+                  <div key={filterDef.name} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                    {/* Filter Header Row (the global script) */}
+                    <div
+                      className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
+                      onClick={() => setExpandedLuaFilters(prev => isExpanded ? prev.filter(n => n !== filterDef.name) : [...prev, filterDef.name])}
+                    >
+                      <div className="flex items-center gap-3">
+                        <button className={`w-6 h-6 flex items-center justify-center rounded transition-transform ${isExpanded ? 'rotate-90' : ''}`}>
+                          <Icon name="chevron-right" size={16} className="text-gray-400" />
+                        </button>
+                        <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                          <Icon name="code" size={20} />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-200 flex items-center gap-2">
+                            {filterDef.name}
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 font-mono">{filterDef.version}</span>
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">{configs.length} config{configs.length !== 1 ? 's' : ''}</span>
+                            {hasWarnings && <Icon name="alert-triangle" size={12} className="text-amber-400" title="Some configs have warnings" />}
+                          </div>
+                          <div className="text-sm text-gray-400">{filterDef.sourceType} • {filterDef.owner}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <div className="text-sm text-gray-300">{totalInvocations >= 1000000 ? (totalInvocations/1000000).toFixed(1) + 'M' : totalInvocations >= 1000 ? (totalInvocations/1000).toFixed(0) + 'K' : totalInvocations} <span className="text-gray-500 text-xs">calls</span></div>
+                          <div className="text-sm text-gray-400">{activeCount}/{configs.length} active</div>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setViewingLuaScript(filterDef); }}
+                          className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs rounded-lg flex items-center gap-1.5"
+                        >
+                          <Icon name="file-text" size={12} />Script
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Expanded Content: Service Configs Table */}
+                    {isExpanded && (
+                      <div className="border-t border-gray-700 bg-gray-900/30">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-gray-700/50">
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Service Config</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Target</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Operation</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Context</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Hook</th>
+                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Metrics</th>
+                              <th className="px-4 py-2 text-right text-sm font-medium text-gray-500">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {configs.map(cfg => {
+                              const targetShort = cfg.targetFilter?.replace('envoy.filters.http.', '') || null;
+                              return (
+                              <tr key={cfg.id} className={`border-b border-gray-700/30 hover:bg-gray-800/30 ${!cfg.enabled ? 'opacity-50' : ''}`}>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-gray-200">{cfg.name}</span>
+                                    {!cfg.validated && <Icon name="alert-circle" size={12} className="text-amber-400" title="Validation warning" />}
+                                    {!cfg.targetExists && <Icon name="alert-triangle" size={12} className="text-orange-400" title="IST0151" />}
+                                  </div>
+                                  <div className="text-xs text-gray-500">{cfg.namespace}</div>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <span className="text-xs px-2 py-1 rounded bg-teal-500/20 text-teal-300">{cfg.target}</span>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center gap-1">
+                                    <span className={`text-xs px-1.5 py-0.5 rounded font-mono ${
+                                      cfg.operation === 'INSERT_BEFORE' ? 'bg-blue-500/20 text-blue-300' :
+                                      cfg.operation === 'INSERT_AFTER' ? 'bg-green-500/20 text-green-300' :
+                                      'bg-orange-500/20 text-orange-300'
+                                    }`}>{cfg.operation.replace('INSERT_', '')}</span>
+                                    {targetShort && <span className="text-xs text-gray-400">→ {targetShort}</span>}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2.5 text-sm text-gray-400">{cfg.match.context}</td>
+                                <td className="px-4 py-2.5">
+                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm font-medium ${
+                                    cfg.hookType === 'request' ? 'bg-blue-500/20 text-blue-300' :
+                                    cfg.hookType === 'response' ? 'bg-green-500/20 text-green-300' :
+                                    'bg-purple-500/20 text-purple-300'
+                                  }`}>{cfg.hookType === 'both' ? 'req+res' : cfg.hookType}</span>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="text-xs text-gray-300">{cfg.metrics?.invocations || '0'}</div>
+                                  <div className={`text-xs ${cfg.metrics?.errors !== '0' ? 'text-red-400' : 'text-gray-500'}`}>{cfg.metrics?.errors || '0'} err</div>
+                                </td>
+                                <td className="px-4 py-2.5">
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button
+                                      onClick={() => setEditingLuaFilter(cfg)}
+                                      className="p-1 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400"
+                                      title="Edit Config"
+                                    >
+                                      <Icon name="edit" size={12} />
+                                    </button>
+                                    <button
+                                      onClick={() => showNotification(`${cfg.enabled ? 'Disabling' : 'Enabling'} ${cfg.name}...`)}
+                                      className={`relative w-8 h-4 rounded-full transition-colors ${cfg.enabled ? 'bg-indigo-600' : 'bg-gray-600'}`}
+                                    >
+                                      <span className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${cfg.enabled ? 'translate-x-4' : 'translate-x-1'}`} />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            )})}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <Icon name="info" size={16} className="text-indigo-400 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-medium text-indigo-300 mb-2">Lua Filter Reuse (like WASM Modules)</h4>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-2">
+                    One Lua filter script can be reused by multiple service configurations with different settings. Each config specifies its own:
+                  </p>
+                  <ul className="text-sm text-gray-400 space-y-1 mb-2">
+                    <li><strong>Operation</strong>: <code className="text-blue-300">INSERT_BEFORE</code>, <code className="text-green-300">INSERT_AFTER</code>, or <code className="text-orange-300">INSERT_FIRST</code></li>
+                    <li><strong>Target Filter</strong>: Which Envoy filter to insert relative to (e.g., router, jwt_authn)</li>
+                    <li><strong>Context</strong>: GATEWAY, SIDECAR_INBOUND, or SIDECAR_OUTBOUND</li>
+                    <li><strong>Hook Type</strong>: request, response, or both</li>
+                  </ul>
+                  <p className="text-sm text-gray-400">
+                    <Icon name="alert-triangle" size={10} className="inline text-amber-400 mr-1" />
+                    <strong>IST0151 Warning:</strong> If the target filter doesn't exist, INSERT_BEFORE goes to front, INSERT_AFTER goes to end.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>})()}
+
+          {/* Lua Filter Config Edit Modal */}
+          {editingLuaFilter && (() => {
+            const filterDef = mockLuaFilterDefs.find(f => f.name === editingLuaFilter.filter);
+            return (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setEditingLuaFilter(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                          <Icon name="settings" size={20} className="text-cyan-400" />
+                        </div>
+                        Edit Config: {editingLuaFilter.name}
+                      </h2>
+                      <div className="mt-1 ml-[52px] text-sm text-gray-400 flex items-center gap-2">
+                        Uses filter: <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">{editingLuaFilter.filter}</span>
+                        <span className="text-gray-600">•</span>
+                        Target: <span className="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300">{editingLuaFilter.target}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => setEditingLuaFilter(null)} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200">
+                      <Icon name="x" size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* Filter Chain Visualization */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                    <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                      <Icon name="git-branch" size={14} className="text-indigo-400" />
+                      Filter Chain Position for {editingLuaFilter.target}
+                    </h3>
+                    <div className="bg-gray-900/50 rounded-lg p-4">
+                      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                        {editingLuaFilter.operation === 'INSERT_FIRST' && (
+                          <>
+                            <div className="px-4 py-2 rounded-lg bg-indigo-500/30 border-2 border-indigo-400 text-sm font-medium text-indigo-200 shadow-lg shadow-indigo-500/20">
+                              {editingLuaFilter.filter}
+                              <div className="text-xs text-indigo-400 mt-0.5">Your Filter</div>
+                            </div>
+                            <Icon name="chevron-right" size={16} className="text-gray-500" />
+                          </>
+                        )}
+                        {['jwt_authn', 'ext_authz', 'rbac', 'router'].map((filter, idx) => {
+                          const targetShort = editingLuaFilter.targetFilter?.replace('envoy.filters.http.', '') || null;
+                          const isTarget = filter === targetShort;
+                          const showBefore = editingLuaFilter.operation === 'INSERT_BEFORE' && isTarget;
+                          const showAfter = editingLuaFilter.operation === 'INSERT_AFTER' && isTarget;
+                          return (
+                            <React.Fragment key={filter}>
+                              {showBefore && (
+                                <>
+                                  <div className="px-4 py-2 rounded-lg bg-indigo-500/30 border-2 border-indigo-400 text-sm font-medium text-indigo-200 shadow-lg shadow-indigo-500/20">
+                                    {editingLuaFilter.filter}
+                                    <div className="text-xs text-indigo-400 mt-0.5">Your Filter</div>
+                                  </div>
+                                  <Icon name="chevron-right" size={16} className="text-gray-500" />
+                                </>
+                              )}
+                              <div className={`px-4 py-2 rounded-lg text-sm font-mono ${
+                                filter === 'router' ? 'bg-violet-500/20 border border-violet-500/30 text-violet-300' :
+                                filter === 'jwt_authn' ? 'bg-blue-500/20 border border-blue-500/30 text-blue-300' :
+                                'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300'
+                              }`}>
+                                {filter}
+                                <div className="text-xs text-gray-500 mt-0.5">{filter === 'jwt_authn' ? 'AuthN' : filter === 'router' ? 'Terminal' : 'AuthZ'}</div>
+                              </div>
+                              {showAfter && (
+                                <>
+                                  <Icon name="chevron-right" size={16} className="text-gray-500" />
+                                  <div className="px-4 py-2 rounded-lg bg-indigo-500/30 border-2 border-indigo-400 text-sm font-medium text-indigo-200 shadow-lg shadow-indigo-500/20">
+                                    {editingLuaFilter.filter}
+                                    <div className="text-xs text-indigo-400 mt-0.5">Your Filter</div>
+                                  </div>
+                                </>
+                              )}
+                              {idx < 3 && <Icon name="chevron-right" size={16} className="text-gray-500" />}
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                      {!editingLuaFilter.targetExists && (
+                        <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs text-amber-300 flex items-center gap-2">
+                          <Icon name="alert-triangle" size={14} />
+                          IST0151: Target filter may not exist on this proxy. Your filter will be inserted at the {editingLuaFilter.operation === 'INSERT_BEFORE' ? 'front' : 'end'} of the chain instead.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Config Fields */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Operation</label>
+                      <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200" defaultValue={editingLuaFilter.operation}>
+                        <option value="INSERT_BEFORE">INSERT_BEFORE</option>
+                        <option value="INSERT_AFTER">INSERT_AFTER</option>
+                        <option value="INSERT_FIRST">INSERT_FIRST</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Target Filter</label>
+                      <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200" defaultValue={editingLuaFilter.targetFilter || ''}>
+                        <option value="">-- Select Target --</option>
+                        <option value="envoy.filters.http.jwt_authn">jwt_authn</option>
+                        <option value="envoy.filters.http.ext_authz">ext_authz</option>
+                        <option value="envoy.filters.http.rbac">rbac</option>
+                        <option value="envoy.filters.http.router">router</option>
+                        <option value="envoy.filters.http.cors">cors</option>
+                        <option value="envoy.filters.http.fault">fault</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Context</label>
+                      <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200" defaultValue={editingLuaFilter.match.context}>
+                        <option value="GATEWAY">GATEWAY</option>
+                        <option value="SIDECAR_INBOUND">SIDECAR_INBOUND</option>
+                        <option value="SIDECAR_OUTBOUND">SIDECAR_OUTBOUND</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Hook Type</label>
+                      <select className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200" defaultValue={editingLuaFilter.hookType}>
+                        <option value="request">envoy_on_request</option>
+                        <option value="response">envoy_on_response</option>
+                        <option value="both">Both</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Lua Script (from filter definition - read only here) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm text-gray-400">Lua Script (from {editingLuaFilter.filter})</label>
+                      <button
+                        onClick={() => showNotification(`Opening script editor for ${editingLuaFilter.filter}`)}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                      >
+                        <Icon name="edit" size={10} />Edit Script
+                      </button>
+                    </div>
+                    <pre className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 font-mono h-32 overflow-auto">
+                      {filterDef?.script || '-- Script not found'}
+                    </pre>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-700 flex justify-end gap-3">
+                  <button onClick={() => setEditingLuaFilter(null)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm rounded-lg">Cancel</button>
+                  <button onClick={() => { showNotification(`Saved config changes to ${editingLuaFilter.name}`); setEditingLuaFilter(null); }} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg">Save Config</button>
+                </div>
+              </div>
+            </div>
+          );})()}
+
+          {/* Lua Script Viewer (Read-Only) */}
+          {viewingLuaScript && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setViewingLuaScript(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
+                          <Icon name="code" size={20} className="text-indigo-400" />
+                        </div>
+                        {viewingLuaScript.name}
+                      </h2>
+                      <div className="mt-1 ml-[52px] text-sm text-gray-400 flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded bg-gray-700 text-gray-300 font-mono">{viewingLuaScript.version}</span>
+                        <span className="text-gray-600">•</span>
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300">{viewingLuaScript.sourceType}</span>
+                        <span className="text-gray-600">•</span>
+                        <span className="text-gray-500">{viewingLuaScript.owner}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => setViewingLuaScript(null)} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200">
+                      <Icon name="x" size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  {/* Script Content (Read-Only) */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400 font-mono">lua</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-500">read-only</span>
+                      </div>
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(viewingLuaScript.script || ''); showNotification('Script copied to clipboard'); }}
+                        className="text-sm text-gray-400 hover:text-gray-200 flex items-center gap-1"
+                      >
+                        <Icon name="copy" size={12} />Copy
+                      </button>
+                    </div>
+                    <pre className="p-4 text-sm text-gray-300 font-mono overflow-auto max-h-[400px] leading-relaxed whitespace-pre-wrap">
+                      {viewingLuaScript.script || '-- Script not available'}
+                    </pre>
+                  </div>
+
+                  {/* Usage Info */}
+                  <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Icon name="info" size={16} className="text-indigo-400 mt-0.5" />
+                      <div className="text-sm text-gray-400">
+                        <p>This filter script is used by <strong className="text-indigo-300">{viewingLuaScript.configs?.length || 0} service config(s)</strong>.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-700 flex justify-end">
+                  <button onClick={() => setViewingLuaScript(null)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-sm rounded-lg">Close</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security Tab */}
+          {dadActiveTab === 'security' && featureFlags.dadSecurity && <>
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">mTLS Enforcement</span>
+                  <Icon name="lock" size={14} className="text-emerald-400" />
+                </div>
+                <div className="text-2xl font-semibold text-emerald-300">{mockSecurityPolicies.filter(p => p.type === 'PeerAuthentication' && p.mode === 'STRICT').length}/{mockSecurityPolicies.filter(p => p.type === 'PeerAuthentication').length}</div>
+                <div className="text-sm text-gray-400 mt-1">STRICT mode policies</div>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">Auth Policies</span>
+                  <Icon name="shield" size={14} className="text-blue-400" />
+                </div>
+                <div className="text-2xl font-semibold text-blue-300">{meshStats.authPolicies}</div>
+                <div className="text-sm text-gray-400 mt-1">Authorization rules</div>
+              </div>
+              <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">JWT Providers</span>
+                  <Icon name="key" size={14} className="text-violet-400" />
+                </div>
+                <div className="text-2xl font-semibold text-violet-300">{mockSecurityPolicies.filter(p => p.type === 'RequestAuthentication').length}</div>
+                <div className="text-sm text-gray-400 mt-1">RequestAuthentication</div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">Warnings</span>
+                  <Icon name="alert-triangle" size={14} className="text-amber-400" />
+                </div>
+                <div className="text-2xl font-semibold text-amber-300">{mockSecurityPolicies.filter(p => p.status === 'warning').length}</div>
+                <div className="text-sm text-gray-400 mt-1">PERMISSIVE mode</div>
+              </div>
+            </div>
+            {/* Filter Tabs with Counts */}
+            <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+              {[
+                { id: 'All', count: mockSecurityPolicies.length + mockMeshResources.filter(r => r.type === 'authpolicy').length },
+                { id: 'PeerAuth', count: mockSecurityPolicies.filter(p => p.type === 'PeerAuthentication').length },
+                { id: 'RequestAuth', count: mockSecurityPolicies.filter(p => p.type === 'RequestAuthentication').length },
+                { id: 'AuthPolicy', count: mockMeshResources.filter(r => r.type === 'authpolicy').length }
+              ].map(cat => (
+                <button key={cat.id} onClick={() => setSecurityFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${securityFilter === cat.id ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                  {cat.id}
+                  <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${securityFilter === cat.id ? 'bg-amber-500/30 text-amber-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                </button>
+              ))}
+            </div>
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-700">
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Policy</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Mode/Issuer</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Selector</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Owner</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {[...mockSecurityPolicies, ...mockMeshResources.filter(r => r.type === 'authpolicy')].filter(p => {
+                    if (securityFilter === 'All') return true;
+                    if (securityFilter === 'PeerAuth') return p.type === 'PeerAuthentication';
+                    if (securityFilter === 'RequestAuth') return p.type === 'RequestAuthentication';
+                    if (securityFilter === 'AuthPolicy') return p.type === 'authpolicy';
+                    return true;
+                  }).map((p, idx) => {
+                    const isPeerAuth = p.type === 'PeerAuthentication';
+                    const isReqAuth = p.type === 'RequestAuthentication';
+                    const isAuthPolicy = p.type === 'authpolicy';
+                    return (
+                    <tr key={idx} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                      <td className="px-4 py-3"><div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          isPeerAuth ? 'bg-emerald-500/20 text-emerald-400' :
+                          isReqAuth ? 'bg-violet-500/20 text-violet-400' :
+                          'bg-blue-500/20 text-blue-400'
+                        }`}><Icon name={isPeerAuth ? 'lock' : isReqAuth ? 'key' : 'shield'} size={16} /></div>
+                        <div><div className="font-medium">{p.name}</div><div className="text-sm text-gray-400">{p.namespace}</div></div>
+                      </div></td>
+                      <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium border ${
+                        isPeerAuth ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                        isReqAuth ? 'bg-violet-500/20 text-violet-300 border-violet-500/30' :
+                        'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                      }`}>{isPeerAuth ? 'PeerAuth' : isReqAuth ? 'RequestAuth' : 'AuthPolicy'}</span></td>
+                      <td className="px-4 py-3"><span className="text-sm text-gray-400 font-mono">{isPeerAuth ? p.mode : isReqAuth ? new URL(p.issuer).hostname : p.action}</span></td>
+                      <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium ${
+                        p.status === 'enforced' || p.status === 'active' || p.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-300' :
+                        p.status === 'warning' ? 'bg-amber-500/20 text-amber-300' : 'bg-gray-500/20 text-gray-300'
+                      }`}>{p.status}</span></td>
+                      <td className="px-4 py-3"><span className="text-sm text-gray-400">{p.selector ? Object.entries(p.selector).map(([k,v]) => `${k}=${v}`).join(', ') : 'mesh-wide'}</span></td>
+                      <td className="px-4 py-3"><span className="text-sm text-gray-400">{p.owner}</span></td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => showNotification(`Editing ${p.name}...`)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>}
+
+          {/* Certificates Tab */}
+          {dadActiveTab === 'certs' && featureFlags.dadCertificates && <>
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">Valid Certs</span>
+                  <Icon name="check-circle" size={14} className="text-emerald-400" />
+                </div>
+                <div className="text-2xl font-semibold text-emerald-300">{mockCertificates.filter(c => c.status === 'valid').length}</div>
+                <div className="text-sm text-gray-400 mt-1">Active & healthy</div>
+              </div>
+              <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">Expiring Soon</span>
+                  <Icon name="alert-triangle" size={14} className="text-amber-400" />
+                </div>
+                <div className="text-2xl font-semibold text-amber-300">{mockCertificates.filter(c => c.daysRemaining < 30).length}</div>
+                <div className="text-sm text-gray-400 mt-1">&lt; 30 days remaining</div>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">Auto-Renew</span>
+                  <Icon name="refresh-cw" size={14} className="text-cyan-400" />
+                </div>
+                <div className="text-2xl font-semibold text-cyan-300">{mockCertificates.filter(c => c.autoRenew).length}</div>
+                <div className="text-sm text-gray-400 mt-1">cert-manager enabled</div>
+              </div>
+              <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-gray-400">External CAs</span>
+                  <Icon name="globe" size={14} className="text-violet-400" />
+                </div>
+                <div className="text-2xl font-semibold text-violet-300">{mockCertificates.filter(c => !c.issuer.includes('cert-manager')).length}</div>
+                <div className="text-sm text-gray-400 mt-1">DigiCert, external</div>
+              </div>
+            </div>
+            {/* Filter Tabs with Counts */}
+            <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+              {[
+                { id: 'All', count: mockCertificates.length },
+                { id: 'Gateway', count: mockCertificates.filter(c => c.type === 'gateway').length },
+                { id: 'mTLS', count: mockCertificates.filter(c => c.type === 'mtls').length },
+                { id: 'Client', count: mockCertificates.filter(c => c.type === 'client').length },
+                { id: 'Workload', count: mockCertificates.filter(c => c.type === 'workload').length }
+              ].map(cat => (
+                <button key={cat.id} onClick={() => setCertFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${certFilter === cat.id ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                  {cat.id}
+                  <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${certFilter === cat.id ? 'bg-amber-500/30 text-amber-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                </button>
+              ))}
+              <div className="border-l border-gray-600 mx-2" />
+              {[
+                { id: 'Valid', count: mockCertificates.filter(c => c.status === 'valid').length, activeClass: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30', countClass: 'bg-emerald-500/30 text-emerald-200' },
+                { id: 'Expiring', count: mockCertificates.filter(c => c.status === 'expiring' || c.daysRemaining < 30).length, activeClass: 'bg-amber-500/20 text-amber-300 border border-amber-500/30', countClass: 'bg-amber-500/30 text-amber-200' }
+              ].map(cat => (
+                <button key={cat.id} onClick={() => setCertFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${certFilter === cat.id ? cat.activeClass : 'text-gray-400 hover:bg-gray-800'}`}>
+                  {cat.id}
+                  <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${certFilter === cat.id ? cat.countClass : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                </button>
+              ))}
+            </div>
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-700">
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Certificate</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Issuer</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Expires</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Auto</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {mockCertificates.filter(c => {
+                    if (certFilter === 'All') return true;
+                    if (certFilter === 'Gateway') return c.type === 'gateway';
+                    if (certFilter === 'mTLS') return c.type === 'mtls';
+                    if (certFilter === 'Client') return c.type === 'client';
+                    if (certFilter === 'Workload') return c.type === 'workload';
+                    if (certFilter === 'Valid') return c.status === 'valid';
+                    if (certFilter === 'Expiring') return c.status === 'expiring' || c.daysRemaining < 30;
+                    return true;
+                  }).map(c => (
+                    <tr key={c.id} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                      <td className="px-4 py-3"><div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          c.status === 'valid' ? 'bg-emerald-500/20 text-emerald-400' :
+                          c.status === 'expiring' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'
+                        }`}><Icon name="lock" size={16} /></div>
+                        <div><div className="font-medium">{c.name}</div><div className="text-sm text-gray-400">{c.namespace}</div></div>
+                      </div></td>
+                      <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium border ${
+                        c.type === 'gateway' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' :
+                        c.type === 'mtls' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                        c.type === 'client' ? 'bg-violet-500/20 text-violet-300 border-violet-500/30' :
+                        'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                      }`}>{c.type.toUpperCase()}</span></td>
+                      <td className="px-4 py-3"><span className="text-sm text-gray-400">{c.issuer}</span></td>
+                      <td className="px-4 py-3">
+                        <div className="text-sm">{c.notAfter}</div>
+                        <div className={`text-xs ${c.daysRemaining < 30 ? 'text-amber-400' : 'text-gray-500'}`}>{c.daysRemaining} days</div>
+                      </td>
+                      <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium ${
+                        c.status === 'valid' ? 'bg-emerald-500/20 text-emerald-300' :
+                        c.status === 'expiring' ? 'bg-amber-500/20 text-amber-300' : 'bg-red-500/20 text-red-300'
+                      }`}>{c.status}</span></td>
+                      <td className="px-4 py-3">{c.autoRenew ? <Icon name="check" size={16} className="text-emerald-400" /> : <span className="text-gray-500">-</span>}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => showNotification(`Viewing ${c.name} details...`)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="View Details"><Icon name="eye" size={14} /></button>
+                          <button onClick={() => showNotification(`Renewing ${c.name}...`)} className="p-1.5 hover:bg-emerald-500/20 rounded-lg text-gray-400 hover:text-emerald-400" title="Renew"><Icon name="refresh-cw" size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>}
+
+
+          {/* Edit WASM Plugin Modal */}
+          {editingWasmPlugin && (() => {
+            const p = editingWasmPlugin;
+            const filterChain = [
+              { name: 'jwt_authn', label: 'AuthN', color: 'emerald', active: p.phase === 'AUTHN' },
+              { name: 'ext_authz', label: 'AuthZ', color: 'teal', active: p.phase === 'AUTHZ' },
+              { name: 'rbac', label: 'AuthZ', color: 'teal', active: false },
+              { name: p.module, label: 'Your Filter', color: 'violet', active: true, highlight: true },
+              { name: 'router', label: 'Terminal', color: 'gray', active: false }
+            ];
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEditingWasmPlugin(null)} />
+                <div className="relative w-[700px] max-h-[85vh] bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                  {/* Header */}
+                  <div className="bg-cyan-500/10 border-b border-cyan-500/30 p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-cyan-500/20 text-cyan-400">
+                          <Icon name="settings" size={24} />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-cyan-300">Edit Config: {p.name}</h2>
+                          <div className="flex items-center gap-2 mt-1 text-sm">
+                            <span className="text-gray-400">Uses filter:</span>
+                            <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-sm font-medium">{p.module}</span>
+                            <span className="text-gray-500">•</span>
+                            <span className="text-gray-400">Target:</span>
+                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-sm font-medium">{p.targetGateway || p.targetService}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button onClick={() => setEditingWasmPlugin(null)} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white">
+                        <Icon name="x" size={20} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 overflow-auto p-6 space-y-6">
+                    {/* Filter Chain Position */}
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                        <Icon name="git-branch" size={16} className="text-violet-400" />
+                        <span>Filter Chain Position for {p.targetGateway || p.targetService}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        {filterChain.map((f, i) => (
+                          <React.Fragment key={i}>
+                            <div className={`px-4 py-3 rounded-lg border-2 text-center min-w-[100px] ${f.highlight ? 'bg-violet-500/20 border-violet-500 text-violet-300' : f.active ? `bg-${f.color}-500/10 border-${f.color}-500/30 text-${f.color}-300` : 'bg-gray-800 border-gray-600 text-gray-400'}`}>
+                              <div className="font-mono text-sm">{f.name}</div>
+                              <div className="text-xs mt-1 opacity-70">{f.label}</div>
+                            </div>
+                            {i < filterChain.length - 1 && (
+                              <Icon name="chevron-right" size={20} className="text-gray-600 flex-shrink-0" />
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Configuration */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Plugin Name</label>
+                        <input type="text" defaultValue={p.name} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Namespace</label>
+                        <input type="text" defaultValue={p.namespace} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Phase</label>
+                        <select defaultValue={p.phase} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500">
+                          <option value="AUTHN">AUTHN</option>
+                          <option value="AUTHZ">AUTHZ</option>
+                          <option value="STATS">STATS</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Priority</label>
+                        <input type="number" defaultValue={p.priority} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" />
+                      </div>
+                    </div>
+
+                    {/* Image Source */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Image Source ({p.sourceType})</label>
+                      <input type="text" defaultValue={p.image} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm font-mono text-xs focus:outline-none focus:border-cyan-500" />
+                    </div>
+
+                    {/* Plugin Config */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Plugin Configuration</label>
+                      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono text-xs">
+                        <pre className="text-cyan-300 whitespace-pre-wrap">{JSON.stringify(p.config, null, 2)}</pre>
+                      </div>
+                    </div>
+
+                    {/* Selector */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Workload Selector</label>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(p.selector?.matchLabels || {}).map(([k, v], i) => (
+                          <span key={i} className="px-3 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm">
+                            <span className="text-gray-400">{k}:</span> <span className="text-cyan-300">{v}</span>
+                          </span>
+                        ))}
+                        <button className="px-3 py-1.5 bg-gray-800 border border-dashed border-gray-600 rounded-lg text-sm text-gray-500 hover:text-gray-300 hover:border-gray-500">
+                          + Add Label
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Metrics */}
+                    <div className="flex gap-4">
+                      {Object.entries(p.metrics || {}).map(([k, v], i) => (
+                        <div key={i} className="flex-1 bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-center">
+                          <div className="text-lg font-semibold text-gray-200">{v}</div>
+                          <div className="text-sm text-gray-400 capitalize">{k}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="border-t border-gray-700 p-4 bg-gray-800/50 flex items-center justify-between">
+                    <button onClick={() => setEditingWasmPlugin(null)} className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg">Cancel</button>
+                    <div className="flex gap-2">
+                      <button onClick={() => showNotification(`Validating ${p.name}...`)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center gap-2">
+                        <Icon name="check-circle" size={16} />Validate
+                      </button>
+                      <button onClick={() => { showNotification(`${p.name} updated successfully!`, 'success'); setEditingWasmPlugin(null); }} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg flex items-center gap-2 font-medium">
+                        <Icon name="save" size={16} />Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Edit Virtual Service Modal */}
+          {editingVirtualService && (() => {
+            const vs = editingVirtualService;
+            const luaFilters = [
+              { name: 'custom-cors', label: 'CORS', color: 'amber', position: 1 },
+              { name: 'path-rewriter', label: 'Rewrite', color: 'amber', position: 2 },
+              { name: 'tenant-router', label: 'Router', color: 'amber', position: 4 }
+            ];
+            const wasmFilters = [
+              { name: 'jwt-validator', label: 'AuthN', color: 'emerald', position: 1 },
+              { name: 'header-augmenter', label: 'Headers', color: 'violet', position: 2 },
+              { name: 'rate-limiter', label: 'Rate Limit', color: 'cyan', position: 3 },
+              { name: 'header-repairer', label: 'Repair', color: 'amber', position: 4 },
+              { name: 'canary-router', label: 'Canary', color: 'teal', position: 5 },
+              { name: 'audit-logger', label: 'Audit', color: 'cyan', position: 6 }
+            ];
+            const unifiedChain = [
+              { name: 'jwt-validator', label: 'AuthN', type: 'wasm', color: 'emerald' },
+              { name: 'header-augmenter', label: 'Headers', type: 'wasm', color: 'violet' },
+              { name: 'rate-limiter', label: 'Rate Limit', type: 'wasm', color: 'cyan' },
+              { name: 'header-repairer', label: 'Repair', type: 'wasm', color: 'amber' },
+              { name: 'custom-cors', label: 'CORS', type: 'lua', color: 'amber' },
+              { name: 'path-rewriter', label: 'Rewrite', type: 'lua', color: 'amber' },
+              { name: 'canary-router', label: 'Canary', type: 'wasm', color: 'teal' },
+              { name: 'tenant-router', label: 'Router', type: 'lua', color: 'amber' },
+              { name: 'audit-logger', label: 'Audit', type: 'wasm', color: 'cyan' },
+              { name: 'router', label: 'Terminal', type: 'envoy', color: 'gray' }
+            ];
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEditingVirtualService(null)} />
+                <div className="relative w-[800px] max-h-[90vh] bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                  {/* Header */}
+                  <div className="bg-violet-500/10 border-b border-violet-500/30 p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-violet-500/20 text-violet-400">
+                          <Icon name="git-branch" size={24} />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-violet-300">Filter Chain: {vs.name}</h2>
+                          <div className="flex items-center gap-2 mt-1 text-sm">
+                            <span className="text-gray-400">Host:</span>
+                            <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 rounded text-sm font-medium">{vs.host}</span>
+                            <span className="text-gray-500">•</span>
+                            <span className="text-gray-400">Gateway:</span>
+                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-sm font-medium">{vs.gateway}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button onClick={() => setEditingVirtualService(null)} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white">
+                        <Icon name="x" size={20} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tabs */}
+                  <div className="flex border-b border-gray-700">
+                    {[
+                      { id: 'details', label: 'Details', icon: 'settings' },
+                      { id: 'unified', label: 'Unified Chain', icon: 'layers', count: unifiedChain.length - 1 },
+                      { id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length },
+                      { id: 'wasm', label: 'WASM Plugins', icon: 'cpu', count: wasmFilters.length }
+                    ].map(tab => (
+                      <button key={tab.id} onClick={() => setVsFilterTab(tab.id)} className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 ${vsFilterTab === tab.id ? 'text-violet-400 border-b-2 border-violet-400 bg-violet-500/5' : 'text-gray-400 hover:text-gray-200'}`}>
+                        <Icon name={tab.icon} size={16} />
+                        {tab.label}
+                        {tab.count !== undefined && <span className={`px-1.5 py-0.5 rounded text-sm ${vsFilterTab === tab.id ? 'bg-violet-500/20 text-violet-300' : 'bg-gray-700 text-gray-400'}`}>{tab.count}</span>}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 overflow-auto p-6 space-y-6">
+                    {/* Details Tab */}
+                    {vsFilterTab === 'details' && (
+                      <div className="space-y-6">
+                        {/* Basic Info */}
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Icon name="info" size={16} className="text-violet-400" />
+                            <span className="text-sm font-medium text-gray-300">Basic Information</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm text-gray-400 mb-1 block">Name</label>
+                              <input type="text" defaultValue={vs.name} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
+                            </div>
+                            <div>
+                              <label className="text-sm text-gray-400 mb-1 block">Namespace</label>
+                              <select defaultValue={vs.namespace} onChange={e => setEditingVirtualService({...vs, namespace: e.target.value})} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none">
+                                {namespaces.map(ns => <option key={ns.id} value={ns.name}>{ns.name}</option>)}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-sm text-gray-400 mb-1 block">Host</label>
+                              <input type="text" defaultValue={vs.host} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
+                            </div>
+                            <div>
+                              <label className="text-sm text-gray-400 mb-1 block">Gateway</label>
+                              <input type="text" defaultValue={vs.gateway} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Routing */}
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              <Icon name="git-branch" size={16} className="text-cyan-400" />
+                              <span className="text-sm font-medium text-gray-300">Routes</span>
+                              <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-sm">{vs.routes || 3}</span>
+                            </div>
+                            <button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                              <Icon name="plus" size={12} />Add Route
+                            </button>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                              <div className="flex items-center gap-3">
+                                <span className="text-xs font-mono text-gray-500">1</span>
+                                <code className="text-sm text-cyan-300">/api/*</code>
+                                <Icon name="arrow-right" size={14} className="text-gray-600" />
+                                <span className="text-sm text-gray-300">api-service:8080</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
+                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                              <div className="flex items-center gap-3">
+                                <span className="text-xs font-mono text-gray-500">2</span>
+                                <code className="text-sm text-cyan-300">/auth/*</code>
+                                <Icon name="arrow-right" size={14} className="text-gray-600" />
+                                <span className="text-sm text-gray-300">auth-service:8080</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
+                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                              <div className="flex items-center gap-3">
+                                <span className="text-xs font-mono text-gray-500">3</span>
+                                <code className="text-sm text-cyan-300">/*</code>
+                                <Icon name="arrow-right" size={14} className="text-gray-600" />
+                                <span className="text-sm text-gray-300">frontend:80</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
+                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Metadata */}
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Icon name="tag" size={16} className="text-amber-400" />
+                            <span className="text-sm font-medium text-gray-300">Labels & Annotations</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm text-gray-400 mb-2 block">Labels</label>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <input type="text" defaultValue="app" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
+                                  <span className="text-gray-600">=</span>
+                                  <input type="text" defaultValue={vs.name} className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
+                                  <button className="p-1 text-gray-500 hover:text-red-400"><Icon name="x" size={14} /></button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <input type="text" defaultValue="version" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
+                                  <span className="text-gray-600">=</span>
+                                  <input type="text" defaultValue="v1" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
+                                  <button className="p-1 text-gray-500 hover:text-red-400"><Icon name="x" size={14} /></button>
+                                </div>
+                                <button className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 mt-1">
+                                  <Icon name="plus" size={12} />Add Label
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Unified Tab */}
+                    {vsFilterTab === 'unified' && (
+                      <>
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                            <Icon name="git-branch" size={16} className="text-violet-400" />
+                            <span>Complete Filter Chain for {vs.host}</span>
+                          </div>
+                          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                            {unifiedChain.map((f, i) => (
+                              <React.Fragment key={i}>
+                                <div className={`px-3 py-2 rounded-lg border-2 text-center min-w-[90px] flex-shrink-0 ${f.type === 'envoy' ? 'bg-gray-800 border-gray-600 text-gray-400' : `bg-${f.color}-500/20 border-${f.color}-500/50 text-${f.color}-300`}`}>
+                                  <div className="font-mono text-xs">{f.name}</div>
+                                  <div className="text-xs mt-1 opacity-70 flex items-center justify-center gap-1">
+                                    {f.type === 'lua' && <Icon name="code" size={10} />}
+                                    {f.type === 'wasm' && <Icon name="cpu" size={10} />}
+                                    {f.label}
+                                  </div>
+                                </div>
+                                {i < unifiedChain.length - 1 && (
+                                  <Icon name="chevron-right" size={16} className="text-gray-600 flex-shrink-0" />
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
+                            <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-3"><Icon name="code" size={16} />Lua Filters ({luaFilters.length})</div>
+                            {luaFilters.map((f, i) => (
+                              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0">
+                                <span className="text-sm text-gray-300">{f.name}</span>
+                                <span className="text-sm text-gray-400">Position {f.position}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-4">
+                            <div className="flex items-center gap-2 text-cyan-400 text-sm font-medium mb-3"><Icon name="cpu" size={16} />WASM Plugins ({wasmFilters.length})</div>
+                            {wasmFilters.map((f, i) => (
+                              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0">
+                                <span className="text-sm text-gray-300">{f.name}</span>
+                                <span className="text-sm text-gray-400">Position {f.position}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Lua Tab */}
+                    {vsFilterTab === 'lua' && (
+                      <>
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                            <Icon name="code" size={16} className="text-amber-400" />
+                            <span>Lua Filter Chain</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {luaFilters.map((f, i) => (
+                              <React.Fragment key={i}>
+                                <div className="px-4 py-3 rounded-lg border-2 bg-amber-500/20 border-amber-500/50 text-amber-300 text-center min-w-[100px]">
+                                  <div className="font-mono text-sm">{f.name}</div>
+                                  <div className="text-xs mt-1 opacity-70">{f.label}</div>
+                                </div>
+                                {i < luaFilters.length - 1 && <Icon name="chevron-right" size={20} className="text-gray-600" />}
+                              </React.Fragment>
+                            ))}
+                            <Icon name="chevron-right" size={20} className="text-gray-600" />
+                            <div className="px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-600 text-gray-400 text-center min-w-[100px]">
+                              <div className="font-mono text-sm">router</div>
+                              <div className="text-xs mt-1 opacity-70">Terminal</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          {luaFilters.map((f, i) => (
+                            <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/20 text-amber-400"><Icon name="code" size={16} /></div>
+                                  <div>
+                                    <div className="font-medium text-amber-300">{f.name}</div>
+                                    <div className="text-sm text-gray-400">Position {f.position} • Lua Script</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button className="p-1.5 hover:bg-amber-500/20 rounded text-gray-400 hover:text-amber-400"><Icon name="edit" size={14} /></button>
+                                  <button className="p-1.5 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash-2" size={14} /></button>
+                                </div>
+                              </div>
+                              <div className="bg-gray-900 rounded p-3 font-mono text-sm text-gray-400 max-h-20 overflow-auto">
+                                function envoy_on_request(handle)<br/>  -- {f.label} logic<br/>end
+                              </div>
+                            </div>
+                          ))}
+                          <button className="w-full p-3 border-2 border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-amber-400 hover:border-amber-500/50 flex items-center justify-center gap-2">
+                            <Icon name="plus" size={16} />Add Lua Filter
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* WASM Tab */}
+                    {vsFilterTab === 'wasm' && (
+                      <>
+                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
+                            <Icon name="cpu" size={16} className="text-cyan-400" />
+                            <span>WASM Plugin Chain</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {wasmFilters.map((f, i) => (
+                              <React.Fragment key={i}>
+                                <div className={`px-4 py-3 rounded-lg border-2 bg-${f.color}-500/20 border-${f.color}-500/50 text-${f.color}-300 text-center min-w-[100px]`}>
+                                  <div className="font-mono text-sm">{f.name}</div>
+                                  <div className="text-xs mt-1 opacity-70">{f.label}</div>
+                                </div>
+                                {i < wasmFilters.length - 1 && <Icon name="chevron-right" size={20} className="text-gray-600" />}
+                              </React.Fragment>
+                            ))}
+                            <Icon name="chevron-right" size={20} className="text-gray-600" />
+                            <div className="px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-600 text-gray-400 text-center min-w-[100px]">
+                              <div className="font-mono text-sm">router</div>
+                              <div className="text-xs mt-1 opacity-70">Terminal</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          {wasmFilters.map((f, i) => (
+                            <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${f.color}-500/20 text-${f.color}-400`}><Icon name="cpu" size={16} /></div>
+                                  <div>
+                                    <div className={`font-medium text-${f.color}-300`}>{f.name}</div>
+                                    <div className="text-sm text-gray-400">Position {f.position} • OCI Image</div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`px-2 py-1 rounded text-sm bg-${f.color}-500/20 text-${f.color}-300`}>{f.label}</span>
+                                  <button className="p-1.5 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400"><Icon name="edit" size={14} /></button>
+                                  <button className="p-1.5 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash-2" size={14} /></button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <button className="w-full p-3 border-2 border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-cyan-400 hover:border-cyan-500/50 flex items-center justify-center gap-2">
+                            <Icon name="plus" size={16} />Add WASM Plugin
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="border-t border-gray-700 p-4 bg-gray-800/50 flex items-center justify-between">
+                    <button onClick={() => setEditingVirtualService(null)} className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg">Cancel</button>
+                    <div className="flex gap-2">
+                      <button onClick={() => showNotification(`Validating filter chain...`)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center gap-2">
+                        <Icon name="check-circle" size={16} />Validate Chain
+                      </button>
+                      <button onClick={() => { showNotification(`Filter chain for ${vs.name} updated successfully!`, 'success'); setEditingVirtualService(null); }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg flex items-center gap-2 font-medium">
+                        <Icon name="save" size={16} />Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Create Resource Modal */}
+          {creatingResource && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setCreatingResource(false)} />
+              <div className="relative w-[700px] max-h-[85vh] bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl">
+                {/* Header */}
+                <div className="border-b border-gray-700 bg-gradient-to-r from-amber-500/10 to-violet-500/10">
+                  <div className="p-5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                        <Icon name="plus-circle" size={24} />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold">Create New</h2>
+                        <p className="text-sm text-gray-400">Add resources to the service mesh</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setCreatingResource(false)} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white">
+                      <Icon name="x" size={20} />
+                    </button>
+                  </div>
+                  {/* Tabs */}
+                  <div className="px-5 flex gap-1">
+                    <button onClick={() => setCreateResourceTab('pattern')}
+                      className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 ${createResourceTab === 'pattern' ? 'bg-gray-900 text-amber-400 border-t border-x border-amber-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+                      <Icon name="layers" size={16} />Pattern
+                    </button>
+                    <button onClick={() => setCreateResourceTab('individual')}
+                      className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2 ${createResourceTab === 'individual' ? 'bg-gray-900 text-violet-400 border-t border-x border-violet-500/30' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+                      <Icon name="file-plus" size={16} />Individual
+                    </button>
+                  </div>
+                </div>
+
+                {/* Body */}
+                {createResourceTab === 'pattern' ? (
+                  <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+                    <p className="text-sm text-gray-400">Select a pattern to create multiple related resources with best practices built-in.</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { id: 'expose-service', name: 'Expose Service', icon: 'globe', color: 'cyan', desc: 'Ingress Gateway + VirtualService + DestinationRule' },
+                        { id: 'external-access', name: 'External Access', icon: 'external-link', color: 'orange', desc: 'ServiceEntry + Egress Gateway + DestinationRule' },
+                        { id: 'traffic-split', name: 'Traffic Split', icon: 'git-branch', color: 'violet', desc: 'VirtualService + DestinationRule with subsets' },
+                        { id: 'cross-cluster', name: 'Cross-Cluster', icon: 'share-2', color: 'teal', desc: 'East-West Gateway + ServiceEntry + DestinationRule' },
+                        { id: 'secure-comms', name: 'Secure Service', icon: 'shield', color: 'rose', desc: 'PeerAuthentication + AuthorizationPolicy' },
+                      ].map(pattern => (
+                        <button key={pattern.id} onClick={() => {
+                          setCreatingResource(false);
+                          setShowPatternWizard(true);
+                          setPatternWizardStep(0);
+                          setPatternWizardType(pattern);
+                          setPatternWizardData({});
+                        }}
+                          className={`p-4 rounded-xl border text-left transition-all hover:scale-[1.02] bg-${pattern.color}-500/5 border-${pattern.color}-500/20 hover:border-${pattern.color}-500/50 hover:bg-${pattern.color}-500/10`}>
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-lg bg-${pattern.color}-500/20 flex items-center justify-center text-${pattern.color}-400`}>
+                              <Icon name={pattern.icon} size={20} />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-white">{pattern.name}</div>
+                              <div className="text-sm text-gray-400 mt-1">{pattern.desc}</div>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  (() => {
+                  const namingSuffixes = {
+                    virtualservice: '-vs',
+                    destinationrule: '-dr',
+                    ingress: '-gw-ingress',
+                    egress: '-gw-egress',
+                    eastwest: '-gw-ew',
+                    serviceentry: '-se',
+                    authpolicy: '-authz',
+                    peerauthentication: '-mtls',
+                    service: ''
+                  };
+                  const suffix = namingSuffixes[newResourceType] || '';
+                  const fullName = (newResourceData.name || 'my-resource') + suffix;
+                  return (
+                <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+                  {/* Resource Type Selector */}
+                  <div>
+                    <label className="text-sm text-gray-400 mb-2 block">Resource Type</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { type: 'service', label: 'Service', icon: 'server', color: 'emerald' },
+                        { type: 'virtualservice', label: 'VirtualService', icon: 'git-branch', color: 'violet' },
+                        { type: 'ingress', label: 'Ingress GW', icon: 'log-in', color: 'cyan' },
+                        { type: 'egress', label: 'Egress GW', icon: 'log-out', color: 'orange' },
+                        { type: 'eastwest', label: 'East-West GW', icon: 'repeat', color: 'teal' },
+                        { type: 'serviceentry', label: 'ServiceEntry', icon: 'external-link', color: 'amber' },
+                      ].map(rt => (
+                        <button key={rt.type} onClick={() => setNewResourceType(rt.type)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${newResourceType === rt.type ? `bg-${rt.color}-500/20 text-${rt.color}-300 border border-${rt.color}-500` : 'bg-gray-800 text-gray-400 border border-gray-600 hover:border-gray-500'}`}>
+                          <Icon name={rt.icon} size={12} />{rt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Naming Convention Info */}
+                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <Icon name="info" size={14} className="text-blue-400 mt-0.5" />
+                      <div className="text-xs text-blue-300">
+                        <span className="font-medium">Naming Convention:</span> Resources use kebab-case with type suffixes for clarity.
+                        {suffix && <span className="ml-1">This resource will be suffixed with <code className="bg-blue-500/20 px-1 rounded">{suffix}</code></span>}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-gray-800/50 rounded-lg">
+                      <label className="text-sm text-gray-400 mb-1 block">Base Name</label>
+                      <input type="text" value={newResourceData.name} onChange={e => setNewResourceData({...newResourceData, name: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})}
+                        placeholder="my-resource"
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none" />
+                      {newResourceData.name && suffix && (
+                        <div className="mt-2 text-xs">
+                          <span className="text-gray-500">Full name: </span>
+                          <code className="text-amber-400 bg-gray-800 px-1.5 py-0.5 rounded">{fullName}</code>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3 bg-gray-800/50 rounded-lg">
+                      <label className="text-sm text-gray-400 mb-1 block">Namespace</label>
+                      <select value={newResourceData.namespace} onChange={e => setNewResourceData({...newResourceData, namespace: e.target.value})}
+                        className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:border-cyan-500 focus:outline-none">
+                        <option value="default">default</option>
+                        <option value="istio-system">istio-system</option>
+                        <option value="lending">lending</option>
+                        <option value="payments">payments</option>
+                        <option value="accounts">accounts</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Type-specific options */}
+                  {newResourceType === 'service' && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Port</label>
+                        <input type="number" value={newResourceData.port || 8080} onChange={e => setNewResourceData({...newResourceData, port: e.target.value})}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Protocol</label>
+                        <div className="flex gap-2">
+                          {['HTTP', 'HTTPS', 'gRPC', 'TCP'].map(p => (
+                            <button key={p} onClick={() => setNewResourceData({...newResourceData, protocol: p})}
+                              className={`px-3 py-1.5 rounded text-sm ${newResourceData.protocol === p ? 'bg-blue-500/20 text-blue-300 border border-blue-500' : 'bg-gray-800 text-gray-400 border border-gray-600'}`}>{p}</button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {newResourceType === 'virtualservice' && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Target Service</label>
+                        <input type="text" value={newResourceData.targetService || ''} onChange={e => setNewResourceData({...newResourceData, targetService: e.target.value})}
+                          placeholder="my-service.default.svc.cluster.local"
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-violet-500 focus:outline-none" />
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Route Prefix</label>
+                        <input type="text" value={newResourceData.prefix || '/'} onChange={e => setNewResourceData({...newResourceData, prefix: e.target.value})}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-violet-500 focus:outline-none" />
+                      </div>
+                    </div>
+                  )}
+
+                  {(newResourceType === 'ingress' || newResourceType === 'egress' || newResourceType === 'eastwest') && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">{newResourceType === 'ingress' ? 'External Hosts' : newResourceType === 'eastwest' ? 'Internal Service Hosts' : 'External Services'}</label>
+                        <input type="text" value={newResourceData.hosts || ''} onChange={e => setNewResourceData({...newResourceData, hosts: e.target.value})}
+                          placeholder={newResourceType === 'ingress' ? 'api.example.com, *.example.com' : newResourceType === 'eastwest' ? '*.namespace.svc.cluster.local' : 'external-api.com'}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-cyan-500 focus:outline-none" />
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Port</label>
+                        <div className="flex gap-2">
+                          {['80', '443', '8080'].map(p => (
+                            <button key={p} onClick={() => setNewResourceData({...newResourceData, gwPort: p})}
+                              className={`px-3 py-1.5 rounded text-sm ${newResourceData.gwPort === p ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500' : 'bg-gray-800 text-gray-400 border border-gray-600'}`}>{p}</button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {newResourceType === 'destinationrule' && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Target Host</label>
+                        <input type="text" value={newResourceData.host || ''} onChange={e => setNewResourceData({...newResourceData, host: e.target.value})}
+                          placeholder="my-service.default.svc.cluster.local"
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-violet-500 focus:outline-none" />
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Load Balancer</label>
+                        <select value={newResourceData.lb || 'ROUND_ROBIN'} onChange={e => setNewResourceData({...newResourceData, lb: e.target.value})}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:border-violet-500 focus:outline-none">
+                          <option value="ROUND_ROBIN">ROUND_ROBIN</option>
+                          <option value="LEAST_CONN">LEAST_CONN</option>
+                          <option value="RANDOM">RANDOM</option>
+                          <option value="PASSTHROUGH">PASSTHROUGH</option>
+                        </select>
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">TLS Mode</label>
+                        <select value={newResourceData.tlsMode || 'DISABLE'} onChange={e => setNewResourceData({...newResourceData, tlsMode: e.target.value})}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm focus:border-violet-500 focus:outline-none">
+                          <option value="DISABLE">DISABLE</option>
+                          <option value="SIMPLE">SIMPLE</option>
+                          <option value="MUTUAL">MUTUAL (mTLS)</option>
+                          <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                        </select>
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-2 block">Connection Pool</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-gray-600 block mb-1">Max Connections</label>
+                            <input type="number" value={newResourceData.maxConnections || ''} onChange={e => setNewResourceData({...newResourceData, maxConnections: e.target.value})}
+                              placeholder="100" className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-sm focus:border-violet-500 focus:outline-none" />
+                          </div>
+                          <div>
+                            <label className="text-xs text-gray-600 block mb-1">Connect Timeout</label>
+                            <input type="text" value={newResourceData.connectTimeout || ''} onChange={e => setNewResourceData({...newResourceData, connectTimeout: e.target.value})}
+                              placeholder="10s" className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-sm focus:border-violet-500 focus:outline-none" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-2 block">Outlier Detection</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-gray-600 block mb-1">Consecutive Errors</label>
+                            <input type="number" value={newResourceData.consecutiveErrors || ''} onChange={e => setNewResourceData({...newResourceData, consecutiveErrors: e.target.value})}
+                              placeholder="5" className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-sm focus:border-violet-500 focus:outline-none" />
+                          </div>
+                          <div>
+                            <label className="text-xs text-gray-600 block mb-1">Ejection Time</label>
+                            <input type="text" value={newResourceData.ejectionTime || ''} onChange={e => setNewResourceData({...newResourceData, ejectionTime: e.target.value})}
+                              placeholder="30s" className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-sm focus:border-violet-500 focus:outline-none" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Subsets (one per line: name=selector)</label>
+                        <textarea value={newResourceData.subsets || ''} onChange={e => setNewResourceData({...newResourceData, subsets: e.target.value})}
+                          placeholder="v1=version:v1&#10;v2=version:v2"
+                          rows={3}
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-violet-500 focus:outline-none" />
+                      </div>
+                    </div>
+                  )}
+
+                  {newResourceType === 'authpolicy' && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Destination (Target Workload)</label>
+                        <input type="text" value={newResourceData.destination || ''} onChange={e => setNewResourceData({...newResourceData, destination: e.target.value})}
+                          placeholder="app=my-service or version=v1"
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" />
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Action</label>
+                        <div className="flex gap-2">
+                          {['ALLOW', 'DENY'].map(a => (
+                            <button key={a} onClick={() => setNewResourceData({...newResourceData, action: a})}
+                              className={`flex-1 px-4 py-2 rounded text-sm font-medium ${newResourceData.action === a ? (a === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500' : 'bg-red-500/20 text-red-300 border border-red-500') : 'bg-gray-800 text-gray-400 border border-gray-600'}`}>{a}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="p-3 bg-gray-800/50 rounded-lg">
+                        <label className="text-sm text-gray-400 mb-1 block">Source Principals</label>
+                        <input type="text" value={newResourceData.principals || ''} onChange={e => setNewResourceData({...newResourceData, principals: e.target.value})}
+                          placeholder="cluster.local/ns/default/sa/*"
+                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                ); })()
+                )}
+
+                {/* Footer */}
+                <div className="border-t border-gray-700 p-4 flex items-center justify-between bg-gray-900/80">
+                  <button onClick={() => setCreatingResource(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                  {createResourceTab === 'individual' && (
+                    <button onClick={() => {
+                      const suffixes = { virtualservice: '-vs', destinationrule: '-dr', ingress: '-gw-ingress', egress: '-gw-egress', eastwest: '-gw-ew', serviceentry: '-se', authpolicy: '-authz', peerauthentication: '-mtls', service: '' };
+                      const suffix = suffixes[newResourceType] || '';
+                      const fullName = (newResourceData.name || 'new-resource') + suffix;
+                      const typeLabels = { service: 'Service', virtualservice: 'Virtual Service', ingress: 'Ingress Gateway', egress: 'Egress Gateway', eastwest: 'East-West Gateway', destinationrule: 'Destination Rule', authpolicy: 'Authorization Policy', serviceentry: 'ServiceEntry' };
+                      showNotification(`Created ${typeLabels[newResourceType]}: ${fullName}`, 'success');
+                      setCreatingResource(false);
+                    }} className="px-6 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm font-medium flex items-center gap-2">
+                      <Icon name="plus" size={16} />Create Resource
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+      };
+
+      // A.U.N.T.I.E. VIEW (Messaging)
+      const AUNTIEView = () => (
+        <div className="p-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
+                <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.auntie.trend}</span>
+              </div>
+              <div className="text-2xl font-semibold text-emerald-300">${platformCosts.auntie.total.toLocaleString()}</div>
+              <div className="text-sm text-gray-400 mt-1">SNS + SQS + EventBridge + Kafka</div>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Event Sources</span>
+                <Icon name="radio" size={14} className="text-cyan-400" />
+              </div>
+              <div className="text-2xl font-semibold text-cyan-300">{messagingResources.length}</div>
+              <div className="text-sm text-gray-400 mt-1">{messagingResources.filter(m => m.type === 'sns').length} SNS, {messagingResources.filter(m => m.type === 'sqs').length} SQS, {messagingResources.filter(m => m.type === 'kafka').length} Kafka</div>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Messages/Day</span>
+                <Icon name="trending-up" size={14} className="text-cyan-400" />
+              </div>
+              <div className="text-2xl font-semibold text-cyan-300">2.4M</div>
+              <div className="text-sm text-gray-400 mt-1">+12% from last week</div>
+            </div>
+            <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-base font-semibold text-gray-300">Dead Letter Queue</span>
+                <Icon name="inbox" size={14} className="text-amber-400" />
+              </div>
+              <div className="text-2xl font-semibold text-amber-300">247</div>
+              <div className="text-sm text-gray-400 mt-1">3 queues with messages</div>
+            </div>
+          </div>
+          {/* Filter Tabs with Counts */}
+          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+            {[
+              { id: 'All', count: messagingResources.length },
+              { id: 'SNS', count: messagingResources.filter(m => m.type === 'sns').length },
+              { id: 'SQS', count: messagingResources.filter(m => m.type === 'sqs').length },
+              { id: 'EventBridge', count: messagingResources.filter(m => m.type === 'eventbridge').length },
+              { id: 'Kafka', count: messagingResources.filter(m => m.type === 'kafka').length }
+            ].map(cat => (
+              <button key={cat.id} onClick={() => setAuntieFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${auntieFilter === cat.id ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                {cat.id}
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${auntieFilter === cat.id ? 'bg-emerald-500/30 text-emerald-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+              </button>
+            ))}
+            <div className="border-l border-gray-600 mx-2" />
+            {[
+              { id: 'Local', count: messagingResources.filter(m => m.zone === 'local').length, activeClass: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30', countClass: 'bg-cyan-500/30 text-cyan-200' },
+              { id: 'Enterprise', count: messagingResources.filter(m => m.zone === 'central').length, activeClass: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30', countClass: 'bg-indigo-500/30 text-indigo-200' }
+            ].map(cat => (
+              <button key={cat.id} onClick={() => setAuntieFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${auntieFilter === cat.id ? cat.activeClass : 'text-gray-400 hover:bg-gray-800'}`}>
+                {cat.id}
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${auntieFilter === cat.id ? cat.countClass : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+            <table className="w-full">
+              <thead><tr className="border-b border-gray-700">
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Resource</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Zone</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Metrics</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Messages/Day</th>
+                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Cost</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+              </tr></thead>
+              <tbody>
+                {messagingResources.filter(m => {
+                  if (auntieFilter === 'All') return true;
+                  if (auntieFilter === 'Local') return m.zone === 'local';
+                  if (auntieFilter === 'Enterprise') return m.zone === 'central';
+                  return m.type.toLowerCase() === auntieFilter.toLowerCase();
+                }).map(m => (
+                  <tr key={m.id} onClick={() => setSelectedMessaging(m)} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                    <td className="px-4 py-3"><div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{
+                        backgroundColor: m.type === 'sns' ? 'rgba(236,72,153,0.2)' : m.type === 'sqs' ? 'rgba(6,182,212,0.2)' : m.type === 'eventbridge' ? 'rgba(139,92,246,0.2)' : 'rgba(245,158,11,0.2)',
+                        color: m.type === 'sns' ? '#22d3ee' : m.type === 'sqs' ? '#22d3ee' : m.type === 'eventbridge' ? '#a78bfa' : '#fbbf24'
+                      }}>
+                        <Icon name={m.type === 'sns' ? 'radio' : m.type === 'sqs' ? 'mail' : m.type === 'eventbridge' ? 'zap' : 'activity'} size={16} />
+                      </div>
+                      <div><div className="font-medium">{m.name}</div><div className="text-sm text-gray-400">{m.owner}</div></div>
+                    </div></td>
+                    <td className="px-4 py-3"><span className="text-sm text-gray-300 uppercase">{m.type}</span></td>
+                    <td className="px-4 py-3"><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium ${m.zone === 'local' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'}`}>{m.zone === 'local' ? 'Zone 1' : 'Zone 2'}</span></td>
+                    <td className="px-4 py-3"><span className="text-sm text-gray-400">{m.subscribers ? `${m.subscribers} subscribers` : m.depth !== undefined ? `${m.depth} in queue` : m.rules ? `${m.rules} rules` : `${m.partitions} partitions`}</span></td>
+                    <td className="px-4 py-3 text-sm text-gray-300">{m.messagesDay}</td>
+                    <td className="px-4 py-3 text-sm text-emerald-400">{m.monthlyCost}</td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => setMetricsResource(m)} className="p-1.5 hover:bg-blue-500/20 rounded-lg text-gray-400 hover:text-blue-400" title="View Metrics"><Icon name="activity" size={14} /></button>
+                        <button onClick={() => { setEditingMessaging(m); setNewMessagingData({ name: m.name, type: m.type, zone: m.zone, description: m.description || '', owner: m.owner || '', retention: m.retention || '', encryption: m.encryption || 'AWS KMS', namespace: m.namespace || '', status: m.status || 'active', monthlyCost: m.monthlyCost || '', region: m.region || 'us-east-1', subscribers: m.subscribers || 0, producers: m.producers || 0, targets: m.targets || 0, rules: m.rules || 0 }); setShowNewMessaging(true); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => { const newStatus = m.status === 'active' ? 'warning' : 'active'; setMessagingResources(prev => prev.map(r => r.id === m.id ? {...r, status: newStatus} : r)); showNotification(`${m.name} ${newStatus === 'active' ? 'activated' : 'paused'}`); }} className="p-1.5 hover:bg-amber-500/20 rounded-lg text-gray-400 hover:text-amber-400" title={m.status === 'active' ? 'Pause' : 'Activate'}><Icon name={m.status === 'active' ? 'pause-circle' : 'play-circle'} size={14} /></button>
+                        <button onClick={() => { setMessagingResources(prev => prev.filter(r => r.id !== m.id)); showNotification(`Resource "${m.name}" deleted`, 'warning'); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Messaging Detail Panel */}
+          {selectedMessaging && (
+            <div className="fixed inset-0 z-50 flex justify-end">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedMessaging(null)} />
+              <div className="relative w-[600px] bg-gray-900 border-l border-gray-700 overflow-auto">
+                <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setSelectedMessaging(null)} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedMessaging.type === 'sns' ? 'bg-cyan-500/20 text-cyan-400' : selectedMessaging.type === 'sqs' ? 'bg-cyan-500/20 text-cyan-400' : selectedMessaging.type === 'eventbridge' ? 'bg-violet-500/20 text-violet-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      <Icon name={selectedMessaging.type === 'sns' ? 'radio' : selectedMessaging.type === 'sqs' ? 'mail' : selectedMessaging.type === 'eventbridge' ? 'zap' : 'activity'} size={20} />
+                    </div>
+                    <div><div className="font-semibold">{selectedMessaging.name}</div><div className="text-sm text-gray-400">{selectedMessaging.owner}</div></div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => { setEditingMessaging(selectedMessaging); setNewMessagingData({ name: selectedMessaging.name, type: selectedMessaging.type, zone: selectedMessaging.zone, description: selectedMessaging.description || '', owner: selectedMessaging.owner || '', retention: selectedMessaging.retention || '', encryption: selectedMessaging.encryption || 'AWS KMS', namespace: selectedMessaging.namespace || '', status: selectedMessaging.status || 'active', monthlyCost: selectedMessaging.monthlyCost || '', region: selectedMessaging.region || 'us-east-1', subscribers: selectedMessaging.subscribers || 0, producers: selectedMessaging.producers || 0, targets: selectedMessaging.targets || 0, rules: selectedMessaging.rules || 0 }); setShowNewMessaging(true); }} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
+                    <button onClick={() => setViewMessagesResource(selectedMessaging)} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="View Messages"><Icon name="eye" size={16} /></button>
+                    <button onClick={() => { setMessagingResources(prev => prev.filter(m => m.id !== selectedMessaging.id)); showNotification(`Resource "${selectedMessaging.name}" deleted`, 'warning'); setSelectedMessaging(null); }} className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg" title="Delete"><Icon name="trash2" size={16} /></button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-6">
+                  {/* Status Overview */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Status</div><StatusBadge status={selectedMessaging.status === 'active' ? 'healthy' : 'warning'} /></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Monthly Cost</div><div className="text-lg font-semibold text-emerald-400">{selectedMessaging.monthlyCost}</div></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Zone</div><span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm font-medium ${selectedMessaging.zone === 'local' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'}`}>{selectedMessaging.zone === 'local' ? 'Zone 1 (Local)' : 'Zone 2 (Central)'}</span></div>
+                  </div>
+
+                  {/* Configuration */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="database" size={14} className="text-gray-400" />Configuration</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div><div className="text-sm text-gray-400 mb-1">Type</div><div className="text-gray-300 uppercase">{selectedMessaging.type}</div></div>
+                      <div><div className="text-sm text-gray-400 mb-1">Created</div><div className="text-gray-300">{selectedMessaging.created}</div></div>
+                      <div><div className="text-sm text-gray-400 mb-1">Retention</div><div className="text-gray-300">{selectedMessaging.retention}</div></div>
+                      <div><div className="text-sm text-gray-400 mb-1">Encryption</div><div className="text-gray-300">{selectedMessaging.encryption}</div></div>
+                    </div>
+                  </div>
+
+                  {/* Metrics */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="activity" size={14} className="text-gray-400" />Metrics</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div><div className="text-sm text-gray-400 mb-1">Messages/Day</div><div className="text-gray-300">{selectedMessaging.messagesDay}</div></div>
+                      {selectedMessaging.subscribers && <div><div className="text-sm text-gray-400 mb-1">Subscribers</div><div className="text-gray-300">{selectedMessaging.subscribers}</div></div>}
+                      {selectedMessaging.depth !== undefined && <div><div className="text-sm text-gray-400 mb-1">Queue Depth</div><div className={selectedMessaging.depth > 100 ? 'text-amber-400' : 'text-emerald-400'}>{selectedMessaging.depth}</div></div>}
+                      {selectedMessaging.rules && <div><div className="text-sm text-gray-400 mb-1">Rules</div><div className="text-gray-300">{selectedMessaging.rules}</div></div>}
+                      {selectedMessaging.targets && <div><div className="text-sm text-gray-400 mb-1">Targets</div><div className="text-gray-300">{selectedMessaging.targets}</div></div>}
+                      {selectedMessaging.partitions && <div><div className="text-sm text-gray-400 mb-1">Partitions</div><div className="text-gray-300">{selectedMessaging.partitions}</div></div>}
+                      {selectedMessaging.consumerGroups && <div><div className="text-sm text-gray-400 mb-1">Consumer Groups</div><div className="text-gray-300">{selectedMessaging.consumerGroups}</div></div>}
+                      {selectedMessaging.deliveryRate && <div><div className="text-sm text-gray-400 mb-1">Delivery Rate</div><div className="text-emerald-400">{selectedMessaging.deliveryRate}</div></div>}
+                      {selectedMessaging.avgProcessTime && <div><div className="text-sm text-gray-400 mb-1">Avg Process Time</div><div className="text-gray-300">{selectedMessaging.avgProcessTime}</div></div>}
+                      {selectedMessaging.avgAge && <div><div className="text-sm text-gray-400 mb-1">Avg Message Age</div><div className="text-amber-400">{selectedMessaging.avgAge}</div></div>}
+                    </div>
+                  </div>
+
+                  {/* Consumer Lag */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="clock" size={14} className="text-amber-400" />Consumer Lag</h3>
+                    <div className="space-y-3">
+                      {[
+                        { name: 'order-processor', lag: 12, trend: 'down', partition: 0 },
+                        { name: 'notification-svc', lag: 847, trend: 'up', partition: 1 },
+                        { name: 'analytics-consumer', lag: 3, trend: 'stable', partition: 2 },
+                        { name: 'audit-logger', lag: 0, trend: 'stable', partition: 3 },
+                      ].map((consumer, i) => (
+                        <div key={i} className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${consumer.lag > 100 ? 'bg-amber-400' : consumer.lag > 0 ? 'bg-emerald-400' : 'bg-gray-500'}`} />
+                            <div>
+                              <div className="text-sm font-medium">{consumer.name}</div>
+                              <div className="text-sm text-gray-400">Partition {consumer.partition}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div className={`text-sm font-medium ${consumer.lag > 100 ? 'text-amber-400' : consumer.lag > 0 ? 'text-gray-300' : 'text-emerald-400'}`}>{consumer.lag.toLocaleString()}</div>
+                              <div className="text-sm text-gray-400">messages behind</div>
+                            </div>
+                            <Icon name={consumer.trend === 'up' ? 'trending-up' : consumer.trend === 'down' ? 'trending-down' : 'minus'} size={14} className={consumer.trend === 'up' ? 'text-amber-400' : consumer.trend === 'down' ? 'text-emerald-400' : 'text-gray-500'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-700 flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Total Lag</span>
+                      <span className="text-amber-400 font-medium">862 messages</span>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div><h3 className="text-sm font-medium mb-2">Description</h3><p className="text-sm text-gray-400">{selectedMessaging.description}</p></div>
+
+                  {/* DLQ Warning */}
+                  {selectedMessaging.status === 'warning' && (
+                    <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Icon name="alert-triangle" size={18} className="text-amber-400" />
+                        <span className="font-medium text-amber-300">Attention Required</span>
+                      </div>
+                      <p className="text-sm text-gray-400 mb-3">This queue has {selectedMessaging.depth} unprocessed messages that may require investigation.</p>
+                      <div className="flex gap-2">
+                        <button onClick={() => showNotification('Replaying messages...', 'info')} className="px-3 py-1.5 text-sm bg-amber-600 hover:bg-amber-500 rounded-lg"><Icon name="refresh-cw" size={14} className="inline mr-1.5" />Replay Messages</button>
+                        <button onClick={() => showNotification('Purging queue...', 'warning')} className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg"><Icon name="trash2" size={14} className="inline mr-1.5" />Purge Queue</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Metrics Modal */}
+          {metricsResource && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => setMetricsResource(null)} />
+              <div className="relative w-[800px] max-h-[90vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${metricsResource.type === 'sns' ? 'bg-cyan-500/20 text-cyan-400' : metricsResource.type === 'sqs' ? 'bg-cyan-500/20 text-cyan-400' : metricsResource.type === 'eventbridge' ? 'bg-violet-500/20 text-violet-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      <Icon name={metricsResource.type === 'sns' ? 'radio' : metricsResource.type === 'sqs' ? 'mail' : metricsResource.type === 'eventbridge' ? 'zap' : 'activity'} size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{metricsResource.name}</div>
+                      <div className="text-sm text-gray-400">Metrics Dashboard</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1 p-1 bg-gray-800 rounded-lg border border-gray-700">
+                      {[
+                        { id: '1m', label: '1 Month' },
+                        { id: '3m', label: '3 Months' },
+                        { id: '6m', label: '6 Months' }
+                      ].map(t => (
+                        <button key={t.id} onClick={() => setMetricsTimeRange(t.id)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${metricsTimeRange === t.id ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-gray-400 hover:text-gray-200'}`}>{t.label}</button>
+                      ))}
+                    </div>
+                    <button onClick={() => setMetricsResource(null)} className="p-2 hover:bg-gray-700 rounded-lg"><Icon name="x" size={18} /></button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-6 max-h-[calc(90vh-80px)] overflow-y-auto">
+                  {/* Key Stats */}
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Total Messages</div>
+                      <div className="text-2xl font-semibold text-gray-100">{metricsTimeRange === '1m' ? '1.2M' : metricsTimeRange === '3m' ? '3.8M' : '7.4M'}</div>
+                      <div className="text-xs text-emerald-400 mt-1">+12% vs prev period</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Avg Throughput</div>
+                      <div className="text-2xl font-semibold text-cyan-400">{metricsTimeRange === '1m' ? '42K' : metricsTimeRange === '3m' ? '38K' : '35K'}/day</div>
+                      <div className="text-sm text-gray-400 mt-1">Messages processed</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Success Rate</div>
+                      <div className="text-2xl font-semibold text-emerald-400">99.7%</div>
+                      <div className="text-sm text-gray-400 mt-1">Delivery success</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="text-sm text-gray-400 mb-1">Avg Latency</div>
+                      <div className="text-2xl font-semibold text-amber-400">45ms</div>
+                      <div className="text-sm text-gray-400 mt-1">End-to-end</div>
+                    </div>
+                  </div>
+                  {/* Message Volume Chart */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-medium flex items-center gap-2"><Icon name="bar-chart-2" size={16} className="text-cyan-400" />Message Volume</h3>
+                      <span className="text-sm text-gray-400">{metricsTimeRange === '1m' ? 'Last 30 days' : metricsTimeRange === '3m' ? 'Last 90 days' : 'Last 180 days'}</span>
+                    </div>
+                    <FakeGraph color="cyan" height={120} data={Array.from({ length: metricsTimeRange === '1m' ? 30 : metricsTimeRange === '3m' ? 90 : 180 }, (_, i) => 30000 + Math.sin(i * 0.2) * 10000 + Math.random() * 5000)} />
+                  </div>
+                  {/* Two Column Charts */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="clock" size={16} className="text-amber-400" />Latency (p99)</h3>
+                      </div>
+                      <FakeGraph color="amber" height={100} data={Array.from({ length: 30 }, (_, i) => 30 + Math.sin(i * 0.3) * 15 + Math.random() * 10)} />
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium flex items-center gap-2"><Icon name="alert-circle" size={16} className="text-red-400" />Error Rate</h3>
+                      </div>
+                      <FakeGraph color="red" height={100} data={Array.from({ length: 30 }, (_, i) => 0.1 + Math.random() * 0.5)} />
+                    </div>
+                  </div>
+                  {/* Consumer/Publisher Stats */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-medium flex items-center gap-2 mb-4"><Icon name="users" size={16} className="text-violet-400" />Subscribers & Activity</h3>
+                    <div className="space-y-3">
+                      {['order-processor', 'notification-service', 'analytics-pipeline', 'audit-logger'].map((sub, i) => (
+                        <div key={sub} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center"><Icon name="box" size={14} /></div>
+                            <div>
+                              <div className="text-sm font-medium">{sub}</div>
+                              <div className="text-sm text-gray-400">{['Lambda', 'ECS Service', 'Kinesis', 'CloudWatch'][i]}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-gray-300">{[12400, 8900, 15200, 5600][i].toLocaleString()} msgs</div>
+                            <div className="text-xs text-emerald-400">{['99.9%', '99.8%', '99.7%', '100%'][i]} success</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Messages Viewer Modal */}
+          {viewMessagesResource && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => setViewMessagesResource(null)} />
+              <div className="relative w-[900px] max-h-[85vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${viewMessagesResource.type === 'sns' ? 'bg-cyan-500/20 text-cyan-400' : viewMessagesResource.type === 'sqs' ? 'bg-cyan-500/20 text-cyan-400' : viewMessagesResource.type === 'eventbridge' ? 'bg-violet-500/20 text-violet-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      <Icon name={viewMessagesResource.type === 'sns' ? 'radio' : viewMessagesResource.type === 'sqs' ? 'mail' : viewMessagesResource.type === 'eventbridge' ? 'zap' : 'activity'} size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{viewMessagesResource.name}</div>
+                      <div className="text-sm text-gray-400">Message Browser</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => showNotification('Refreshing messages...')} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg"><Icon name="refresh-cw" size={16} /></button>
+                    <button onClick={() => setViewMessagesResource(null)} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg"><Icon name="x" size={16} /></button>
+                  </div>
+                </div>
+                <div className="flex-1 overflow-auto p-4 space-y-2">
+                  {Array.from({ length: 15 }, (_, i) => {
+                    const timestamps = ['2 seconds ago', '15 seconds ago', '42 seconds ago', '1 minute ago', '2 minutes ago', '3 minutes ago', '5 minutes ago', '8 minutes ago', '12 minutes ago', '15 minutes ago', '20 minutes ago', '25 minutes ago', '30 minutes ago', '45 minutes ago', '1 hour ago'];
+                    const messageTypes = ['OrderCreated', 'PaymentProcessed', 'InventoryUpdate', 'ShipmentReady', 'CustomerNotification', 'AuditLog', 'MetricsEvent'];
+                    const sources = ['order-service', 'payment-gateway', 'inventory-api', 'shipping-service', 'notification-hub', 'audit-system'];
+                    const msgType = messageTypes[i % messageTypes.length];
+                    const source = sources[i % sources.length];
+                    const msgId = `msg-${Date.now() - i * 30000}-${Math.random().toString(36).substr(2, 8)}`;
+                    const size = (Math.random() * 2 + 0.3).toFixed(1);
+                    return (
+                      <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800 cursor-pointer" onClick={() => showNotification(`Viewing message ${msgId}`)}>
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs rounded font-mono">{msgType}</span>
+                            <span className="text-sm text-gray-400">from</span>
+                            <span className="text-xs text-cyan-400">{source}</span>
+                          </div>
+                          <span className="text-sm text-gray-400">{timestamps[i]}</span>
+                        </div>
+                        <div className="font-mono text-sm text-gray-400 bg-gray-900/50 rounded p-2 overflow-hidden">
+                          {`{ "messageId": "${msgId}", "type": "${msgType}", "source": "${source}", "payload": { "id": ${1000 + i}, "status": "processed", "timestamp": "${new Date(Date.now() - i * 60000).toISOString()}" } }`}
+                        </div>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+                          <span><Icon name="hash" size={10} className="inline mr-1" />{msgId.slice(0, 16)}...</span>
+                          <span><Icon name="database" size={10} className="inline mr-1" />{size} KB</span>
+                          <span className={i === 1 ? 'text-amber-400' : 'text-emerald-400'}><Icon name={i === 1 ? 'clock' : 'check-circle'} size={10} className="inline mr-1" />{i === 1 ? 'Pending' : 'Delivered'}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="px-6 py-3 border-t border-gray-700 bg-gray-800/50 flex items-center justify-between">
+                  <div className="text-sm text-gray-400">Showing 15 of {viewMessagesResource.messagesDay?.replace(/,/g, '') || '1,234'} messages</div>
+                  <div className="flex items-center gap-2">
+                    <button className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg disabled:opacity-50" disabled>Previous</button>
+                    <span className="text-sm text-gray-400">Page 1</span>
+                    <button className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg">Next</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Create/Edit Messaging Resource Modal */}
+          {showNewMessaging && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => setShowNewMessaging(false)} />
+              <div className="relative w-[600px] max-h-[85vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col">
+                <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                      <Icon name={editingMessaging ? 'edit' : 'plus'} size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingMessaging ? 'Edit Resource' : 'New Messaging Resource'}</div>
+                      <div className="text-sm text-gray-400">{editingMessaging ? `Editing ${editingMessaging.name}` : 'Choose a blueprint or configure manually'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowNewMessaging(false)} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg"><Icon name="x" size={16} /></button>
+                </div>
+                {/* Tabs */}
+                {!editingMessaging && (
+                  <div className="flex border-b border-gray-700">
+                    <button onClick={() => setNewMessagingTab('blueprints')} className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 ${newMessagingTab === 'blueprints' ? 'text-cyan-400 border-b-2 border-cyan-400 bg-cyan-500/5' : 'text-gray-400 hover:text-gray-200'}`}>
+                      <Icon name="layout" size={16} />Blueprints
+                    </button>
+                    <button onClick={() => setNewMessagingTab('custom')} className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 ${newMessagingTab === 'custom' ? 'text-cyan-400 border-b-2 border-cyan-400 bg-cyan-500/5' : 'text-gray-400 hover:text-gray-200'}`}>
+                      <Icon name="sliders" size={16} />Standard
+                    </button>
+                  </div>
+                )}
+                <div className="flex-1 overflow-auto p-6">
+                  {/* Blueprints Tab */}
+                  {(newMessagingTab === 'blueprints' && !editingMessaging && !selectedBlueprint) && (
+                    <div className="space-y-3">
+                      <button onClick={() => setSelectedBlueprint('fanout')} className="w-full p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-gray-600 hover:bg-gray-800 text-left flex items-start gap-4 group">
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-cyan-500/20 text-cyan-400 flex-shrink-0">
+                          <Icon name="share-2" size={24} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-gray-200">Fan-Out Pattern</span>
+                            <span className="px-2 py-0.5 rounded text-sm bg-cyan-500/20 text-cyan-300">SNS+SQS</span>
+                          </div>
+                          <div className="text-sm text-gray-400 mb-1">SNS topic with multiple SQS queue subscribers</div>
+                          <div className="text-sm text-gray-400">SNS → 2x SQS</div>
+                        </div>
+                        <Icon name="chevron-right" size={20} className="text-gray-600 group-hover:text-gray-400 flex-shrink-0 mt-2" />
+                      </button>
+                    </div>
+                  )}
+                  {/* Fan-Out Blueprint Detail */}
+                  {(newMessagingTab === 'blueprints' && selectedBlueprint === 'fanout') && (
+                    <div className="space-y-4">
+                      <button onClick={() => setSelectedBlueprint(null)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 mb-2">
+                        <Icon name="arrow-left" size={14} />Back to Blueprints
+                      </button>
+                      <div className="text-center mb-4">
+                        <div className="text-lg font-medium text-gray-200">Fan-Out Pattern</div>
+                        <div className="text-sm text-gray-400">SNS topic distributing to multiple SQS queues</div>
+                      </div>
+                      {/* SNS Topic */}
+                      <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-cyan-500/20 text-cyan-400">
+                            <Icon name="radio" size={20} />
+                          </div>
+                          <div>
+                            <div className="font-medium text-cyan-300">SNS Topic</div>
+                            <div className="text-sm text-gray-400">Publisher</div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div><label className="block text-sm text-gray-400 mb-1">Topic Name</label><input type="text" defaultValue="order-events-topic" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Topic Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"><option>Standard</option><option>FIFO</option></select></div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Display Name</label><input type="text" defaultValue="Order Events" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Delivery Policy</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"><option>Immediate</option><option>Batched</option></select></div>
+                        </div>
+                      </div>
+                      {/* Arrow connector */}
+                      <div className="flex justify-center py-2">
+                        <div className="flex flex-col items-center text-gray-500">
+                          <div className="w-0.5 h-4 bg-gray-600"></div>
+                          <Icon name="chevrons-down" size={20} />
+                          <div className="flex items-center gap-8">
+                            <div className="w-16 h-0.5 bg-gray-600"></div>
+                            <div className="w-16 h-0.5 bg-gray-600"></div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* SQS Queues */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Queue 1 */}
+                        <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-cyan-500/20 text-cyan-400">
+                              <Icon name="mail" size={20} />
+                            </div>
+                            <div>
+                              <div className="font-medium text-cyan-300">SQS Queue 1</div>
+                              <div className="text-sm text-gray-400">Subscriber</div>
+                            </div>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div><label className="block text-sm text-gray-400 mb-1">Queue Name</label><input type="text" defaultValue="order-processing-queue" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div><label className="block text-sm text-gray-400 mb-1">Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"><option>Standard</option><option>FIFO</option></select></div>
+                              <div><label className="block text-sm text-gray-400 mb-1">Visibility (s)</label><input type="number" defaultValue="30" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div><label className="block text-sm text-gray-400 mb-1">Retention (days)</label><input type="number" defaultValue="4" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                              <div><label className="block text-sm text-gray-400 mb-1">Max Size (KB)</label><input type="number" defaultValue="256" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Queue 2 */}
+                        <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-cyan-500/20 text-cyan-400">
+                              <Icon name="mail" size={20} />
+                            </div>
+                            <div>
+                              <div className="font-medium text-cyan-300">SQS Queue 2</div>
+                              <div className="text-sm text-gray-400">Subscriber</div>
+                            </div>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div><label className="block text-sm text-gray-400 mb-1">Queue Name</label><input type="text" defaultValue="order-analytics-queue" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div><label className="block text-sm text-gray-400 mb-1">Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white"><option>Standard</option><option>FIFO</option></select></div>
+                              <div><label className="block text-sm text-gray-400 mb-1">Visibility (s)</label><input type="number" defaultValue="60" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div><label className="block text-sm text-gray-400 mb-1">Retention (days)</label><input type="number" defaultValue="7" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                              <div><label className="block text-sm text-gray-400 mb-1">Max Size (KB)</label><input type="number" defaultValue="256" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white" /></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Custom Tab */}
+                  {(newMessagingTab === 'custom' || editingMessaging) && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Resource Name</label>
+                        <input type="text" value={newMessagingData.name} onChange={(e) => setNewMessagingData({ ...newMessagingData, name: e.target.value })} placeholder="e.g., order-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      {!editingMessaging && <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Owner</label>
+                        <input type="text" value={newMessagingData.owner} onChange={(e) => setNewMessagingData({ ...newMessagingData, owner: e.target.value })} placeholder="e.g., orders-team" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                      </div>}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Retention</label>
+                          <input type="text" value={newMessagingData.retention} onChange={(e) => setNewMessagingData({ ...newMessagingData, retention: e.target.value })} placeholder="e.g., 14 days" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Encryption</label>
+                          <select value={newMessagingData.encryption} onChange={(e) => setNewMessagingData({ ...newMessagingData, encryption: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option value="AWS KMS">AWS KMS</option>
+                            <option value="TLS 1.3">TLS 1.3</option>
+                            <option value="None">None</option>
+                          </select>
+                        </div>
+                      </div>
+                      {/* Region - shown when editing */}
+                      {editingMessaging && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Region</label>
+                          <select value={newMessagingData.region} onChange={(e) => setNewMessagingData({ ...newMessagingData, region: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option value="us-east-1">us-east-1</option>
+                            <option value="us-east-2">us-east-2</option>
+                            <option value="us-west-1">us-west-1</option>
+                            <option value="us-west-2">us-west-2</option>
+                            <option value="eu-west-1">eu-west-1</option>
+                          </select>
+                        </div>
+                      )}
+                      {/* Subscribers & Producers - for SNS, SQS, Kafka when editing */}
+                      {editingMessaging && (newMessagingData.type === 'sns' || newMessagingData.type === 'sqs' || newMessagingData.type === 'kafka') && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Subscribers</label>
+                            <input type="number" value={newMessagingData.subscribers || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, subscribers: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Producers</label>
+                            <input type="number" value={newMessagingData.producers || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, producers: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                          </div>
+                        </div>
+                      )}
+                      {/* Rules - for EventBridge when editing */}
+                      {editingMessaging && newMessagingData.type === 'eventbridge' && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Rules</label>
+                          <input type="number" value={newMessagingData.rules || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, rules: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      )}
+                      {/* Targets - for all types when editing */}
+                      {editingMessaging && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Targets</label>
+                          <input type="number" value={newMessagingData.targets || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, targets: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      )}
+                      {!editingMessaging && <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Type</label>
+                        <div className="grid grid-cols-4 gap-2">
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'sns' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'sns' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="radio" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'sns' ? 'text-cyan-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'sns' ? 'text-cyan-300' : 'text-gray-400'}`}>SNS</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'sqs' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'sqs' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="mail" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'sqs' ? 'text-cyan-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'sqs' ? 'text-cyan-300' : 'text-gray-400'}`}>SQS</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'eventbridge' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'eventbridge' ? 'bg-violet-500/20 border-violet-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="zap" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'eventbridge' ? 'text-violet-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'eventbridge' ? 'text-violet-300' : 'text-gray-400'}`}>EventBridge</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'kafka' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'kafka' ? 'bg-amber-500/20 border-amber-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="activity" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'kafka' ? 'text-amber-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'kafka' ? 'text-amber-300' : 'text-gray-400'}`}>Kafka</div>
+                          </button>
+                        </div>
+                      </div>}
+                      {/* Type-specific Configuration - only show when creating new */}
+                      {!editingMessaging && newMessagingData.type === 'sns' && (
+                        <div className="space-y-3 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-lg">
+                          <div className="text-sm font-medium text-cyan-400 mb-2">SNS Configuration</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Topic Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"><option>Standard</option><option>FIFO</option></select></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Delivery Protocol</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"><option>HTTP/HTTPS</option><option>Email</option><option>SQS</option><option>Lambda</option></select></div>
+                          </div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Display Name</label><input type="text" placeholder="e.g., Order Notifications" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                        </div>
+                      )}
+                      {!editingMessaging && newMessagingData.type === 'sqs' && (
+                        <div className="space-y-3 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-lg">
+                          <div className="text-sm font-medium text-cyan-400 mb-2">SQS Configuration</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Queue Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm"><option>Standard</option><option>FIFO</option></select></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Visibility Timeout (sec)</label><input type="number" defaultValue="30" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Message Retention (days)</label><input type="number" defaultValue="4" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Max Message Size (KB)</label><input type="number" defaultValue="256" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          </div>
+                        </div>
+                      )}
+                      {!editingMessaging && newMessagingData.type === 'eventbridge' && (
+                        <div className="space-y-3 p-4 bg-violet-500/5 border border-violet-500/20 rounded-lg">
+                          <div className="text-sm font-medium text-violet-400 mb-2">EventBridge Configuration</div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Event Bus Name</label><input type="text" placeholder="e.g., custom-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Source Pattern</label><input type="text" placeholder="e.g., com.myapp.*" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Detail Type</label><input type="text" placeholder="e.g., OrderCreated" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          </div>
+                        </div>
+                      )}
+                      {!editingMessaging && newMessagingData.type === 'kafka' && (
+                        <div className="space-y-3 p-4 bg-amber-500/5 border border-amber-500/20 rounded-lg">
+                          <div className="text-sm font-medium text-amber-400 mb-2">Kafka Configuration</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Consumer Group</label><input type="text" placeholder="e.g., order-processors" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Producer Group</label><input type="text" placeholder="e.g., order-service" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="block text-sm text-gray-400 mb-1">Partitions</label><input type="number" defaultValue="3" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                            <div><label className="block text-sm text-gray-400 mb-1">Replication Factor</label><input type="number" defaultValue="2" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                          </div>
+                          <div><label className="block text-sm text-gray-400 mb-1">Retention (hours)</label><input type="number" defaultValue="168" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
+                        </div>
+                      )}
+                      {!editingMessaging && <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Zone</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, zone: 'local' })} className={`p-3 rounded-lg border text-center ${newMessagingData.zone === 'local' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <div className={`text-sm font-medium ${newMessagingData.zone === 'local' ? 'text-cyan-300' : 'text-gray-400'}`}>Zone 1 (Local)</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, zone: 'central' })} className={`p-3 rounded-lg border text-center ${newMessagingData.zone === 'central' ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <div className={`text-sm font-medium ${newMessagingData.zone === 'central' ? 'text-indigo-300' : 'text-gray-400'}`}>Zone 2 (Central)</div>
+                          </button>
+                        </div>
+                      </div>}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                        <textarea value={newMessagingData.description} onChange={(e) => setNewMessagingData({ ...newMessagingData, description: e.target.value })} placeholder="Describe this resource..." rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="px-6 py-4 border-t border-gray-700 bg-gray-800/50 flex items-center justify-between">
+                  {!editingMessaging && newMessagingTab === 'custom' && !selectedBlueprint && (
+                    <button onClick={() => setNewMessagingTab('blueprints')} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200 flex items-center gap-2"><Icon name="arrow-left" size={14} />Back to Blueprints</button>
+                  )}
+                  {(editingMessaging || (newMessagingTab === 'blueprints' && !selectedBlueprint)) && <div />}
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => { setShowNewMessaging(false); setSelectedBlueprint(null); }} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                    {(newMessagingTab === 'custom' || editingMessaging) && (
+                      <button onClick={() => {
+                        if (editingMessaging) {
+                          setMessagingResources(prev => prev.map(m => m.id === editingMessaging.id ? { ...m, ...newMessagingData } : m));
+                          showNotification(`Resource "${newMessagingData.name}" updated successfully`, 'success');
+                        } else {
+                          const newResource = { ...newMessagingData, id: Date.now(), messagesDay: '0', status: 'active', created: new Date().toISOString().split('T')[0], monthlyCost: '$0' };
+                          setMessagingResources(prev => [...prev, newResource]);
+                          showNotification(`Resource "${newMessagingData.name}" created successfully`, 'success');
+                        }
+                        setShowNewMessaging(false); setSelectedMessaging(null); setSelectedBlueprint(null); setEditingMessaging(null);
+                      }} className="px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-500 rounded-lg font-medium">{editingMessaging ? 'Save Changes' : 'Create Resource'}</button>
+                    )}
+                                      </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+
+      // R.O.S.I.E. VIEW (Scheduling)
+      const ROSIEView = () => {
+        return (
+          <div className="p-6">
+            {/* Stats Grid with Cost - Always visible */}
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
+                  <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.rosie.trend}</span>
+                </div>
+                <div className="text-2xl font-semibold text-emerald-300">${platformCosts.rosie.total.toLocaleString()}</div>
+                <div className="text-sm text-gray-400 mt-1">{enableAirflow ? 'Step Functions + MWAA' : 'Step Functions'}</div>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-base font-semibold text-gray-300">Total Jobs</span>
+                  <Icon name="git-branch" size={14} className="text-cyan-400" />
+                </div>
+                <div className="text-2xl font-semibold text-cyan-300">{visibleJobs.length}</div>
+                <div className="text-sm text-gray-400 mt-1">{rosieStats.active} active, {rosieStats.paused} paused</div>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-base font-semibold text-gray-300">Success Rate</span>
+                  <Icon name="trending-up" size={14} className="text-cyan-400" />
+                </div>
+                <div className="text-2xl font-semibold text-cyan-300">{rosieStats.successRate}%</div>
+                <div className="text-sm text-gray-400 mt-1">Last 24 hours</div>
+              </div>
+              <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-base font-semibold text-gray-300">Failed (24h)</span>
+                  <Icon name="alert-triangle" size={14} className="text-red-400" />
+                </div>
+                <div className="text-2xl font-semibold text-red-300">{rosieStats.failed24h}</div>
+                <div className="text-sm text-gray-400 mt-1">{rosieStats.failed24h > 0 ? 'Needs attention' : 'All jobs healthy'}</div>
+              </div>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex items-center justify-between mb-6 border-b border-gray-700">
+              <div className="flex gap-1">
+              {[
+                { id: 'jobs', label: 'Jobs', icon: 'clock' },
+                { id: 'runs', label: 'Run History', icon: 'activity' },
+                ...(enableAirflow ? [{ id: 'airflow', label: 'Airflow UI', icon: 'external-link' }, { id: 'settings', label: 'Settings', icon: 'settings' }] : []),
+              ].map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${activeTab === tab.id ? 'border-cyan-500 text-cyan-300' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>
+                  <Icon name={tab.icon} size={16} />{tab.label}
+                </button>
+              ))}
+              </div>
+            </div>
+
+            {/* JOBS TAB */}
+            {activeTab === 'jobs' && (<>
+            {/* Filter Tabs with Counts */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                {[
+                  { id: 'all', label: 'All', count: jobs.filter(j => enableAirflow || j.target !== 'mwaa').length },
+                  { id: 'active', label: 'Active', count: jobs.filter(j => j.status === 'active' && (enableAirflow || j.target !== 'mwaa')).length },
+                  { id: 'paused', label: 'Paused', count: jobs.filter(j => j.status === 'paused' && (enableAirflow || j.target !== 'mwaa')).length }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setFilterStatus(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${filterStatus === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    {cat.label}
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${filterStatus === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+              {enableAirflow && (
+              <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                {[
+                  { id: 'all', label: 'All Platforms', count: jobs.filter(j => enableAirflow || j.target !== 'mwaa').length },
+                  { id: 'eventbridge', label: 'Step Function', count: jobs.filter(j => j.target === 'eventbridge').length },
+                  { id: 'mwaa', label: 'MWAA', count: jobs.filter(j => j.target === 'mwaa').length }
+                ].map(cat => (
+                  <button key={cat.id} onClick={() => setFilterTarget(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${filterTarget === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    {cat.label}
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${filterTarget === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+              )}
+              <div className="relative flex-1 max-w-xs">
+                <Icon name="search" size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input type="text" placeholder="Search jobs..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+              </div>
+              <span className="text-sm text-gray-500">{filteredJobs.length} jobs</span>
+            </div>
+
+            {/* Jobs Table */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-700">
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Job Name</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Target</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Schedule</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Last Run</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Cost</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {filteredJobs.map(job => (
+                    <tr key={job.id} onClick={() => { setJobEditorResource(job); setJobEditorNodes(job.workflow ? JSON.parse(JSON.stringify(job.workflow)) : []); setJobEditorConfig({ name: job.name, schedule: job.schedule, scheduleType: job.schedule.startsWith('rate') ? 'rate' : 'cron', target: job.target, tags: job.tags || [] }); setShowJobEditor(true); }} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                      <td className="px-4 py-3"><div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${job.type === 'dag' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}><Icon name={job.type === 'dag' ? 'git-branch' : 'zap'} size={16} /></div>
+                        <div><div className="font-medium">{job.name}</div><div className="text-sm text-gray-400">{job.owner}</div></div>
+                      </div></td>
+                      <td className="px-4 py-3"><PlatformBadge target={job.target} /></td>
+                      <td className="px-4 py-3"><div><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{job.schedule}</code><div className="text-sm text-gray-400 mt-0.5">{job.scheduleHuman}</div></div></td>
+                      <td className="px-4 py-3"><StatusBadge status={job.status} size="sm" /></td>
+                      <td className="px-4 py-3"><div className="flex items-center gap-2"><StatusBadge status={job.lastRunStatus} size="sm" /><span className="text-sm text-gray-400">{job.lastRun}</span></div></td>
+                      <td className="px-4 py-3 text-sm text-gray-300">{job.estimatedCost}</td>
+                      <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => { setSelectedJob(job); setShowDiagnostics(true); }} className="p-1.5 hover:bg-violet-500/20 rounded-lg text-gray-400 hover:text-violet-400" title="Diagnose"><Icon name="wrench" size={14} /></button>
+                          <button onClick={() => { setJobEditorResource(job); setJobEditorNodes(job.workflow ? JSON.parse(JSON.stringify(job.workflow)) : []); setJobEditorConfig({ name: job.name, schedule: job.schedule, scheduleType: job.schedule.startsWith('rate') ? 'rate' : 'cron', target: job.target, tags: job.tags || [] }); setShowJobEditor(true); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                          <button onClick={() => handleTriggerJob(job)} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Run Once"><Icon name="zap" size={14} /></button>
+                          <button onClick={() => { const newStatus = job.status === 'active' ? 'paused' : 'active'; setJobs(jobs.map(j => j.id === job.id ? {...j, status: newStatus, nextRun: newStatus === 'paused' ? 'Paused' : j.nextRun} : j)); showNotification(`Job "${job.name}" ${newStatus === 'paused' ? 'paused' : 'resumed'}`); }} className="p-1.5 hover:bg-amber-500/20 rounded-lg text-gray-400 hover:text-amber-400" title={job.status === 'active' ? 'Pause Schedule' : 'Resume Schedule'}><Icon name={job.status === 'active' ? 'pause-circle' : 'play-circle'} size={14} /></button>
+                          <button onClick={() => handleDeleteJob(job)} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Platform Distribution - only shown when Airflow is enabled */}
+            {enableAirflow && (
+            <div className="mt-6 bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3"><div className="text-sm font-medium text-gray-300">Platform Distribution (90/10 Target)</div><div className="text-sm text-gray-400">Your jobs: {jobs.length > 0 ? Math.round(jobs.filter(j => j.target === 'eventbridge').length / jobs.length * 100) : 0}% Step Function / {jobs.length > 0 ? Math.round(jobs.filter(j => j.target === 'mwaa').length / jobs.length * 100) : 0}% Airflow</div></div>
+              <div className="flex h-3 rounded-full overflow-hidden bg-gray-700"><div className="bg-cyan-500" style={{ width: `${jobs.length > 0 ? jobs.filter(j => j.target === 'eventbridge').length / jobs.length * 100 : 0}%` }} /><div className="bg-indigo-500" style={{ width: `${jobs.length > 0 ? jobs.filter(j => j.target === 'mwaa').length / jobs.length * 100 : 0}%` }} /></div>
+              <div className="flex justify-between mt-2 text-sm text-gray-400"><span>Step Function (Target: 90%)</span><span>Airflow (Target: 10%)</span></div>
+            </div>
+            )}
+
+
+            {/* Trigger Modal */}
+            {showTriggerModal && jobToAction && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/50" onClick={() => setShowTriggerModal(false)} />
+                <div className="relative bg-gray-800 border border-gray-700 rounded-xl p-6 w-[400px]">
+                  <h2 className="text-lg font-semibold mb-4">Trigger Job</h2>
+                  <p className="text-gray-400 mb-4">Run <strong className="text-gray-200">{jobToAction.name}</strong> immediately?</p>
+                  <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 mb-4">
+                    <div className="text-sm text-gray-400 mb-1">Execution Date</div>
+                    <div className="text-sm text-white">Now (manual trigger)</div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <button onClick={() => setShowTriggerModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                    <button onClick={confirmTrigger} className="px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-500 rounded-lg">Trigger Now</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Delete Modal */}
+            {showDeleteModal && jobToAction && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteModal(false)} />
+                <div className="relative bg-gray-800 border border-gray-700 rounded-xl p-6 w-[400px]">
+                  <h2 className="text-lg font-semibold mb-4">Delete Job</h2>
+                  <p className="text-gray-400 mb-4">Are you sure you want to delete <strong className="text-gray-200">{jobToAction.name}</strong>?</p>
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 text-sm text-red-300">This will remove all run history and cannot be recovered.</div>
+                  <div className="flex justify-end gap-2">
+                    <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                    <button onClick={confirmDelete} className="px-4 py-2 text-sm bg-red-600 hover:bg-red-500 rounded-lg">Delete</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>)}
+
+            {/* RUNS TAB */}
+            {activeTab === 'runs' && (
+              <div className="flex gap-6">
+                {/* Run List */}
+                <div className="flex-1">
+                  {/* Filter Pills and Search */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex gap-2 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+                      {[
+                        { id: 'all', label: 'All', count: mockRuns.length },
+                        { id: 'success', label: 'Success', count: mockRuns.filter(r => r.status === 'success').length },
+                        { id: 'failed', label: 'Failed', count: mockRuns.filter(r => r.status === 'failed').length },
+                        { id: 'running', label: 'Running', count: mockRuns.filter(r => r.status === 'running').length }
+                      ].map(cat => (
+                        <button key={cat.id} onClick={() => setRunsFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${runsFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                          {cat.label}
+                          <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${runsFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="relative flex-1 max-w-xs">
+                      <Icon name="search" size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input type="text" placeholder="Search runs..." value={runsSearch} onChange={e => setRunsSearch(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+                    </div>
+                    <span className="text-sm text-gray-500">{mockRuns.filter(r => (runsFilter === 'all' || r.status === runsFilter) && (runsSearch === '' || r.jobName.toLowerCase().includes(runsSearch.toLowerCase()) || r.id.includes(runsSearch))).length} runs</span>
+                  </div>
+
+                  {/* Run History List */}
+                  <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden max-h-[600px] overflow-y-auto">
+                    <div className="divide-y divide-gray-700/50">
+                      {mockRuns.filter(r => (runsFilter === 'all' || r.status === runsFilter) && (runsSearch === '' || r.jobName.toLowerCase().includes(runsSearch.toLowerCase()) || r.id.includes(runsSearch))).slice(0, 100).map(run => (
+                        <button key={run.id} onClick={() => setSelectedRun(run)} className={`w-full p-4 hover:bg-gray-800/30 text-left transition-colors ${selectedRun?.id === run.id ? 'bg-cyan-500/10 border-l-2 border-cyan-500' : ''}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <StatusBadge status={run.status} size="sm" />
+                              <span className="font-medium">{run.jobName}</span>
+                              <span className="text-sm text-gray-400">#{run.id}</span>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-400">
+                              <span><Icon name="clock" size={12} className="inline mr-1" />{run.duration}</span>
+                              <span className="px-2 py-0.5 bg-gray-700 rounded text-sm">{run.triggeredBy}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className="text-sm text-gray-400">{run.startTime}</span>
+                            {run.error && (
+                              <div className="flex-1 text-red-400 text-xs bg-red-500/10 px-2 py-1 rounded truncate"><Icon name="alert-circle" size={12} className="inline mr-1" />{run.error}</div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Run Details Panel */}
+                {selectedRun && (
+                  <div className="w-[450px] bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={selectedRun.status} size="sm" />
+                        <span className="font-medium">{selectedRun.jobName}</span>
+                      </div>
+                      <button onClick={() => setSelectedRun(null)} className="p-1 hover:bg-gray-700 rounded"><Icon name="x" size={16} /></button>
+                    </div>
+                    <div className="p-4 space-y-4 max-h-[550px] overflow-y-auto">
+                      {/* Run Info */}
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div><div className="text-gray-500 text-xs mb-1">Run ID</div><div className="font-mono text-gray-300">{selectedRun.id}</div></div>
+                        <div><div className="text-gray-500 text-xs mb-1">Duration</div><div className="text-gray-300">{selectedRun.duration}</div></div>
+                        <div><div className="text-gray-500 text-xs mb-1">Started</div><div className="text-gray-300">{selectedRun.startTime}</div></div>
+                        <div><div className="text-gray-500 text-xs mb-1">Triggered By</div><div className="text-gray-300">{selectedRun.triggeredBy}</div></div>
+                      </div>
+                      {selectedRun.error && (
+                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                          <div className="text-red-400 text-sm font-medium flex items-center gap-2"><Icon name="alert-circle" size={14} />Error</div>
+                          <div className="text-red-300 text-sm mt-1">{selectedRun.error}</div>
+                        </div>
+                      )}
+                      {/* Steps */}
+                      <div>
+                        <div className="text-gray-400 text-sm font-medium mb-2">Steps</div>
+                        <div className="space-y-2">
+                          {selectedRun.steps.map((step, i) => (
+                            <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden">
+                              <button onClick={() => setRunLogExpanded(runLogExpanded === `${selectedRun.id}-${i}` ? null : `${selectedRun.id}-${i}`)} className="w-full px-3 py-2 flex items-center justify-between hover:bg-gray-700/30">
+                                <div className="flex items-center gap-2">
+                                  <Icon name={step.status === 'success' ? 'check-circle' : step.status === 'failed' ? 'x-circle' : 'loader'} size={14} className={step.status === 'success' ? 'text-emerald-400' : step.status === 'failed' ? 'text-red-400' : 'text-blue-400 animate-spin'} />
+                                  <span className="text-sm font-medium">{step.name}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-gray-400">
+                                  <span>{step.duration}</span>
+                                  <Icon name={runLogExpanded === `${selectedRun.id}-${i}` ? 'chevron-up' : 'chevron-down'} size={14} />
+                                </div>
+                              </button>
+                              {runLogExpanded === `${selectedRun.id}-${i}` && (
+                                <div className="border-t border-gray-700 p-3 bg-gray-900/50">
+                                  <div className="text-sm text-gray-400 mb-2">Logs</div>
+                                  <pre className="text-xs font-mono text-gray-400 whitespace-pre-wrap bg-black/30 p-2 rounded">{step.logs}</pre>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SETTINGS TAB */}
+            {activeTab === 'settings' && (
+              <div className="flex gap-6">
+                {/* Settings Sidebar */}
+                <div className="w-48 space-y-1">
+                  {[
+                    { id: 'connections', label: 'Connections', icon: 'database' },
+                    { id: 'variables', label: 'Variables', icon: 'tag' },
+                    { id: 'notifications', label: 'Notifications', icon: 'bell' },
+                    { id: 'cost', label: 'Cost Management', icon: 'dollar-sign' },
+                  ].map(item => (
+                    <button key={item.id} onClick={() => setSettingsSection(item.id)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm ${settingsSection === item.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+                      <Icon name={item.icon} size={16} />{item.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Settings Content */}
+                <div className="flex-1">
+                  {/* Connections Section */}
+                  {settingsSection === 'connections' && (
+                  <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div><h2 className="text-lg font-semibold">Connections</h2><p className="text-sm text-gray-500">{enableAirflow ? 'Manage Airflow connections for your jobs' : 'Manage database connections for your jobs'}</p></div>
+                    <button onClick={() => showNotification('Opening connection wizard...')} className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-500 px-3 py-1.5 rounded-lg text-sm"><Icon name="plus" size={14} />Add Connection</button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {mockConnections.map(conn => (
+                      <div key={conn.id} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${conn.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                              <Icon name="database" size={18} />
+                            </div>
+                            <div>
+                              <div className="font-medium">{conn.name}</div>
+                              <div className="text-sm text-gray-400">{conn.type}</div>
+                            </div>
+                          </div>
+                          <StatusBadge status={conn.status} size="sm" />
+                        </div>
+                        <div className="text-sm text-gray-400 mb-3 font-mono bg-gray-900 px-2 py-1 rounded truncate">{conn.host}</div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-500">Tested {conn.lastTested}</span>
+                          <button onClick={() => showNotification(`Editing connection "${conn.name}"...`)} className="text-cyan-400 hover:text-cyan-300">Edit</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  </div>
+                  )}
+
+                  {/* Variables Section */}
+                  {settingsSection === 'variables' && (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div><h2 className="text-lg font-semibold">Variables</h2><p className="text-sm text-gray-500">Environment variables for your jobs</p></div>
+                      <button onClick={() => showNotification('Opening variable editor...')} className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg text-sm"><Icon name="plus" size={14} />Add Variable</button>
+                    </div>
+                    <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                      <table className="w-full">
+                        <thead><tr className="border-b border-gray-700">
+                          <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Key</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Value</th>
+                          <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Description</th>
+                          <th className="px-4 py-3"></th>
+                        </tr></thead>
+                        <tbody>
+                          {mockVariables.map((v, i) => (
+                            <tr key={i} className="border-b border-gray-700/50 hover:bg-gray-800/30">
+                              <td className="px-4 py-3"><code className="text-sm text-cyan-300">{v.key}</code></td>
+                              <td className="px-4 py-3"><code className="text-sm text-gray-300">{v.encrypted ? <span className="flex items-center gap-1"><Icon name="lock" size={12} />{v.value}</span> : v.value}</code></td>
+                              <td className="px-4 py-3 text-sm text-gray-400">{v.description}</td>
+                              <td className="px-4 py-3"><button onClick={() => showNotification(`Editing variable "${v.key}"...`)} className="text-gray-400 hover:text-gray-200"><Icon name="edit" size={14} /></button></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  )}
+
+                  {/* Cost Management Section */}
+                  {settingsSection === 'cost' && (
+                  <div>
+                    <h2 className="text-lg font-semibold mb-4">Cost Management</h2>
+                    <div className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl p-5 mb-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm text-gray-400 mb-1">Migration Savings vs Control-M</div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold text-emerald-400">${(platformCosts.legacyCost - platformCosts.rosie.total).toLocaleString()}/mo</span>
+                            <span className="text-sm text-gray-500">saved</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-400">Control-M Legacy</div>
+                          <div className="text-lg text-gray-400 line-through">${platformCosts.legacyCost.toLocaleString()}</div>
+                          <div className="text-sm text-gray-400 mt-1">ROSIE Platform</div>
+                          <div className="text-lg text-emerald-400">${platformCosts.rosie.total.toLocaleString()}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                        <h3 className="text-sm font-medium mb-3">Cost by Platform</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between"><span className="text-sm text-gray-400">Step Functions</span><span className="text-sm text-cyan-400">${platformCosts.rosie.breakdown.eventbridge_scheduler}</span></div>
+                          {enableAirflow && <div className="flex items-center justify-between"><span className="text-sm text-gray-400">MWAA (Airflow)</span><span className="text-sm text-indigo-400">${platformCosts.rosie.breakdown.mwaa}</span></div>}
+                          <div className="flex items-center justify-between"><span className="text-sm text-gray-400">AWS Batch</span><span className="text-sm text-amber-400">${platformCosts.rosie.breakdown.batch}</span></div>
+                        </div>
+                      </div>
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                        <h3 className="text-sm font-medium mb-3">Top Cost Jobs</h3>
+                        <div className="space-y-2">
+                          {mockJobs.slice(0, 3).sort((a, b) => parseFloat(b.estimatedCost.replace('$', '')) - parseFloat(a.estimatedCost.replace('$', ''))).map((job, i) => (
+                            <div key={i} className="flex items-center justify-between"><span className="text-sm text-gray-400">{job.name}</span><span className="text-sm text-emerald-400">{job.estimatedCost}/run</span></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  )}
+
+                  {/* Notifications Section */}
+                  {settingsSection === 'notifications' && (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div><h2 className="text-lg font-semibold">Notifications</h2><p className="text-sm text-gray-500">Configure alerts and notification channels</p></div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-500/20 text-blue-400"><Icon name="mail" size={18} /></div>
+                            <div><div className="font-medium">Email Alerts</div><div className="text-sm text-gray-400">ops-team@company.com</div></div>
+                          </div>
+                          <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded">Active</span>
+                        </div>
+                      </div>
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-500/20 text-purple-400"><Icon name="message-square" size={18} /></div>
+                            <div><div className="font-medium">Slack Integration</div><div className="text-sm text-gray-400">#rosie-alerts</div></div>
+                          </div>
+                          <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded">Active</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* AIRFLOW TAB */}
+            {activeTab === 'airflow' && (
+              <div>
+                {/* MWAA Environment Info */}
+                <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 mb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center"><Icon name="git-branch" size={24} className="text-indigo-400" /></div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold">MWAA Environment</h3>
+                      <p className="text-gray-400 text-sm mt-1">mwaa-rosie-prod.us-east-1.amazonaws.com</p>
+                      <div className="flex items-center gap-4 mt-4">
+                        <button onClick={() => showNotification('Opening Airflow UI in new tab...')} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg text-sm font-medium"><Icon name="external-link" size={16} />Open Airflow UI</button>
+                        <span className="text-sm text-gray-500">Opens in new tab with SSO authentication</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Your Access Level */}
+                <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 mb-6">
+                  <h3 className="text-sm font-medium text-gray-400 mb-4 flex items-center gap-2"><Icon name="users" size={16} />Your Access Level</h3>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-sm font-medium text-gray-900">LA</div>
+                      <div><div className="font-medium">Luke Angel</div><div className="text-sm text-gray-500">luke.angel@company.com</div></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 bg-violet-500/20 text-violet-300 text-sm rounded-full border border-violet-500/30">platform-admins</span>
+                      <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-sm rounded-full border border-emerald-500/30">loans-origination-developers</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Permission Matrix */}
+                <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
+                  <div className="p-4 border-b border-gray-700"><h3 className="text-sm font-medium text-gray-400 flex items-center gap-2"><Icon name="lock" size={16} />Permission Matrix</h3></div>
+                  <table className="w-full">
+                    <thead><tr className="border-b border-gray-700 bg-gray-800/50">
+                      <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Role</th>
+                      <th className="text-center px-4 py-3 text-sm font-medium text-gray-400">View DAGs</th>
+                      <th className="text-center px-4 py-3 text-sm font-medium text-gray-400">Trigger</th>
+                      <th className="text-center px-4 py-3 text-sm font-medium text-gray-400">Edit</th>
+                      <th className="text-center px-4 py-3 text-sm font-medium text-gray-400">Delete</th>
+                      <th className="text-center px-4 py-3 text-sm font-medium text-gray-400">Admin</th>
+                    </tr></thead>
+                    <tbody>
+                      {[
+                        { role: 'Viewers', view: true, trigger: false, edit: false, del: false, admin: false },
+                        { role: 'Developers', view: true, trigger: true, edit: true, del: false, admin: false },
+                        { role: 'Team Admins', view: true, trigger: true, edit: true, del: true, admin: false },
+                        { role: 'Platform Admins', view: true, trigger: true, edit: true, del: true, admin: true },
+                        { role: 'Auditors', view: true, trigger: false, edit: false, del: false, admin: false },
+                      ].map((row, i) => (
+                        <tr key={i} className="border-b border-gray-700/50">
+                          <td className="px-4 py-3 text-sm font-medium">{row.role}</td>
+                          <td className="px-4 py-3 text-center">{row.view ? <Icon name="check" size={16} className="text-emerald-400 mx-auto" /> : <Icon name="x" size={16} className="text-gray-600 mx-auto" />}</td>
+                          <td className="px-4 py-3 text-center">{row.trigger ? <Icon name="check" size={16} className="text-emerald-400 mx-auto" /> : <Icon name="x" size={16} className="text-gray-600 mx-auto" />}</td>
+                          <td className="px-4 py-3 text-center">{row.edit ? <Icon name="check" size={16} className="text-emerald-400 mx-auto" /> : <Icon name="x" size={16} className="text-gray-600 mx-auto" />}</td>
+                          <td className="px-4 py-3 text-center">{row.del ? <Icon name="check" size={16} className="text-emerald-400 mx-auto" /> : <Icon name="x" size={16} className="text-gray-600 mx-auto" />}</td>
+                          <td className="px-4 py-3 text-center">{row.admin ? <Icon name="check" size={16} className="text-emerald-400 mx-auto" /> : <Icon name="x" size={16} className="text-gray-600 mx-auto" />}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Diagnostics Panel */}
+            {showDiagnostics && (
+              <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="absolute inset-0 bg-black/50" onClick={() => setShowDiagnostics(false)} />
+                <div className="relative w-96 bg-gray-900 border-l border-gray-700 overflow-auto flex flex-col">
+                  <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center"><Icon name="wrench" size={20} className="text-amber-400" /></div>
+                      <div><div className="font-semibold">Diagnostics</div><div className="text-sm text-gray-500">Platform Health</div></div>
+                    </div>
+                    <button onClick={() => setShowDiagnostics(false)} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} className="text-gray-400" /></button>
+                  </div>
+                  <div className="flex-1 p-4 space-y-4">
+                    {/* Health Checks */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"><Icon name="activity" size={14} />Health Checks</h4>
+                      <div className="space-y-2">
+                        {[
+                          ...(enableAirflow ? [{ name: 'MWAA Environment', status: 'healthy', detail: 'All workers healthy' }] : []),
+                          { name: 'Step Functions', status: 'healthy', detail: '3 state machines active' },
+                          { name: 'IAM Permissions', status: 'healthy', detail: 'Cross-account roles valid' },
+                          { name: 'Bank API Connection', status: 'warning', detail: 'High latency detected (2.3s)' },
+                          ...(enableAirflow ? [{ name: 'S3 DAG Bucket', status: 'healthy', detail: 'Sync operational' }] : []),
+                        ].map((check, i) => (
+                          <div key={i} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-2 h-2 rounded-full ${check.status === 'healthy' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                              <div><div className="text-sm font-medium">{check.name}</div><div className="text-sm text-gray-400">{check.detail}</div></div>
+                            </div>
+                            {check.status === 'warning' && <button onClick={() => showNotification('Running fix for ' + check.name + '...')} className="text-xs text-amber-400 hover:text-amber-300">Fix</button>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Recent Issues */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"><Icon name="alert-circle" size={14} />Recent Issues</h4>
+                      <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <Icon name="x-circle" size={16} className="text-red-400 mt-0.5" />
+                          <div>
+                            <div className="text-sm font-medium text-red-300">payments-reconciliation failed</div>
+                            <div className="text-sm text-gray-400 mt-1">Bank API timeout on fetch_transactions</div>
+                            <div className="flex items-center gap-2 mt-2">
+                              <button onClick={() => showNotification('Opening logs...')} className="text-xs text-violet-400 hover:text-violet-300">View Logs</button>
+                              <span className="text-gray-600">•</span>
+                              <button onClick={() => showNotification('Retrying job...')} className="text-xs text-violet-400 hover:text-violet-300">Retry</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Recommendations */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"><Icon name="zap" size={14} />Recommendations</h4>
+                      <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <Icon name="sparkles" size={16} className="text-violet-400 mt-0.5" />
+                          <div>
+                            <div className="text-sm font-medium text-violet-300">Optimize month-end-reporting</div>
+                            <div className="text-sm text-gray-400 mt-1">Consider parallelizing tasks 3-7 to reduce runtime by ~40%</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-700">
+                    <button onClick={() => showNotification('Running full diagnostics...')} className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-500 px-4 py-2 rounded-lg text-sm font-medium"><Icon name="wrench" size={16} />Run Full Diagnostics</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      return (
+        <div className={`min-h-screen flex ${featureFlags.darkMode ? 'theme-dark' : 'theme-light'}`}>
+          {/* Notification Toast */}
+          {notification && (
+            <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
+              notification.type === 'success' ? 'bg-emerald-600' : notification.type === 'warning' ? 'bg-amber-600' : notification.type === 'error' ? 'bg-red-600' : featureFlags.darkMode ? 'bg-gray-700' : 'bg-gray-600'
+            }`}>
+              <Icon name={notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'alert-triangle' : notification.type === 'error' ? 'x-circle' : 'bell'} size={16} />
+              <span className="text-sm">{notification.message}</span>
+            </div>
+          )}
+
+          <div className="w-64 themed-sidebar border-r flex flex-col">
+            <div className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${featureFlags.darkMode ? 'bg-gradient-to-br from-cyan-500 to-indigo-500' : 'bg-gradient-to-br from-blue-500 to-cyan-500'}`}>M</div>
+                <div><div className="font-semibold" style={{color: 'var(--text-sidebar)'}}>MIA</div><div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>Make Infrastructure Awesome</div></div>
+              </div>
+            </div>
+            <nav className="flex-1 p-3 space-y-1">
+              {navItems.map(item => (
+                <button key={item.id} onClick={() => { setActiveNav(item.id); setShowNewJob(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all themed-sidebar-item hover:bg-white/5" style={activeNav === item.id ? {backgroundColor: item.color === 'amber' ? 'rgba(251,191,36,0.2)' : item.color === 'violet' ? 'rgba(139,92,246,0.2)' : item.color === 'blue' ? 'rgba(59,130,246,0.2)' : item.color === 'emerald' ? 'rgba(16,185,129,0.2)' : 'rgba(6,182,212,0.2)', border: item.color === 'amber' ? '1px solid #fbbf24' : item.color === 'violet' ? '1px solid rgba(139,92,246,0.3)' : item.color === 'blue' ? '1px solid rgba(59,130,246,0.3)' : item.color === 'emerald' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(6,182,212,0.3)'} : {color: 'var(--text-sidebar-muted)'}}>
+                  <Icon name={item.icon} size={18} style={activeNav === item.id ? {color: item.color === 'amber' ? '#fbbf24' : item.color === 'violet' ? '#a78bfa' : item.color === 'blue' ? '#60a5fa' : item.color === 'emerald' ? '#34d399' : '#22d3ee'} : {}} />
+                  <div className="flex-1"><div className="text-sm font-medium" style={activeNav === item.id ? {color: '#ffffff'} : {}}>{item.label}</div>{item.subtitle && <div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>{item.subtitle}</div>}</div>
+                  {activeNav === item.id && <Icon name="chevron-right" size={16} style={{color: item.color === 'amber' ? '#fbbf24' : item.color === 'violet' ? '#a78bfa' : item.color === 'blue' ? '#60a5fa' : item.color === 'emerald' ? '#34d399' : '#22d3ee'}} />}
+                </button>
+              ))}
+            </nav>
+            <div className="p-3 border-t" style={{borderColor: 'var(--border-sidebar)'}}>
+              <div className="flex items-center gap-3 px-3 py-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-sm font-medium text-gray-900">LA</div>
+                <div className="flex-1"><div className="text-sm font-medium" style={{color: 'var(--text-sidebar)'}}>Luke Angel</div><div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>Platform PM</div></div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col bg-gray-900">
+            <header className="h-14 border-b flex items-center justify-between px-6 themed-header">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Icon name={navItems.find(n => n.id === activeNav)?.icon || 'home'} size={20} className={`text-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-400`} />
+                  <span className="font-semibold">{navItems.find(n => n.id === activeNav)?.label}</span>
+                  {navItems.find(n => n.id === activeNav)?.subtitle && <span className="text-gray-500">/ {navItems.find(n => n.id === activeNav)?.subtitle}</span>}
+                </div>
+                {activeNav !== 'home' && (
+                  <button onClick={() => {
+                    if (activeNav === 'mom') { setNewMomData({ name: '', type: 'ec2', size: '', region: 'us-east-1', owner: '', description: '' }); setShowNewMomResource(true); }
+                    else if (activeNav === 'uncle') { setNewDatastoreData({ name: '', type: 'postgresql', engine: '', region: 'us-east-1', owner: '', description: '' }); setShowNewDatastore(true); }
+                    else if (activeNav === 'dad') {
+                      if (dadActiveTab === 'services') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('service'); setNewResourceData({ name: '', namespace: 'default' }); }
+                      else if (dadActiveTab === 'resources') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('virtualservice'); setNewResourceData({ name: '', namespace: 'default' }); }
+                      else if (dadActiveTab === 'patterns') { setShowPatternWizard(true); setPatternWizardStep(0); }
+                      else if (dadActiveTab === 'security') { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('authpolicy'); setNewResourceData({ name: '', namespace: 'default' }); }
+                      else if (dadActiveTab === 'certs') showNotification('Creating new Certificate...');
+                      else if (dadActiveTab === 'wasm') showNotification('Creating new WASM Plugin...');
+                      else if (dadActiveTab === 'lua') showNotification('Creating new Lua Filter...');
+                    }
+                    else if (activeNav === 'auntie') { setEditingMessaging(null); setNewMessagingData({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' }); setShowNewMessaging(true); }
+                    else if (activeNav === 'rosie') { setJobEditorResource({ id: Date.now(), name: 'New Job', isNew: true }); setJobEditorNodes([]); setJobEditorConfig({ name: '', description: '', schedule: '0 2 * * *', scheduleType: 'cron', tags: [] }); setJobEditorSelectedNode(null); setEditingBranch(null); setShowJobEditor(true); }
+                    else if (activeNav === 'bro') { setNewNetworkData({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' }); setShowNewNetworkResource(true); }
+                  }} className={`flex items-center gap-1.5 bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-600 hover:bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-500 px-3 py-1.5 rounded-lg text-sm font-medium`}><Icon name="plus" size={16} />New</button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})} className="p-2 rounded-lg transition-colors hover:bg-gray-700/50 text-gray-400 hover:text-gray-200" title={featureFlags.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}><Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={18} /></button>
+                <button onClick={() => setActiveNav('settings')} className={`p-2 rounded-lg transition-colors hover:bg-gray-700/50 ${activeNav === 'settings' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:text-gray-200'}`} title="Settings"><Icon name="settings" size={18} /></button>
+              </div>
+            </header>
+            <div className="flex-1 overflow-auto">
+              {activeNav === 'home' && <HomeView />}
+              {activeNav === 'mom' && <MOMView />}
+              {activeNav === 'uncle' && <UNCLEView />}
+              {activeNav === 'dad' && <DADView />}
+              {activeNav === 'auntie' && <AUNTIEView />}
+              {activeNav === 'rosie' && <ROSIEView />}
+              {activeNav === 'bro' && <BROView />}
+              {activeNav === 'settings' && <SettingsView />}
+            </div>
+          </div>
+
+          {/* Filter/WASM Info Modal */}
+          {showFilterInfo && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={() => setShowFilterInfo(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl ${showFilterInfo.type === 'wasm' ? 'bg-purple-500/20' : showFilterInfo.type === 'resource' ? 'bg-amber-500/20' : 'bg-cyan-500/20'} flex items-center justify-center`}>
+                      <Icon name={showFilterInfo.type === 'wasm' ? 'code' : showFilterInfo.type === 'resource' ? 'layers' : 'filter'} size={20} className={showFilterInfo.type === 'wasm' ? 'text-purple-400' : showFilterInfo.type === 'resource' ? 'text-amber-400' : 'text-cyan-400'} />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">{showFilterInfo.name}</h2>
+                      <p className="text-sm text-gray-400">{showFilterInfo.type === 'wasm' ? 'WASM Module' : showFilterInfo.type === 'resource' ? 'Istio Resource' : 'Envoy Filter'}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowFilterInfo(null)} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
+                </div>
+                <div className="p-4 overflow-y-auto space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                      <Icon name="info" size={14} className="text-cyan-400" />
+                      Description
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">{showFilterInfo.desc}</p>
+                  </div>
+                  {showFilterInfo.example && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                        <Icon name="code" size={14} className="text-emerald-400" />
+                        Example Configuration
+                      </h3>
+                      <pre className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-xs text-emerald-300 font-mono overflow-x-auto whitespace-pre-wrap">{showFilterInfo.example}</pre>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 border-t border-gray-700 flex justify-end">
+                  <button onClick={() => setShowFilterInfo(null)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">Close</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pattern Wizard Modal */}
+          {showPatternWizard && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={() => { setShowPatternWizard(false); setPatternWizardStep(0); setPatternWizardType(null); setPatternWizardData({}); }}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                      <Icon name="layers" size={20} className="text-amber-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">{patternWizardStep === 0 ? 'Create Pattern' : patternWizardType?.label}</h2>
+                      <p className="text-sm text-gray-400">{patternWizardStep === 0 ? 'Choose a pattern to create linked resources' : `Step ${patternWizardStep} of 3`}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => { setShowPatternWizard(false); setPatternWizardStep(0); setPatternWizardType(null); setPatternWizardData({}); }} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
+                </div>
+                <div className="p-6 overflow-y-auto flex-1">
+                  {/* Step 0: Pattern Selection */}
+                  {patternWizardStep === 0 && (
+                    <div className="grid grid-cols-2 gap-4">
+                      {[
+                        { id: 'external-api', label: 'External API Integration', icon: 'globe', desc: 'Call external APIs securely through egress', resources: 'ServiceEntry + Egress Gateway + DestinationRule', bgClass: 'bg-orange-500/20', textClass: 'text-orange-400', hoverClass: 'hover:border-orange-500/50 hover:bg-orange-500/5' },
+                        { id: 'expose-service', label: 'Expose Internal Service', icon: 'log-in', desc: 'Expose services to external clients', resources: 'Ingress Gateway + VirtualService + DestinationRule', bgClass: 'bg-cyan-500/20', textClass: 'text-cyan-400', hoverClass: 'hover:border-cyan-500/50 hover:bg-cyan-500/5' },
+                        { id: 'canary', label: 'Canary Deployment', icon: 'git-branch', desc: 'Traffic splitting for safe rollouts', resources: 'VirtualService + DestinationRule with subsets', bgClass: 'bg-violet-500/20', textClass: 'text-violet-400', hoverClass: 'hover:border-violet-500/50 hover:bg-violet-500/5' },
+                        { id: 'cross-cluster', label: 'Cross-Cluster Service', icon: 'repeat', desc: 'Multi-cluster service communication', resources: 'East-West Gateway + ServiceEntry + DestinationRule', bgClass: 'bg-teal-500/20', textClass: 'text-teal-400', hoverClass: 'hover:border-teal-500/50 hover:bg-teal-500/5' },
+                        { id: 'secure-comms', label: 'Secure Service-to-Service', icon: 'shield', desc: 'mTLS and authorization policies', resources: 'PeerAuthentication + AuthorizationPolicy', bgClass: 'bg-emerald-500/20', textClass: 'text-emerald-400', hoverClass: 'hover:border-emerald-500/50 hover:bg-emerald-500/5' },
+                      ].map(pattern => (
+                        <button key={pattern.id} onClick={() => { setPatternWizardType(pattern); setPatternWizardStep(1); setPatternWizardData({ namespace: 'default' }); }} className={`text-left p-4 rounded-xl border border-gray-700 ${pattern.hoverClass} transition-all`}>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-10 h-10 rounded-lg ${pattern.bgClass} flex items-center justify-center`}>
+                              <Icon name={pattern.icon} size={20} className={pattern.textClass} />
+                            </div>
+                            <div className="font-medium">{pattern.label}</div>
+                          </div>
+                          <p className="text-sm text-gray-400 mb-2">{pattern.desc}</p>
+                          <p className="text-sm text-gray-400">{pattern.resources}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Step 1: Basic Configuration */}
+                  {patternWizardStep === 1 && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Pattern Name Prefix</label>
+                        <input type="text" value={patternWizardData.namePrefix || ''} onChange={e => setPatternWizardData({...patternWizardData, namePrefix: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g., my-api" />
+                        <p className="text-sm text-gray-400 mt-1">This will be used to name all created resources</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Namespace</label>
+                        <select value={patternWizardData.namespace || 'default'} onChange={e => setPatternWizardData({...patternWizardData, namespace: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                          <option value="default">default</option>
+                          <option value="lending">lending</option>
+                          <option value="payments">payments</option>
+                          <option value="identity">identity</option>
+                          <option value="comms">comms</option>
+                          <option value="data">data</option>
+                          <option value="istio-system">istio-system</option>
+                        </select>
+                      </div>
+
+                      {/* External API specific fields */}
+                      {patternWizardType?.id === 'external-api' && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">External Host(s)</label>
+                            <input type="text" value={patternWizardData.hosts || ''} onChange={e => setPatternWizardData({...patternWizardData, hosts: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="api.example.com, api2.example.com" />
+                            <p className="text-sm text-gray-400 mt-1">Comma-separated list of external hostnames</p>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Port</label>
+                              <input type="number" value={patternWizardData.port || 443} onChange={e => setPatternWizardData({...patternWizardData, port: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Protocol</label>
+                              <select value={patternWizardData.protocol || 'HTTPS'} onChange={e => setPatternWizardData({...patternWizardData, protocol: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                                <option value="HTTPS">HTTPS</option>
+                                <option value="HTTP">HTTP</option>
+                                <option value="TLS">TLS</option>
+                                <option value="TCP">TCP</option>
+                              </select>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Expose Service specific fields */}
+                      {patternWizardType?.id === 'expose-service' && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">External Hostname</label>
+                            <input type="text" value={patternWizardData.hostname || ''} onChange={e => setPatternWizardData({...patternWizardData, hostname: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="api.example.com" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Target Service</label>
+                            <select value={patternWizardData.targetService || ''} onChange={e => setPatternWizardData({...patternWizardData, targetService: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="">Select a service...</option>
+                              {mockMeshResources.filter(r => r.type === 'service').map(s => (
+                                <option key={s.id} value={s.name}>{s.name} ({s.namespace})</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">TLS Mode</label>
+                            <select value={patternWizardData.tlsMode || 'SIMPLE'} onChange={e => setPatternWizardData({...patternWizardData, tlsMode: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="SIMPLE">SIMPLE (Server TLS)</option>
+                              <option value="MUTUAL">MUTUAL (mTLS)</option>
+                              <option value="PASSTHROUGH">PASSTHROUGH</option>
+                            </select>
+                          </div>
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 mt-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Icon name="sliders" size={14} className="text-violet-400" />
+                              <span className="text-sm font-medium">DestinationRule (Recommended)</span>
+                            </div>
+                            <p className="text-sm text-gray-400 mb-3">Configure traffic policies like circuit breakers, retries, and connection pooling for the target service</p>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Load Balancer</label>
+                              <select value={patternWizardData.loadBalancer || 'ROUND_ROBIN'} onChange={e => setPatternWizardData({...patternWizardData, loadBalancer: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                                <option value="ROUND_ROBIN">Round Robin</option>
+                                <option value="LEAST_CONN">Least Connections</option>
+                                <option value="RANDOM">Random</option>
+                              </select>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Canary specific fields */}
+                      {patternWizardType?.id === 'canary' && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Target Service</label>
+                            <select value={patternWizardData.targetService || ''} onChange={e => setPatternWizardData({...patternWizardData, targetService: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="">Select a service...</option>
+                              {mockMeshResources.filter(r => r.type === 'service').map(s => (
+                                <option key={s.id} value={s.name}>{s.name} ({s.namespace})</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Stable Traffic %</label>
+                              <input type="number" min="0" max="100" value={patternWizardData.stableWeight || 90} onChange={e => setPatternWizardData({...patternWizardData, stableWeight: parseInt(e.target.value), canaryWeight: 100 - parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-400 mb-1">Canary Traffic %</label>
+                              <input type="number" min="0" max="100" value={patternWizardData.canaryWeight || 10} onChange={e => setPatternWizardData({...patternWizardData, canaryWeight: parseInt(e.target.value), stableWeight: 100 - parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Cross-Cluster specific fields */}
+                      {patternWizardType?.id === 'cross-cluster' && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Remote Cluster Service</label>
+                            <input type="text" value={patternWizardData.remoteService || ''} onChange={e => setPatternWizardData({...patternWizardData, remoteService: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="service-name.namespace.svc.cluster.local" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Remote Cluster Name</label>
+                            <input type="text" value={patternWizardData.remoteCluster || ''} onChange={e => setPatternWizardData({...patternWizardData, remoteCluster: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="cluster-west" />
+                          </div>
+                        </>
+                      )}
+
+                      {/* Secure Comms specific fields */}
+                      {patternWizardType?.id === 'secure-comms' && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Target Service</label>
+                            <select value={patternWizardData.targetService || ''} onChange={e => setPatternWizardData({...patternWizardData, targetService: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="">Select a service...</option>
+                              {mockMeshResources.filter(r => r.type === 'service').map(s => (
+                                <option key={s.id} value={s.name}>{s.name} ({s.namespace})</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">mTLS Mode</label>
+                            <select value={patternWizardData.mtlsMode || 'STRICT'} onChange={e => setPatternWizardData({...patternWizardData, mtlsMode: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="STRICT">STRICT (Require mTLS)</option>
+                              <option value="PERMISSIVE">PERMISSIVE (Allow plaintext)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Allowed Principals</label>
+                            <input type="text" value={patternWizardData.principals || ''} onChange={e => setPatternWizardData({...patternWizardData, principals: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="cluster.local/ns/*/sa/frontend" />
+                            <p className="text-sm text-gray-400 mt-1">Comma-separated SPIFFE IDs that can access this service</p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Step 2: Traffic Policy */}
+                  {patternWizardStep === 2 && (
+                    <div className="space-y-4">
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="sliders" size={14} className="text-violet-400" />Traffic Policy</h3>
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Load Balancer</label>
+                            <select value={patternWizardData.loadBalancer || 'ROUND_ROBIN'} onChange={e => setPatternWizardData({...patternWizardData, loadBalancer: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                              <option value="ROUND_ROBIN">Round Robin</option>
+                              <option value="LEAST_CONN">Least Connections</option>
+                              <option value="RANDOM">Random</option>
+                              <option value="PASSTHROUGH">Passthrough</option>
+                            </select>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id="circuitBreaker" checked={patternWizardData.circuitBreaker || false} onChange={e => setPatternWizardData({...patternWizardData, circuitBreaker: e.target.checked})} className="rounded" />
+                            <label htmlFor="circuitBreaker" className="text-sm text-gray-300">Enable Circuit Breaker</label>
+                          </div>
+                          {patternWizardData.circuitBreaker && (
+                            <div className="grid grid-cols-2 gap-3 pl-6">
+                              <div>
+                                <label className="block text-sm text-gray-400 mb-1">Consecutive Errors</label>
+                                <input type="number" value={patternWizardData.consecutiveErrors || 5} onChange={e => setPatternWizardData({...patternWizardData, consecutiveErrors: parseInt(e.target.value)})} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-sm text-gray-400 mb-1">Ejection Time (s)</label>
+                                <input type="number" value={patternWizardData.ejectionTime || 30} onChange={e => setPatternWizardData({...patternWizardData, ejectionTime: parseInt(e.target.value)})} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" />
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-3">
+                            <input type="checkbox" id="retries" checked={patternWizardData.retries || false} onChange={e => setPatternWizardData({...patternWizardData, retries: e.target.checked})} className="rounded" />
+                            <label htmlFor="retries" className="text-sm text-gray-300">Enable Retries</label>
+                          </div>
+                          {patternWizardData.retries && (
+                            <div className="grid grid-cols-2 gap-3 pl-6">
+                              <div>
+                                <label className="block text-sm text-gray-400 mb-1">Max Attempts</label>
+                                <input type="number" value={patternWizardData.retryAttempts || 3} onChange={e => setPatternWizardData({...patternWizardData, retryAttempts: parseInt(e.target.value)})} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-sm text-gray-400 mb-1">Per-Try Timeout (s)</label>
+                                <input type="number" value={patternWizardData.retryTimeout || 2} onChange={e => setPatternWizardData({...patternWizardData, retryTimeout: parseInt(e.target.value)})} className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3: Review & Create */}
+                  {patternWizardStep === 3 && (
+                    <div className="space-y-4">
+                      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+                        <h3 className="text-sm font-medium text-emerald-300 mb-2 flex items-center gap-2"><Icon name="check-circle" size={14} />Resources to be created:</h3>
+                        <ul className="space-y-2 text-sm text-gray-300">
+                          {patternWizardType?.id === 'external-api' && (
+                            <>
+                              <li className="flex items-center gap-2"><Icon name="external-link" size={12} className="text-cyan-400" /><span>ServiceEntry: {patternWizardData.namePrefix}-se</span></li>
+                              <li className="flex items-center gap-2"><Icon name="log-out" size={12} className="text-orange-400" /><span>Egress Gateway: {patternWizardData.namePrefix}-gw-egress</span></li>
+                              <li className="flex items-center gap-2"><Icon name="sliders" size={12} className="text-violet-400" /><span>DestinationRule: {patternWizardData.namePrefix}-dr</span></li>
+                            </>
+                          )}
+                          {patternWizardType?.id === 'expose-service' && (
+                            <>
+                              <li className="flex items-center gap-2"><Icon name="log-in" size={12} className="text-cyan-400" /><span>Ingress Gateway: {patternWizardData.namePrefix}-gw-ingress</span></li>
+                              <li className="flex items-center gap-2"><Icon name="git-branch" size={12} className="text-violet-400" /><span>VirtualService: {patternWizardData.namePrefix}-vs</span></li>
+                              <li className="flex items-center gap-2"><Icon name="sliders" size={12} className="text-violet-400" /><span>DestinationRule: {patternWizardData.namePrefix}-dr</span></li>
+                            </>
+                          )}
+                          {patternWizardType?.id === 'canary' && (
+                            <>
+                              <li className="flex items-center gap-2"><Icon name="git-branch" size={12} className="text-violet-400" /><span>VirtualService: {patternWizardData.namePrefix}-vs</span></li>
+                              <li className="flex items-center gap-2"><Icon name="sliders" size={12} className="text-violet-400" /><span>DestinationRule: {patternWizardData.namePrefix}-dr (with stable/canary subsets)</span></li>
+                            </>
+                          )}
+                          {patternWizardType?.id === 'cross-cluster' && (
+                            <>
+                              <li className="flex items-center gap-2"><Icon name="repeat" size={12} className="text-teal-400" /><span>East-West Gateway: {patternWizardData.namePrefix}-gw-ew</span></li>
+                              <li className="flex items-center gap-2"><Icon name="external-link" size={12} className="text-cyan-400" /><span>ServiceEntry: {patternWizardData.namePrefix}-remote-se</span></li>
+                              <li className="flex items-center gap-2"><Icon name="sliders" size={12} className="text-violet-400" /><span>DestinationRule: {patternWizardData.namePrefix}-dr</span></li>
+                            </>
+                          )}
+                          {patternWizardType?.id === 'secure-comms' && (
+                            <>
+                              <li className="flex items-center gap-2"><Icon name="lock" size={12} className="text-emerald-400" /><span>PeerAuthentication: {patternWizardData.namePrefix}-mtls</span></li>
+                              <li className="flex items-center gap-2"><Icon name="shield" size={12} className="text-emerald-400" /><span>AuthorizationPolicy: {patternWizardData.namePrefix}-authz</span></li>
+                            </>
+                          )}
+                        </ul>
+                      </div>
+                      <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                        <h3 className="text-sm font-medium mb-2">Configuration Summary</h3>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="text-gray-500">Namespace:</div><div className="text-gray-300">{patternWizardData.namespace}</div>
+                          {patternWizardData.hosts && <><div className="text-gray-500">Hosts:</div><div className="text-gray-300">{patternWizardData.hosts}</div></>}
+                          {patternWizardData.hostname && <><div className="text-gray-500">Hostname:</div><div className="text-gray-300">{patternWizardData.hostname}</div></>}
+                          {patternWizardData.targetService && <><div className="text-gray-500">Target Service:</div><div className="text-gray-300">{patternWizardData.targetService}</div></>}
+                          {patternWizardData.stableWeight && <><div className="text-gray-500">Traffic Split:</div><div className="text-gray-300">{patternWizardData.stableWeight}% stable / {patternWizardData.canaryWeight}% canary</div></>}
+                          {patternWizardData.loadBalancer && <><div className="text-gray-500">Load Balancer:</div><div className="text-gray-300">{patternWizardData.loadBalancer}</div></>}
+                          {patternWizardData.circuitBreaker && <><div className="text-gray-500">Circuit Breaker:</div><div className="text-emerald-400">Enabled</div></>}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 border-t border-gray-700 flex justify-between">
+                  <button onClick={() => { if (patternWizardStep === 0) { setShowPatternWizard(false); } else { setPatternWizardStep(patternWizardStep - 1); } }} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">
+                    {patternWizardStep === 0 ? 'Cancel' : 'Back'}
+                  </button>
+                  <button onClick={() => {
+                    if (patternWizardStep < 3) {
+                      setPatternWizardStep(patternWizardStep + 1);
+                    } else {
+                      // Create the actual resources
+                      const newResources = [];
+                      const nextId = Math.max(...meshResources.map(r => r.id)) + 1;
+                      const ns = patternWizardData.namespace || 'default';
+                      const prefix = patternWizardData.namePrefix;
+
+                      if (patternWizardType?.id === 'external-api') {
+                        const hosts = patternWizardData.hosts?.split(',').map(h => h.trim()) || [];
+                        newResources.push(
+                          { id: nextId, name: `${prefix}-se`, type: 'serviceentry', namespace: ns, hosts, location: 'MESH_EXTERNAL', resolution: 'DNS', status: 'healthy', port: patternWizardData.port || 443, protocol: patternWizardData.protocol || 'HTTPS' },
+                          { id: nextId + 1, name: `${prefix}-gw-egress`, type: 'egress', namespace: 'istio-system', hosts, tls: 'PASSTHROUGH', port: 443, status: 'healthy' },
+                          { id: nextId + 2, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: hosts[0] || prefix, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy' }
+                        );
+                      } else if (patternWizardType?.id === 'expose-service') {
+                        newResources.push(
+                          { id: nextId, name: `${prefix}-gw-ingress`, type: 'ingress', namespace: 'istio-system', hosts: [patternWizardData.hostname], tls: patternWizardData.tlsMode || 'SIMPLE', port: 443, status: 'healthy' },
+                          { id: nextId + 1, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.hostname, targetService: patternWizardData.targetService, gateway: `${prefix}-gw-ingress`, routes: 1, status: 'healthy' },
+                          { id: nextId + 2, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: patternWizardData.targetService, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy' }
+                        );
+                      } else if (patternWizardType?.id === 'canary') {
+                        newResources.push(
+                          { id: nextId, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, host: patternWizardData.targetService, targetService: patternWizardData.targetService, gateway: 'mesh', routes: 2, status: 'healthy' },
+                          { id: nextId + 1, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: patternWizardData.targetService, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy', subsets: [{ name: 'stable', labels: { version: 'v1' }, weight: patternWizardData.stableWeight || 90 }, { name: 'canary', labels: { version: 'v2' }, weight: patternWizardData.canaryWeight || 10 }] }
+                        );
+                      } else if (patternWizardType?.id === 'cross-cluster') {
+                        newResources.push(
+                          { id: nextId, name: `${prefix}-gw-ew`, type: 'eastwest', namespace: 'istio-system', hosts: ['*.local'], tls: 'AUTO', port: 15443, status: 'healthy' },
+                          { id: nextId + 1, name: `${prefix}-remote-se`, type: 'serviceentry', namespace: ns, hosts: [patternWizardData.remoteService], location: 'MESH_INTERNAL', resolution: 'DNS', status: 'healthy' },
+                          { id: nextId + 2, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, host: patternWizardData.remoteService, trafficPolicy: patternWizardData.loadBalancer || 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', status: 'healthy' }
+                        );
+                      } else if (patternWizardType?.id === 'secure-comms') {
+                        newResources.push(
+                          { id: nextId, name: `${prefix}-mtls`, type: 'authpolicy', namespace: ns, action: 'ALLOW', rules: 1, status: 'healthy', mtlsMode: patternWizardData.mtlsMode || 'STRICT' },
+                          { id: nextId + 1, name: `${prefix}-authz`, type: 'authpolicy', namespace: ns, action: 'ALLOW', rules: 1, status: 'healthy', principals: patternWizardData.principals }
+                        );
+                      }
+
+                      setMeshResources([...newResources, ...meshResources]);
+                      showNotification(`Pattern "${prefix}" created with ${newResources.length} resources`, 'success');
+                      setShowPatternWizard(false);
+                      setPatternWizardStep(0);
+                      setPatternWizardType(null);
+                      setPatternWizardData({});
+                    }
+                  }} disabled={patternWizardStep === 0 || (patternWizardStep === 1 && !patternWizardData.namePrefix)} className={`px-4 py-2 rounded-lg text-sm font-medium ${patternWizardStep === 0 || (patternWizardStep === 1 && !patternWizardData.namePrefix) ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-500'}`}>
+                    {patternWizardStep === 3 ? 'Create Pattern' : 'Next'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New MOM Resource Modal */}
+          {showNewMomResource && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => { setShowNewMomResource(false); setEditingMomResource(null); }}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+                  <h2 className="text-lg font-semibold">{editingMomResource ? 'Edit Resource' : 'Create New Resource'}</h2>
+                  <button onClick={() => { setShowNewMomResource(false); setEditingMomResource(null); }} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                  <div>
+                    <label className="text-sm text-gray-400 mb-1.5 block">Resource Name</label>
+                    <input type="text" value={newMomData.name} onChange={e => setNewMomData({...newMomData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" placeholder="my-resource" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 mb-1.5 block">Resource Type</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'ec2', label: 'EC2', icon: 'monitor', color: 'cyan' },
+                        { id: 'lambda', label: 'Lambda', icon: 'cloud-lightning', color: 'amber' },
+                        { id: 'ecs', label: 'ECS', icon: 'server', color: 'orange' },
+                        { id: 'apigateway', label: 'API GW', icon: 'globe', color: 'cyan' },
+                        { id: 'pipe', label: 'Pipe', icon: 'git-merge', color: 'teal' },
+                        { id: 'emr', label: 'EMR', icon: 'activity', color: 'purple' }
+                      ].map(t => (
+                        <button key={t.id} onClick={() => setNewMomData({...newMomData, type: t.id})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newMomData.type === t.id ? `border-${t.color}-500 bg-${t.color}-500/10` : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name={t.icon} size={20} className={newMomData.type === t.id ? `text-${t.color}-400` : 'text-gray-400'} />
+                          <span className={`text-xs ${newMomData.type === t.id ? `text-${t.color}-300` : 'text-gray-400'}`}>{t.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* EC2 Configuration - aws_instance */}
+                  {newMomData.type === 'ec2' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-cyan-400 font-medium mb-2">aws_instance configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">ami *</label><input type="text" value={newMomData.ami} onChange={e => setNewMomData({...newMomData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="ami-0abcdef1234567890" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">instance_type *</label><select value={newMomData.instanceType} onChange={e => setNewMomData({...newMomData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="t3.xlarge">t3.xlarge</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="c5.large">c5.large</option><option value="r5.large">r5.large</option><option value="r5.xlarge">r5.xlarge</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={newMomData.subnetId} onChange={e => setNewMomData({...newMomData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="subnet-xxx" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={newMomData.keyName} onChange={e => setNewMomData({...newMomData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="my-keypair" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">vpc_security_group_ids</label><input type="text" value={newMomData.securityGroups} onChange={e => setNewMomData({...newMomData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="sg-xxx, sg-yyy" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={newMomData.iamInstanceProfile} onChange={e => setNewMomData({...newMomData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="my-instance-profile" /></div>
+                      </div>
+                      <div className="text-sm text-gray-400 mt-2">ebs_block_device</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">volume_size (GB)</label><input type="number" value={newMomData.volumeSize} onChange={e => setNewMomData({...newMomData, volumeSize: parseInt(e.target.value) || 100})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">volume_type</label><select value={newMomData.volumeType} onChange={e => setNewMomData({...newMomData, volumeType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="gp3">gp3</option><option value="gp2">gp2</option><option value="io1">io1</option><option value="io2">io2</option><option value="st1">st1</option></select></div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Lambda Configuration - aws_lambda_function */}
+                  {newMomData.type === 'lambda' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-amber-400 font-medium mb-2">aws_lambda_function configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">runtime *</label><select value={newMomData.runtime} onChange={e => setNewMomData({...newMomData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="java21">java21</option><option value="go1.x">go1.x</option><option value="dotnet6">dotnet6</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">handler *</label><input type="text" value={newMomData.handler} onChange={e => setNewMomData({...newMomData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="main.handler" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">memory_size (MB)</label><select value={newMomData.memory} onChange={e => setNewMomData({...newMomData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option><option value="10240">10240</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">timeout (seconds)</label><input type="number" value={newMomData.timeout} onChange={e => setNewMomData({...newMomData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role (IAM ARN) *</label><input type="text" value={newMomData.role} onChange={e => setNewMomData({...newMomData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono text-xs" placeholder="arn:aws:iam::123456789:role/lambda-role" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers (comma-separated ARNs)</label><input type="text" value={newMomData.layers} onChange={e => setNewMomData({...newMomData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono text-xs" placeholder="arn:aws:lambda:us-east-1:123456789:layer:my-layer:1" /></div>
+                      </div>
+                    </div>
+                  )}
+                  {/* ECS Configuration - aws_ecs_service */}
+                  {newMomData.type === 'ecs' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-orange-400 font-medium mb-2">aws_ecs_service / aws_ecs_task_definition configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">cluster *</label><input type="text" value={newMomData.cluster} onChange={e => setNewMomData({...newMomData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="prod-cluster" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">launch_type *</label><select value={newMomData.launchType} onChange={e => setNewMomData({...newMomData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={newMomData.desiredCount} onChange={e => setNewMomData({...newMomData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">cpu (units)</label><select value={newMomData.cpu} onChange={e => setNewMomData({...newMomData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="256">256 (0.25 vCPU)</option><option value="512">512 (0.5 vCPU)</option><option value="1024">1024 (1 vCPU)</option><option value="2048">2048 (2 vCPU)</option><option value="4096">4096 (4 vCPU)</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">memory (MB)</label><select value={newMomData.memoryMb} onChange={e => setNewMomData({...newMomData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="512">512 MB</option><option value="1024">1024 MB</option><option value="2048">2048 MB</option><option value="4096">4096 MB</option><option value="8192">8192 MB</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">network_mode</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="awsvpc">awsvpc</option><option value="bridge">bridge</option><option value="host">host</option></select></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image (ECR URI) *</label><input type="text" value={newMomData.image} onChange={e => setNewMomData({...newMomData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="123456789.dkr.ecr.us-east-1.amazonaws.com/my-app:latest" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={newMomData.taskRole} onChange={e => setNewMomData({...newMomData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="arn:aws:iam::..." /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={newMomData.executionRole} onChange={e => setNewMomData({...newMomData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="arn:aws:iam::..." /></div>
+                      </div>
+                    </div>
+                  )}
+                  {/* EMR Configuration - aws_emr_cluster */}
+                  {newMomData.type === 'emr' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-purple-400 font-medium mb-2">aws_emr_cluster configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">release_label *</label><select value={newMomData.releaseLabel} onChange={e => setNewMomData({...newMomData, releaseLabel: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="emr-7.0.0">emr-7.0.0</option><option value="emr-6.15.0">emr-6.15.0</option><option value="emr-6.10.0">emr-6.10.0</option><option value="emr-6.5.0">emr-6.5.0</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">applications *</label><input type="text" value={newMomData.applications} onChange={e => setNewMomData({...newMomData, applications: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" placeholder="Spark,Hive,Presto" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={newMomData.masterInstanceType} onChange={e => setNewMomData({...newMomData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={newMomData.coreInstanceType} onChange={e => setNewMomData({...newMomData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="r5.4xlarge">r5.4xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">core_instance_count</label><input type="number" value={newMomData.coreCount} onChange={e => setNewMomData({...newMomData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={newMomData.serviceRole} onChange={e => setNewMomData({...newMomData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_DefaultRole" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_attributes.instance_profile</label><input type="text" value={newMomData.ec2Role} onChange={e => setNewMomData({...newMomData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_EC2_DefaultRole" /></div>
+                      </div>
+                    </div>
+                  )}
+                  {/* API Gateway Configuration - aws_apigatewayv2_api */}
+                  {newMomData.type === 'apigateway' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-cyan-400 font-medium mb-2">aws_apigatewayv2_api configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">protocol_type *</label><select value={newMomData.protocolType} onChange={e => setNewMomData({...newMomData, protocolType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="HTTP">HTTP</option><option value="WEBSOCKET">WEBSOCKET</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">endpoint_type</label><select value={newMomData.endpointType} onChange={e => setNewMomData({...newMomData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="REGIONAL">REGIONAL</option><option value="EDGE">EDGE</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">default_authorizer</label><select value={newMomData.defaultAuthorizer} onChange={e => setNewMomData({...newMomData, defaultAuthorizer: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="NONE">NONE</option><option value="JWT">JWT</option><option value="AWS_IAM">AWS_IAM</option><option value="CUSTOM">CUSTOM</option></select></div>
+                        <div className="flex items-center gap-2 pt-5"><input type="checkbox" id="corsEnabled" checked={newMomData.corsEnabled} onChange={e => setNewMomData({...newMomData, corsEnabled: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500 focus:ring-cyan-500" /><label htmlFor="corsEnabled" className="text-sm text-gray-400">Enable CORS</label></div>
+                      </div>
+                      <div className="text-sm text-gray-400 mt-2">Note: Routes and integrations are configured separately after creation</div>
+                    </div>
+                  )}
+                  {/* EventBridge Pipes Configuration - aws_pipes_pipe */}
+                  {newMomData.type === 'pipe' && (
+                    <div className="space-y-3">
+                      <div className="text-xs text-teal-400 font-medium mb-2">aws_pipes_pipe configuration</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">source_type *</label><select value={newMomData.sourceType} onChange={e => setNewMomData({...newMomData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB Streams</option><option value="Kinesis">Kinesis</option><option value="MSK">Amazon MSK</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">target_type *</label><select value={newMomData.targetType} onChange={e => setNewMomData({...newMomData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option><option value="S3">S3</option></select></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source ARN *</label><input type="text" value={newMomData.sourceArn} onChange={e => setNewMomData({...newMomData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:sqs:us-east-1:123456789:my-queue" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target ARN *</label><input type="text" value={newMomData.targetArn} onChange={e => setNewMomData({...newMomData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:events:us-east-1:123456789:event-bus/my-bus" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={newMomData.enrichmentType} onChange={e => setNewMomData({...newMomData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option><option value="Step Functions">Step Functions</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={newMomData.batchSize} onChange={e => setNewMomData({...newMomData, batchSize: parseInt(e.target.value) || 10})} min="1" max="10000" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500" /></div>
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <label className="text-sm text-gray-400 mb-1.5 block">Region</label>
+                    <select value={newMomData.region || 'us-east-1'} onChange={e => setNewMomData({...newMomData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                      <option value="us-east-1">us-east-1</option>
+                      <option value="us-west-2">us-west-2</option>
+                      <option value="eu-west-1">eu-west-1</option>
+                      <option value="ap-southeast-1">ap-southeast-1</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 mb-1.5 block">Description</label>
+                    <textarea value={newMomData.description} onChange={e => setNewMomData({...newMomData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 resize-none" placeholder="What is this resource for?" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700 flex-shrink-0">
+                  <button onClick={() => { setShowNewMomResource(false); setEditingMomResource(null); }} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                  <button onClick={() => {
+                      const resourceName = newMomData.name || 'new-resource';
+                      const baseResource = editingMomResource
+                        ? { ...editingMomResource, name: resourceName, type: newMomData.type, region: newMomData.region, owner: newMomData.owner || editingMomResource.owner, description: newMomData.description || '' }
+                        : { id: Date.now(), name: resourceName, type: newMomData.type, status: 'active', region: newMomData.region, owner: newMomData.owner || 'current-user', created: new Date().toISOString().split('T')[0], monthlyCost: '$0', description: newMomData.description || '' };
+                      let newResource = baseResource;
+                      if (newMomData.type === 'ec2') {
+                        newResource = {...baseResource, status: baseResource.status || 'running', instanceType: newMomData.instanceType, ami: newMomData.ami, subnetId: newMomData.subnetId, keyName: newMomData.keyName, securityGroups: newMomData.securityGroups.split(',').map(s => s.trim()).filter(Boolean), iamInstanceProfile: newMomData.iamInstanceProfile, ebsVolumes: [{deviceName: '/dev/xvda', volumeSize: newMomData.volumeSize, volumeType: newMomData.volumeType, iops: 3000}], cpuUtil: baseResource.cpuUtil || '0%', memUtil: baseResource.memUtil || '0%', network: baseResource.network || '0 Mbps', diskUtil: baseResource.diskUtil || '0%', tags: baseResource.tags || {Environment: 'prod'}};
+                      } else if (newMomData.type === 'lambda') {
+                        newResource = {...baseResource, runtime: newMomData.runtime, handler: newMomData.handler, memory: newMomData.memory, timeout: newMomData.timeout, role: newMomData.role || baseResource.role || 'arn:aws:iam::123456789:role/'+resourceName+'-role', layers: newMomData.layers ? newMomData.layers.split(',').map(s => s.trim()) : [], invocations: baseResource.invocations || '0/mo', avgDuration: baseResource.avgDuration || '0ms', errors: baseResource.errors || '0%', envVars: baseResource.envVars || {}};
+                      } else if (newMomData.type === 'ecs') {
+                        newResource = {...baseResource, status: baseResource.status || 'running', cluster: newMomData.cluster, launchType: newMomData.launchType, desiredCount: newMomData.desiredCount, runningCount: newMomData.desiredCount, cpu: newMomData.cpu, memoryMb: newMomData.memoryMb, image: newMomData.image || baseResource.image || '123456789.dkr.ecr.us-east-1.amazonaws.com/'+resourceName+':latest', networkMode: 'awsvpc', subnets: baseResource.subnets || ['subnet-abc123'], securityGroups: baseResource.securityGroups || ['sg-ecs-default'], taskRole: newMomData.taskRole, executionRole: newMomData.executionRole, cpuUtil: baseResource.cpuUtil || '0%', memUtil: baseResource.memUtil || '0%', requests: baseResource.requests || '0/min', latency: baseResource.latency || '0ms'};
+                      } else if (newMomData.type === 'emr') {
+                        newResource = {...baseResource, status: baseResource.status || 'waiting', releaseLabel: newMomData.releaseLabel, applications: newMomData.applications.split(',').map(s => s.trim()), masterInstanceType: newMomData.masterInstanceType, masterCount: 1, coreInstanceType: newMomData.coreInstanceType, coreCount: newMomData.coreCount, serviceRole: newMomData.serviceRole || 'EMR_DefaultRole', ec2Role: newMomData.ec2Role || 'EMR_EC2_DefaultRole', subnetId: baseResource.subnetId || 'subnet-emr', securityGroups: baseResource.securityGroups || {master: 'sg-emr-master', slave: 'sg-emr-core'}, logUri: baseResource.logUri || 's3://emr-logs/', jobsRun: baseResource.jobsRun || 0, uptime: baseResource.uptime || '100%', storage: baseResource.storage || '0 TB'};
+                      } else if (newMomData.type === 'apigateway') {
+                        newResource = {...baseResource, apiType: newMomData.protocolType, protocolType: newMomData.protocolType, endpointType: newMomData.endpointType, defaultAuthorizer: newMomData.defaultAuthorizer, corsConfig: newMomData.corsEnabled ? {allowOrigins: ['*'], allowMethods: ['GET','POST','PUT','DELETE'], enabled: true} : null, routes: baseResource.routes || 0, stages: baseResource.stages || ['dev'], requests: baseResource.requests || '0/mo', latency: baseResource.latency || '0ms', integrations: baseResource.integrations || []};
+                      } else if (newMomData.type === 'pipe') {
+                        newResource = {...baseResource, status: baseResource.status || 'running', sourceType: newMomData.sourceType, sourceArn: newMomData.sourceArn, targetType: newMomData.targetType, targetArn: newMomData.targetArn, enrichmentType: newMomData.enrichmentType, enrichmentArn: baseResource.enrichmentArn || null, batchSize: newMomData.batchSize, roleArn: baseResource.roleArn || 'arn:aws:iam::123456789:role/'+resourceName+'-pipe-role', throughput: baseResource.throughput || '0/hr', logConfig: baseResource.logConfig || {level: 'ERROR', cloudwatchLogGroup: '/aws/pipes/'+resourceName}};
+                      }
+                      if (editingMomResource) {
+                        setInfraResources(prev => prev.map(r => r.id === editingMomResource.id ? newResource : r));
+                        setSelectedResource(newResource);
+                        showNotification('Resource "' + resourceName + '" updated successfully', 'success');
+                      } else {
+                        setInfraResources(prev => [...prev, newResource]);
+                        showNotification('Resource "' + resourceName + '" created successfully', 'success');
+                      }
+                      setShowNewMomResource(false);
+                      setEditingMomResource(null);
+                    }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-sm font-medium rounded-lg">{editingMomResource ? 'Save Changes' : 'Create Resource'}</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New BRO Network Resource Modal */}
+          {showNewNetworkResource && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowNewNetworkResource(false)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+                  <h2 className="text-lg font-semibold">Create Network Resource</h2>
+                  <button onClick={() => setShowNewNetworkResource(false)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Resource Name</label>
+                    <input type="text" value={newNetworkData.name} onChange={e => setNewNetworkData({...newNetworkData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g., production-vpc" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Resource Type</label>
+                    <select value={newNetworkData.type} onChange={e => setNewNetworkData({...newNetworkData, type: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                      <option value="vpc">VPC</option>
+                      <option value="tgw">Transit Gateway</option>
+                      <option value="vpn">VPN Connection</option>
+                      <option value="directconnect">Direct Connect</option>
+                      <option value="route53">Route 53 Hosted Zone</option>
+                      <option value="peering">VPC Peering</option>
+                      <option value="privatelink">PrivateLink Endpoint</option>
+                    </select>
+                  </div>
+                  {newNetworkData.type === 'vpc' && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">CIDR Block</label>
+                        <input type="text" value={newNetworkData.cidr || ''} onChange={e => setNewNetworkData({...newNetworkData, cidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g., 10.0.0.0/16" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Subnets</label>
+                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="6" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Flow Logs</label>
+                          <select value={newNetworkData.flowLogs || 'true'} onChange={e => setNewNetworkData({...newNetworkData, flowLogs: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {newNetworkData.type === 'tgw' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Bandwidth</label>
+                        <input type="text" value={newNetworkData.bandwidth || ''} onChange={e => setNewNetworkData({...newNetworkData, bandwidth: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="50 Gbps" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Route Tables</label>
+                        <input type="number" value={newNetworkData.routeTables || ''} onChange={e => setNewNetworkData({...newNetworkData, routeTables: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="3" />
+                      </div>
+                    </div>
+                  )}
+                  {newNetworkData.type === 'vpn' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Remote IP</label>
+                          <input type="text" value={newNetworkData.remoteIp || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteIp: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="203.0.113.10" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Encryption</label>
+                          <select value={newNetworkData.encryption || 'AES-256'} onChange={e => setNewNetworkData({...newNetworkData, encryption: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                            <option value="AES-256">AES-256</option>
+                            <option value="AES-256-GCM">AES-256-GCM</option>
+                            <option value="AES-128">AES-128</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Local CIDR</label>
+                          <input type="text" value={newNetworkData.localCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, localCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="10.0.0.0/8" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Remote CIDR</label>
+                          <input type="text" value={newNetworkData.remoteCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="172.16.0.0/12" />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {newNetworkData.type === 'directconnect' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Connection Speed</label>
+                        <select value={newNetworkData.connection || '10 Gbps'} onChange={e => setNewNetworkData({...newNetworkData, connection: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                          <option value="1 Gbps">1 Gbps</option>
+                          <option value="10 Gbps">10 Gbps</option>
+                          <option value="100 Gbps">100 Gbps</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
+                        <input type="text" value={newNetworkData.location || ''} onChange={e => setNewNetworkData({...newNetworkData, location: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="Equinix DC6" />
+                      </div>
+                    </div>
+                  )}
+                  {newNetworkData.type === 'route53' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Domain Name</label>
+                        <input type="text" value={newNetworkData.domain || ''} onChange={e => setNewNetworkData({...newNetworkData, domain: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="example.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Zone Type</label>
+                        <select value={newNetworkData.zoneType || 'public'} onChange={e => setNewNetworkData({...newNetworkData, zoneType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                          <option value="public">Public</option>
+                          <option value="private">Private</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                  {newNetworkData.type === 'peering' && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Requester VPC</label>
+                        <input type="text" value={newNetworkData.requester || ''} onChange={e => setNewNetworkData({...newNetworkData, requester: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="prod-vpc" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Accepter VPC</label>
+                        <input type="text" value={newNetworkData.accepter || ''} onChange={e => setNewNetworkData({...newNetworkData, accepter: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="shared-vpc" />
+                      </div>
+                    </div>
+                  )}
+                  {newNetworkData.type === 'privatelink' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Endpoint Type</label>
+                          <select value={newNetworkData.endpointType || 'Interface'} onChange={e => setNewNetworkData({...newNetworkData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="Interface">Interface</option>
+                            <option value="Gateway">Gateway</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Target VPC</label>
+                          <input type="text" value={newNetworkData.vpc || ''} onChange={e => setNewNetworkData({...newNetworkData, vpc: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="prod-vpc" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Service Name</label>
+                        <input type="text" value={newNetworkData.service || ''} onChange={e => setNewNetworkData({...newNetworkData, service: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="com.amazonaws.us-east-1.s3" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Subnets</label>
+                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="3" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-1">Private DNS</label>
+                          <select value={newNetworkData.privateDns || 'true'} onChange={e => setNewNetworkData({...newNetworkData, privateDns: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Region</label>
+                    <select value={newNetworkData.region} onChange={e => setNewNetworkData({...newNetworkData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                      <option value="us-east-1">US East (N. Virginia)</option>
+                      <option value="us-west-2">US West (Oregon)</option>
+                      <option value="eu-west-1">EU (Ireland)</option>
+                      <option value="global">Global</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Owner</label>
+                    <input type="text" value={newNetworkData.owner} onChange={e => setNewNetworkData({...newNetworkData, owner: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="platform-ops" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
+                    <textarea value={newNetworkData.description} onChange={e => setNewNetworkData({...newNetworkData, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 resize-none" rows={3} placeholder="Describe the purpose of this network resource..." />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700 flex-shrink-0">
+                  <button onClick={() => setShowNewNetworkResource(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                  <button onClick={() => { showNotification(`Network resource "${newNetworkData.name || 'new-resource'}" created successfully`, 'success'); setShowNewNetworkResource(false); }} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-sm font-medium rounded-lg">Create Resource</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ROSIE Job Editor - AWS Step Functions Style with React Flow */}
+          {showJobEditor && jobEditorResource && (() => {
+            const job = jobEditorResource;
+            const { ReactFlow: RF, Background, Controls, MiniMap, useNodesState, useEdgesState, addEdge, Handle, Position } = window.ReactFlow || {};
+
+            const actionStates = [
+              { id: 'lambda', icon: 'zap', label: 'Lambda: Invoke', desc: 'Invoke a Lambda function', color: '#ff9900' },
+              { id: 'glue', icon: 'refresh-cw', label: 'Glue: StartJobRun', desc: 'Start a Glue ETL job', color: '#8c4fff' },
+              { id: 'batch', icon: 'layers', label: 'Batch: SubmitJob', desc: 'Submit an AWS Batch job', color: '#ff4f8b' },
+              { id: 'emr', icon: 'cpu', label: 'EMR: AddStep', desc: 'Add step to EMR cluster', color: '#00a1c9' },
+              { id: 's3', icon: 'hard-drive', label: 'S3: GetObject', desc: 'Get object from S3', color: '#3ecf8e' },
+              { id: 'dynamodb', icon: 'layers', label: 'DynamoDB: PutItem', desc: 'Put item to DynamoDB', color: '#4053d6' },
+              { id: 'sns', icon: 'bell', label: 'SNS: Publish', desc: 'Publish to SNS topic', color: '#d6456c' },
+              { id: 'sqs', icon: 'mail', label: 'SQS: SendMessage', desc: 'Send message to SQS', color: '#ff4f8b' },
+              { id: 'stepfn', icon: 'git-merge', label: 'Step Functions', desc: 'Start execution', color: '#ff4f8b' }
+            ];
+            const flowStates = [
+              { id: 'choice', icon: 'git-branch', label: 'Choice', desc: 'Add branching logic', color: '#00d4aa' },
+              { id: 'parallel', icon: 'grid', label: 'Parallel', desc: 'Execute in parallel', color: '#00d4aa' },
+              { id: 'map', icon: 'repeat', label: 'Map', desc: 'Iterate over items', color: '#00d4aa' },
+              { id: 'wait', icon: 'clock', label: 'Wait', desc: 'Delay execution', color: '#6b7280' },
+              { id: 'pass', icon: 'arrow-right', label: 'Pass', desc: 'Pass input to output', color: '#6b7280' },
+              { id: 'success', icon: 'check-circle', label: 'Success', desc: 'End successfully', color: '#22c55e' },
+              { id: 'fail', icon: 'x-circle', label: 'Fail', desc: 'End with failure', color: '#ef4444' }
+            ];
+            const allStates = [...actionStates, ...flowStates];
+
+            // Convert nodes to React Flow format
+            const initialNodes = jobEditorNodes.map((node, i) => ({
+              id: String(node.id),
+              type: 'stateNode',
+              position: { x: 250, y: 100 + i * 120 },
+              data: { ...node, stateInfo: allStates.find(s => s.id === node.type) }
+            }));
+
+            // Create edges between sequential nodes
+            const initialEdges = jobEditorNodes.slice(0, -1).map((node, i) => ({
+              id: `e${node.id}-${jobEditorNodes[i + 1].id}`,
+              source: String(node.id),
+              target: String(jobEditorNodes[i + 1].id),
+              type: 'smoothstep',
+              style: { stroke: '#4a6785', strokeWidth: 2 },
+              animated: true
+            }));
+
+            const closeEditor = () => { setShowJobEditor(false); setJobEditorResource(null); setJobEditorSelectedNode(null); setJobEditorMode('design'); setEditingBranch(null); };
+            const saveWorkflow = () => {
+              if (job.isNew) {
+                // Create new job
+                const newJob = {
+                  id: job.id,
+                  name: jobEditorConfig.name || 'New Job',
+                  type: 'schedule',
+                  target: 'eventbridge',
+                  schedule: jobEditorConfig.schedule || '0 2 * * *',
+                  scheduleHuman: 'Custom schedule',
+                  status: 'active',
+                  lastRun: 'Never',
+                  lastRunStatus: 'pending',
+                  nextRun: 'Pending',
+                  owner: 'current-user',
+                  tags: jobEditorConfig.tags || [],
+                  successRate: 100,
+                  avgDuration: '0m',
+                  estimatedCost: '$0.00',
+                  taskCount: jobEditorNodes.length,
+                  description: jobEditorConfig.description || '',
+                  workflow: JSON.parse(JSON.stringify(jobEditorNodes))
+                };
+                setJobs([...jobs, newJob]);
+                showNotification(`"${newJob.name}" created successfully`, 'success');
+              } else {
+                // Update existing job
+                setJobs(jobs.map(j => j.id === job.id ? {
+                  ...j,
+                  workflow: JSON.parse(JSON.stringify(jobEditorNodes)),
+                  name: jobEditorConfig.name || job.name,
+                  schedule: jobEditorConfig.schedule || job.schedule,
+                  tags: jobEditorConfig.tags || job.tags,
+                  taskCount: jobEditorNodes.length
+                } : j));
+                showNotification(`"${jobEditorConfig.name || job.name}" saved successfully`, 'success');
+              }
+              closeEditor();
+            };
+            const statesList = jobEditorOpCategory === 'flow' ? flowStates : actionStates;
+
+            // Generate ASL JSON from nodes
+            const generateASL = () => {
+              const states = {};
+              jobEditorNodes.forEach((node, i) => {
+                const stateName = node.name.replace(/[^a-zA-Z0-9]/g, '');
+                const nextState = i < jobEditorNodes.length - 1 ? jobEditorNodes[i + 1].name.replace(/[^a-zA-Z0-9]/g, '') : null;
+                if (node.type === 'lambda') {
+                  states[stateName] = { Type: 'Task', Resource: 'arn:aws:states:::lambda:invoke', Parameters: { FunctionName: node.config?.functionName || 'my-function', Payload: { 'input.$': '$' } }, ...(nextState ? { Next: nextState } : { End: true }) };
+                } else if (node.type === 'choice') {
+                  states[stateName] = { Type: 'Choice', Choices: [{ Variable: '$.status', StringEquals: 'success', Next: nextState || 'End' }], Default: nextState || 'End' };
+                } else if (node.type === 'parallel') {
+                  states[stateName] = { Type: 'Parallel', Branches: [{ StartAt: 'BranchA', States: { BranchA: { Type: 'Pass', End: true } } }, { StartAt: 'BranchB', States: { BranchB: { Type: 'Pass', End: true } } }], ...(nextState ? { Next: nextState } : { End: true }) };
+                } else if (node.type === 'map') {
+                  states[stateName] = { Type: 'Map', ItemsPath: '$.items', MaxConcurrency: 0, Iterator: { StartAt: 'ProcessItem', States: { ProcessItem: { Type: 'Pass', End: true } } }, ...(nextState ? { Next: nextState } : { End: true }) };
+                } else if (node.type === 'wait') {
+                  states[stateName] = { Type: 'Wait', Seconds: node.config?.seconds || 60, ...(nextState ? { Next: nextState } : { End: true }) };
+                } else if (node.type === 'pass') {
+                  states[stateName] = { Type: 'Pass', ...(node.config?.result ? { Result: node.config.result } : {}), ...(nextState ? { Next: nextState } : { End: true }) };
+                } else if (node.type === 'success') {
+                  states[stateName] = { Type: 'Succeed' };
+                } else if (node.type === 'fail') {
+                  states[stateName] = { Type: 'Fail', Error: node.config?.error || 'Error', Cause: node.config?.cause || 'Execution failed' };
+                } else {
+                  states[stateName] = { Type: 'Task', Resource: `arn:aws:states:::${node.type}:action`, Parameters: node.config?.parameters || {}, ...(nextState ? { Next: nextState } : { End: true }) };
+                }
+              });
+              return JSON.stringify({ Comment: job.name, StartAt: jobEditorNodes[0]?.name.replace(/[^a-zA-Z0-9]/g, '') || 'Start', States: states }, null, 2);
+            };
+
+            // Parse ASL JSON back to nodes (for Code -> Design sync)
+            const parseASLToNodes = (aslJson) => {
+              try {
+                const asl = JSON.parse(aslJson);
+                if (!asl.States) return null;
+                const nodeList = [];
+                const typeMap = { Task: 'lambda', Choice: 'choice', Parallel: 'parallel', Map: 'map', Wait: 'wait', Pass: 'pass', Succeed: 'success', Fail: 'fail' };
+                let currentState = asl.StartAt;
+                let id = 1;
+                const visited = new Set();
+                while (currentState && !visited.has(currentState) && asl.States[currentState]) {
+                  visited.add(currentState);
+                  const state = asl.States[currentState];
+                  let nodeType = typeMap[state.Type] || 'lambda';
+                  if (state.Resource?.includes('lambda')) nodeType = 'lambda';
+                  else if (state.Resource?.includes('glue')) nodeType = 'glue';
+                  else if (state.Resource?.includes('sns')) nodeType = 'sns';
+                  else if (state.Resource?.includes('sqs')) nodeType = 'sqs';
+                  else if (state.Resource?.includes('dynamodb')) nodeType = 'dynamodb';
+                  else if (state.Resource?.includes('s3')) nodeType = 's3';
+                  else if (state.Resource?.includes('batch')) nodeType = 'batch';
+                  else if (state.Resource?.includes('emr')) nodeType = 'emr';
+                  nodeList.push({ id: id++, type: nodeType, name: currentState, config: {} });
+                  currentState = state.Next || (state.Choices?.[0]?.Next) || (state.Default);
+                  if (state.End || state.Type === 'Succeed' || state.Type === 'Fail') break;
+                }
+                return nodeList;
+              } catch (e) { return null; }
+            };
+
+            // Handle code changes with sync to design
+            const handleCodeChange = (newCode) => {
+              setJobEditorCode(newCode);
+              const parsed = parseASLToNodes(newCode);
+              if (parsed && parsed.length > 0) setJobEditorNodes(parsed);
+            };
+
+            const addNodeFromSidebar = (state) => {
+              const newNode = { id: Date.now(), type: state.id, name: state.label, config: {} };
+              setJobEditorNodes([...jobEditorNodes, newNode]);
+            };
+
+            const removeNode = (id) => {
+              setJobEditorNodes(jobEditorNodes.filter(n => n.id !== id));
+              if (jobEditorSelectedNode?.id === id) setJobEditorSelectedNode(null);
+            };
+
+            const onDragStart = (event, state) => {
+              event.dataTransfer.setData('application/reactflow', JSON.stringify(state));
+              event.dataTransfer.effectAllowed = 'move';
+            };
+
+            const onDragOver = (event) => {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = 'move';
+            };
+
+            const onDrop = (event) => {
+              event.preventDefault();
+              const data = event.dataTransfer.getData('application/reactflow');
+              if (data) {
+                const state = JSON.parse(data);
+                addNodeFromSidebar(state);
+              }
+            };
+
+            const insertNodeAfter = (index, state) => {
+              const newNode = { id: Date.now(), type: state.id, name: state.label, config: {} };
+              const newNodes = [...jobEditorNodes];
+              newNodes.splice(index + 1, 0, newNode);
+              setJobEditorNodes(newNodes);
+              setJobEditorSelectedNode(newNode);
+            };
+
+            // Branch management for Parallel/Choice states
+            const addBranchState = (nodeId, branchIndex, stateType) => {
+              const stateInfo = allStates.find(s => s.id === stateType) || actionStates[0];
+              const newState = { id: Date.now(), type: stateType, name: stateInfo.label };
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const branches = (n.branches || [[], []]).map((b, i) => i === branchIndex ? [...b, newState] : b);
+                  return { ...n, branches };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const removeBranchState = (nodeId, branchIndex, stateIndex) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const branches = (n.branches || [[], []]).map((b, i) => i === branchIndex ? b.filter((_, si) => si !== stateIndex) : b);
+                  return { ...n, branches };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const addBranch = (nodeId) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const branches = n.branches || [[], []];
+                  return { ...n, branches: [...branches, []] };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const removeBranch = (nodeId, branchIndex) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId && n.branches && n.branches.length > 2) {
+                  const branches = n.branches.filter((_, i) => i !== branchIndex);
+                  return { ...n, branches };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const updateChoiceCondition = (nodeId, ruleIndex, field, value) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const rules = (n.rules || [{ variable: '$.status', operator: 'StringEquals', value: 'success', next: '' }]).map((r, i) => i === ruleIndex ? { ...r, [field]: value } : r);
+                  return { ...n, rules };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const addChoiceRule = (nodeId) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const rules = n.rules || [{ variable: '$.status', operator: 'StringEquals', value: 'success', next: '' }];
+                  return { ...n, rules: [...rules, { variable: '$.field', operator: 'StringEquals', value: '', next: '' }] };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            const removeChoiceRule = (nodeId, ruleIndex) => {
+              const updatedNodes = jobEditorNodes.map(n => {
+                if (n.id === nodeId) {
+                  const rules = (n.rules || []).filter((_, i) => i !== ruleIndex);
+                  if (rules.length === 0) rules.push({ variable: '$.status', operator: 'StringEquals', value: 'success', next: '' });
+                  return { ...n, rules };
+                }
+                return n;
+              });
+              setJobEditorNodes(updatedNodes);
+              const updatedNode = updatedNodes.find(n => n.id === nodeId);
+              if (updatedNode && jobEditorSelectedNode?.id === nodeId) setJobEditorSelectedNode(updatedNode);
+            };
+
+            return (
+            <div className="fixed inset-0 z-50 bg-[#0f1b2d] flex flex-col" style={{fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+              {/* Top Toolbar */}
+              <div className="flex items-center justify-between px-4 py-2 border-b border-[#2d4157] bg-[#161e2d]">
+                <div className="flex items-center gap-4">
+                  <button onClick={closeEditor} className="flex items-center gap-2 px-3 py-1.5 hover:bg-[#2d4157] rounded text-gray-300 hover:text-white"><Icon name="arrow-left" size={16} /><span className="text-sm">Back</span></button>
+                  <div className="w-px h-5 bg-[#2d4157]" />
+                  <div className="text-sm font-medium text-white">{job.name}</div>
+                  <div className="flex items-center border border-[#2d4157] rounded-lg overflow-hidden">
+                    <button onClick={() => setJobEditorMode('design')} className={`px-4 py-1.5 text-sm font-medium ${jobEditorMode === 'design' ? 'bg-[#0073bb] text-white' : 'text-gray-400 hover:bg-[#2d4157]'}`}>Design</button>
+                    <button onClick={() => setJobEditorMode('code')} className={`px-4 py-1.5 text-sm font-medium ${jobEditorMode === 'code' ? 'bg-[#0073bb] text-white' : 'text-gray-400 hover:bg-[#2d4157]'}`}>Code</button>
+                    <button onClick={() => setJobEditorMode('config')} className={`px-4 py-1.5 text-sm font-medium ${jobEditorMode === 'config' ? 'bg-[#0073bb] text-white' : 'text-gray-400 hover:bg-[#2d4157]'}`}>Config</button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={closeEditor} className="px-4 py-1.5 text-sm text-gray-400 hover:text-white hover:bg-[#2d4157] rounded">Cancel</button>
+                  <button onClick={saveWorkflow} className="px-4 py-1.5 bg-[#0073bb] hover:bg-[#005a92] text-white text-sm font-medium rounded">Save</button>
+                  <button onClick={closeEditor} className="p-1.5 hover:bg-[#2d4157] rounded text-gray-400 hover:text-white ml-2"><Icon name="x" size={18} /></button>
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* States Browser - Left Panel (Design mode only) */}
+                {jobEditorMode === 'design' && (
+                <div className="w-64 border-r border-[#2d4157] bg-[#161e2d] flex flex-col">
+                  <div className="p-3 border-b border-[#2d4157]">
+                    <div className="relative">
+                      <Icon name="search" size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input type="text" placeholder="Search states" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#0073bb]" />
+                    </div>
+                  </div>
+                  <div className="flex border-b border-[#2d4157]">
+                    <button onClick={() => setJobEditorOpCategory('actions')} className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 ${jobEditorOpCategory === 'actions' ? 'border-[#0073bb] text-white' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>Actions</button>
+                    <button onClick={() => setJobEditorOpCategory('flow')} className={`flex-1 px-4 py-2.5 text-sm font-medium border-b-2 ${jobEditorOpCategory === 'flow' ? 'border-[#0073bb] text-white' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>Flow</button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-2">
+                    {statesList.map(state => (
+                      <div key={state.id} draggable onDragStart={(e) => onDragStart(e, state)} onClick={() => addNodeFromSidebar(state)} className="w-full flex items-start gap-3 p-3 rounded-lg text-left hover:bg-[#2d4157] group mb-1 cursor-grab active:cursor-grabbing">
+                        <div className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0" style={{backgroundColor: state.color + '20'}}><Icon name={state.icon} size={16} style={{color: state.color}} /></div>
+                        <div className="flex-1 min-w-0"><div className="text-sm text-white font-medium">{state.label}</div><div className="text-xs text-gray-400 leading-tight">{state.desc}</div></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                )}
+
+                {/* Design Mode - Visual Workflow Canvas */}
+                {jobEditorMode === 'design' && (
+                <div className="flex-1 overflow-auto bg-[#0a1220]" onDragOver={onDragOver} onDrop={onDrop}>
+                  <div className="min-h-full p-8 flex flex-col items-center">
+                    {/* Start Node */}
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <Icon name="play" size={20} className="text-white ml-0.5" />
+                      </div>
+                      {jobEditorNodes.length > 0 && <div className="absolute left-1/2 -translate-x-1/2 top-full w-0.5 h-6 bg-gradient-to-b from-green-500 to-[#4a6785]" />}
+                    </div>
+
+                    {/* Workflow States */}
+                    {jobEditorNodes.map((node, index) => {
+                      const stateInfo = allStates.find(s => s.id === node.type) || { icon: 'box', color: '#6b7280', label: 'State' };
+                      const isSelected = jobEditorSelectedNode?.id === node.id;
+                      const isChoice = node.type === 'choice';
+                      const isParallel = node.type === 'parallel';
+                      const isMap = node.type === 'map';
+                      const branches = node.branches || [[], []];
+
+                      // Render Parallel state with visual fan-out
+                      if (isParallel) {
+                        const nodeBranches = node.branches || [[], []];
+                        const branchWidth = 170;
+                        const totalWidth = nodeBranches.length * branchWidth + 60;
+                        const centerX = totalWidth / 2;
+
+                        return (
+                          <div key={node.id} className="relative mt-6 group">
+                            {/* Parallel Header */}
+                            <div onClick={() => setJobEditorSelectedNode(node)} className={`mx-auto bg-[#1a2634] border-2 rounded-xl w-[220px] cursor-pointer transition-all ${isSelected ? 'border-cyan-500 shadow-lg shadow-cyan-500/30' : 'border-[#2d4157] hover:border-cyan-500/50'}`} style={{borderLeftWidth: 4, borderLeftColor: '#00d4aa'}}>
+                              <div className="flex items-center gap-2 p-3">
+                                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center"><Icon name="columns" size={16} className="text-cyan-400" /></div>
+                                <div className="flex-1"><div className="text-sm font-medium text-white">{node.name}</div><div className="text-xs text-gray-500">Parallel • {nodeBranches.length} branches</div></div>
+                                <button onClick={(e) => { e.stopPropagation(); removeNode(node.id); }} className="p-1 hover:bg-red-500/20 rounded opacity-0 group-hover:opacity-100"><Icon name="trash2" size={12} className="text-red-400" /></button>
+                              </div>
+                            </div>
+
+                            {/* Fan-out SVG */}
+                            <svg className="block mx-auto" width={totalWidth} height="50" style={{overflow: 'visible'}}>
+                              <defs><marker id="arrow-cyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#00d4aa" /></marker></defs>
+                              <path d={`M ${centerX} 0 L ${centerX} 15`} stroke="#00d4aa" strokeWidth="2" fill="none" />
+                              {nodeBranches.map((_, bi) => {
+                                const endX = bi * branchWidth + branchWidth/2 + 30;
+                                return <path key={bi} d={`M ${centerX} 15 C ${centerX} 35, ${endX} 25, ${endX} 50`} stroke="#00d4aa" strokeWidth="2" fill="none" markerEnd="url(#arrow-cyan)" />;
+                              })}
+                            </svg>
+
+                            {/* Branch Lanes */}
+                            <div className="flex gap-3 justify-center px-4">
+                              {nodeBranches.map((branchStates, bi) => {
+                                const brStates = Array.isArray(branchStates) ? branchStates : [];
+                                return (
+                                  <div key={bi} className="w-[160px] bg-cyan-500/5 border border-cyan-500/30 rounded-xl p-3 relative group/branch">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-[11px] text-cyan-400 font-medium">Branch {bi + 1}</div>
+                                      {nodeBranches.length > 2 && <button onClick={() => removeBranch(node.id, bi)} className="p-0.5 hover:bg-red-500/20 rounded opacity-0 group-hover/branch:opacity-100"><Icon name="x" size={10} className="text-red-400" /></button>}
+                                    </div>
+                                    <div className="space-y-2">
+                                      {brStates.map((bs, si) => {
+                                        const bsInfo = allStates.find(s => s.id === bs.type) || { icon: 'box', color: '#6b7280' };
+                                        const isEditingThis = editingBranch?.nodeId === node.id && editingBranch?.branchIdx === bi && editingBranch?.stateIdx === si;
+                                        return (
+                                          <div key={si} onClick={() => { setJobEditorSelectedNode(node); setEditingBranch({ nodeId: node.id, branchIdx: bi, stateIdx: si, state: bs }); }} className={`bg-[#1a2634] border rounded-lg p-2 flex items-center gap-2 group/state cursor-pointer transition-all ${isEditingThis ? 'border-cyan-500 ring-1 ring-cyan-500/50' : 'border-[#2d4157] hover:border-cyan-500/50'}`}>
+                                            <div className="w-6 h-6 rounded flex items-center justify-center" style={{backgroundColor: bsInfo.color + '20'}}><Icon name={bsInfo.icon} size={10} style={{color: bsInfo.color}} /></div>
+                                            <span className="text-xs text-gray-300 truncate flex-1">{bs.name}</span>
+                                            <button onClick={(e) => { e.stopPropagation(); removeBranchState(node.id, bi, si); }} className="p-0.5 hover:bg-red-500/20 rounded opacity-0 group-hover/state:opacity-100"><Icon name="x" size={8} className="text-red-400" /></button>
+                                          </div>
+                                        );
+                                      })}
+                                      {brStates.length === 0 && <div className="text-xs text-gray-500 text-center py-2">Empty branch</div>}
+                                      <div className="relative">
+                                        <button onClick={() => setEditingBranch(editingBranch?.nodeId === node.id && editingBranch?.branchIdx === bi && !editingBranch?.state ? null : {nodeId: node.id, branchIdx: bi})} className="w-full py-1.5 border border-dashed border-cyan-500/30 rounded-lg text-xs text-cyan-400 hover:bg-cyan-500/10 flex items-center justify-center gap-1"><Icon name="plus" size={10} /> Add State</button>
+                                        {editingBranch?.nodeId === node.id && editingBranch?.branchIdx === bi && !editingBranch?.state && (
+                                          <div className="absolute top-full left-0 mt-1 bg-[#1a2634] border border-[#2d4157] rounded-lg shadow-2xl z-40 w-48 max-h-52 overflow-y-auto">
+                                            <div className="p-1.5 border-b border-[#2d4157] text-xs text-gray-400">Add to Branch {bi + 1}</div>
+                                            <div className="p-1">{[...actionStates, ...flowStates.filter(f => f.id !== 'parallel' && f.id !== 'choice')].map(s => (
+                                              <button key={s.id} onClick={() => { addBranchState(node.id, bi, s.id); setEditingBranch(null); }} className="w-full flex items-center gap-2 px-2 py-1 hover:bg-[#2d4157] rounded text-left">
+                                                <div className="w-4 h-4 rounded flex items-center justify-center" style={{backgroundColor: s.color + '20'}}><Icon name={s.icon} size={8} style={{color: s.color}} /></div>
+                                                <span className="text-xs text-white">{s.label}</span>
+                                              </button>
+                                            ))}</div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                              <button onClick={() => addBranch(node.id)} className="w-10 self-stretch rounded-lg border border-dashed border-cyan-500/30 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10" title="Add Branch"><Icon name="plus" size={14} /></button>
+                            </div>
+
+                            {/* Fan-in SVG */}
+                            <svg className="block mx-auto" width={totalWidth} height="50" style={{overflow: 'visible'}}>
+                              {nodeBranches.map((_, bi) => {
+                                const startX = bi * branchWidth + branchWidth/2 + 30;
+                                return <path key={bi} d={`M ${startX} 0 C ${startX} 25, ${centerX} 15, ${centerX} 35`} stroke="#00d4aa" strokeWidth="2" fill="none" />;
+                              })}
+                              <path d={`M ${centerX} 35 L ${centerX} 50`} stroke="#00d4aa" strokeWidth="2" fill="none" markerEnd="url(#arrow-cyan)" />
+                            </svg>
+
+                            {/* Connector to next */}
+                            {index < jobEditorNodes.length - 1 && <div className="w-0.5 h-4 bg-[#4a6785] mx-auto" />}
+                          </div>
+                        );
+                      }
+
+                      // Render Choice state with visual branching
+                      if (isChoice) {
+                        const rules = node.rules || [{ variable: '$.status', operator: 'StringEquals', value: 'success' }];
+                        const ruleCount = rules.length;
+                        const totalWidth = (ruleCount + 1) * 160 + 40; // +1 for default branch
+                        const centerX = totalWidth / 2;
+
+                        return (
+                          <div key={node.id} className="relative mt-6 group">
+                            {/* Choice Header - Diamond shape */}
+                            <div onClick={() => setJobEditorSelectedNode(node)} className="mx-auto relative cursor-pointer" style={{width: 70, height: 70}}>
+                              <div className={`absolute inset-0 rotate-45 bg-[#1a2634] border-2 rounded-lg transition-all ${isSelected ? 'border-emerald-500 shadow-lg shadow-emerald-500/30' : 'border-[#2d4157] hover:border-emerald-500/50'}`} />
+                              <div className="absolute inset-0 flex items-center justify-center"><Icon name="git-branch" size={22} className="text-emerald-400" /></div>
+                              <button onClick={(e) => { e.stopPropagation(); removeNode(node.id); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"><Icon name="x" size={10} className="text-white" /></button>
+                            </div>
+                            <div className="text-center mt-1 text-sm text-white font-medium">{node.name}</div>
+
+                            {/* Branch paths SVG */}
+                            <svg className="block mx-auto" width={totalWidth} height="50" style={{overflow: 'visible'}}>
+                              <defs>
+                                <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22c55e" /></marker>
+                                <marker id="arrow-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#6b7280" /></marker>
+                              </defs>
+                              <path d={`M ${centerX} 0 L ${centerX} 12`} stroke="#22c55e" strokeWidth="2" fill="none" />
+                              {rules.map((_, ri) => {
+                                const endX = ri * 160 + 100;
+                                return <path key={ri} d={`M ${centerX} 12 C ${centerX} 30, ${endX} 25, ${endX} 50`} stroke="#22c55e" strokeWidth="2" fill="none" markerEnd="url(#arrow-green)" />;
+                              })}
+                              {/* Default branch */}
+                              <path d={`M ${centerX} 12 C ${centerX} 30, ${ruleCount * 160 + 100} 25, ${ruleCount * 160 + 100} 50`} stroke="#6b7280" strokeWidth="2" fill="none" markerEnd="url(#arrow-gray)" />
+                            </svg>
+
+                            {/* Branch rule cards */}
+                            <div className="flex gap-3 justify-center px-4">
+                              {rules.map((rule, ri) => (
+                                <div key={ri} className="w-[150px] bg-emerald-500/5 border border-emerald-500/30 rounded-xl p-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="text-xs text-emerald-400 font-medium">Rule {ri + 1}</div>
+                                    {rules.length > 1 && <button onClick={() => removeChoiceRule(node.id, ri)} className="p-0.5 hover:bg-red-500/20 rounded"><Icon name="x" size={8} className="text-red-400" /></button>}
+                                  </div>
+                                  <input type="text" value={rule.variable} onChange={e => updateChoiceCondition(node.id, ri, 'variable', e.target.value)} placeholder="$.field" className="w-full bg-[#0a1220] border border-[#2d4157] rounded px-2 py-1 text-sm text-white mb-1.5 focus:border-emerald-500 focus:outline-none" />
+                                  <select value={rule.operator} onChange={e => updateChoiceCondition(node.id, ri, 'operator', e.target.value)} className="w-full bg-[#0a1220] border border-[#2d4157] rounded px-2 py-1 text-sm text-white mb-1.5 focus:border-emerald-500 focus:outline-none">
+                                    <option value="StringEquals">StringEquals</option>
+                                    <option value="StringEqualsPath">StringEqualsPath</option>
+                                    <option value="NumericEquals">NumericEquals</option>
+                                    <option value="NumericGreaterThan">NumericGreaterThan</option>
+                                    <option value="NumericLessThan">NumericLessThan</option>
+                                    <option value="BooleanEquals">BooleanEquals</option>
+                                    <option value="IsPresent">IsPresent</option>
+                                  </select>
+                                  <input type="text" value={rule.value} onChange={e => updateChoiceCondition(node.id, ri, 'value', e.target.value)} placeholder="value" className="w-full bg-[#0a1220] border border-[#2d4157] rounded px-2 py-1 text-sm text-white focus:border-emerald-500 focus:outline-none" />
+                                  <div className="mt-2 text-[9px] text-emerald-400/70 text-center">→ continues flow</div>
+                                </div>
+                              ))}
+                              {/* Default branch */}
+                              <div className="w-[150px] bg-gray-500/5 border border-gray-500/30 rounded-xl p-3">
+                                <div className="text-xs text-gray-400 font-medium mb-2">Default</div>
+                                <div className="text-xs text-gray-500 py-3 text-center">No condition matched</div>
+                                <div className="mt-2 text-[9px] text-gray-400/70 text-center">→ fallback path</div>
+                              </div>
+                              <button onClick={() => addChoiceRule(node.id)} className="w-10 self-stretch rounded-lg border border-dashed border-emerald-500/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/10" title="Add Rule"><Icon name="plus" size={14} /></button>
+                            </div>
+
+                            {/* Merge paths SVG */}
+                            <svg className="block mx-auto" width={totalWidth} height="40" style={{overflow: 'visible'}}>
+                              {rules.map((_, ri) => {
+                                const startX = ri * 160 + 100;
+                                return <path key={ri} d={`M ${startX} 0 C ${startX} 20, ${centerX} 15, ${centerX} 30`} stroke="#22c55e" strokeWidth="2" fill="none" />;
+                              })}
+                              <path d={`M ${ruleCount * 160 + 100} 0 C ${ruleCount * 160 + 100} 20, ${centerX} 15, ${centerX} 30`} stroke="#6b7280" strokeWidth="2" fill="none" />
+                              <path d={`M ${centerX} 30 L ${centerX} 40`} stroke="#4a6785" strokeWidth="2" fill="none" markerEnd="url(#arrow-default)" />
+                              <defs><marker id="arrow-default" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4a6785" /></marker></defs>
+                            </svg>
+
+                            {index < jobEditorNodes.length - 1 && <div className="w-0.5 h-4 bg-[#4a6785] mx-auto" />}
+                          </div>
+                        );
+                      }
+
+                      // Regular state card
+                      return (
+                        <div key={node.id} className="relative mt-6 group">
+                          <div onClick={() => setJobEditorSelectedNode(node)} className={`mx-auto bg-[#1a2634] border-2 rounded-xl w-[240px] cursor-pointer transition-all shadow-lg ${isSelected ? 'border-[#0073bb] shadow-[#0073bb]/30 scale-105' : 'border-[#2d4157] hover:border-[#4a6785]'}`} style={{borderLeftWidth: 4, borderLeftColor: stateInfo.color}}>
+                            <div className="flex items-center gap-3 p-3">
+                              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{backgroundColor: stateInfo.color + '20'}}><Icon name={stateInfo.icon} size={18} style={{color: stateInfo.color}} /></div>
+                              <div className="flex-1 min-w-0"><div className="text-sm font-medium text-white truncate">{node.name}</div><div className="text-sm text-gray-400">{stateInfo.label}</div></div>
+                              <button onClick={(e) => { e.stopPropagation(); removeNode(node.id); }} className="p-1 hover:bg-red-500/20 rounded opacity-0 group-hover:opacity-100"><Icon name="trash2" size={14} className="text-red-400" /></button>
+                            </div>
+                            {isMap && <div className="mx-3 mb-3 bg-purple-500/10 border border-purple-500/30 border-dashed rounded-lg p-2 flex items-center gap-2"><Icon name="repeat" size={12} className="text-purple-400" /><span className="text-xs text-purple-400">Iterates $.items[]</span></div>}
+                          </div>
+
+                          {/* Reorder buttons */}
+                          <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100">
+                            {index > 0 && <button onClick={() => { const n = [...jobEditorNodes]; [n[index-1], n[index]] = [n[index], n[index-1]]; setJobEditorNodes(n); }} className="w-6 h-6 bg-[#2d4157] hover:bg-[#0073bb] rounded-full flex items-center justify-center"><Icon name="chevron-up" size={12} className="text-white" /></button>}
+                            {index < jobEditorNodes.length - 1 && <button onClick={() => { const n = [...jobEditorNodes]; [n[index], n[index+1]] = [n[index+1], n[index]]; setJobEditorNodes(n); }} className="w-6 h-6 bg-[#2d4157] hover:bg-[#0073bb] rounded-full flex items-center justify-center"><Icon name="chevron-down" size={12} className="text-white" /></button>}
+                          </div>
+
+                          {/* Connector line and add button */}
+                          {index < jobEditorNodes.length - 1 && (
+                            <div className="flex flex-col items-center">
+                              <div className="w-0.5 h-3 bg-[#4a6785]" />
+                              <button onClick={() => setJobEditorInsertAt(jobEditorInsertAt === index ? null : index)} className={`w-5 h-5 rounded-full border-2 border-dashed flex items-center justify-center ${jobEditorInsertAt === index ? 'bg-[#0073bb] border-[#0073bb]' : 'bg-[#0a1220] border-[#4a6785] hover:border-[#0073bb]'}`}><Icon name="plus" size={10} className="text-white" /></button>
+                              {jobEditorInsertAt === index && (
+                                <div className="absolute left-full ml-2 top-full bg-[#1a2634] border border-[#2d4157] rounded-lg shadow-2xl z-30 w-56 max-h-64 overflow-y-auto">
+                                  <div className="p-2 border-b border-[#2d4157] text-sm text-gray-400">Insert State</div>
+                                  <div className="p-1">{[...actionStates, ...flowStates].map(s => (<button key={s.id} onClick={() => { insertNodeAfter(index, s); setJobEditorInsertAt(null); }} className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2d4157] rounded"><div className="w-5 h-5 rounded flex items-center justify-center" style={{backgroundColor: s.color + '20'}}><Icon name={s.icon} size={10} style={{color: s.color}} /></div><span className="text-xs text-white">{s.label}</span></button>))}</div>
+                                </div>
+                              )}
+                              <div className="w-0.5 h-3 bg-[#4a6785]" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Empty state */}
+                    {jobEditorNodes.length === 0 && (
+                      <div className="mt-8 text-center">
+                        <button onClick={() => addNodeFromSidebar(actionStates[0])} className="w-14 h-14 rounded-full border-2 border-dashed border-[#4a6785] hover:border-[#0073bb] hover:bg-[#0073bb]/10 flex items-center justify-center mx-auto"><Icon name="plus" size={20} className="text-gray-500" /></button>
+                        <div className="text-gray-500 text-sm mt-3">Drag a state here or click to add</div>
+                      </div>
+                    )}
+
+                    {/* End Node */}
+                    {jobEditorNodes.length > 0 && (
+                      <div className="mt-6 relative">
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-0.5 h-6 bg-gradient-to-b from-[#4a6785] to-gray-500" />
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center shadow-lg">
+                          <Icon name="square" size={16} className="text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
+
+                {/* Code Mode */}
+                {jobEditorMode === 'code' && (() => {
+                  const currentCode = jobEditorCode || generateASL();
+                  return (
+                  <div className="flex-1 flex">
+                    <div className="flex-1 flex flex-col">
+                      <div className="px-4 py-2 bg-[#161e2d] border-b border-[#2d4157] flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Icon name="code" size={14} className="text-gray-500" />
+                          <span className="text-sm text-gray-400">definition.asl.json</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => { const parsed = parseASLToNodes(currentCode); if (parsed && parsed.length > 0) { setJobEditorNodes(parsed); showNotification('Synced to Design view'); } else { showNotification('Invalid ASL JSON', 'error'); } }} className="px-2 py-1 text-sm bg-[#2d4157] hover:bg-[#3d5167] text-gray-300 rounded flex items-center gap-1"><Icon name="refresh-cw" size={10} />Sync to Design</button>
+                          <button onClick={() => { setJobEditorCode(generateASL()); showNotification('Reset from Design view'); }} className="px-2 py-1 text-sm bg-[#2d4157] hover:bg-[#3d5167] text-gray-300 rounded flex items-center gap-1"><Icon name="rotate-ccw" size={10} />Reset</button>
+                        </div>
+                      </div>
+                      <textarea value={currentCode} onChange={e => setJobEditorCode(e.target.value)} className="flex-1 bg-[#0d1117] text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none" style={{tabSize: 2}} spellCheck={false} />
+                    </div>
+                    <div className="w-80 border-l border-[#2d4157] bg-[#161e2d] overflow-auto p-4">
+                      <div className="text-sm text-gray-400 uppercase font-medium mb-4">Graph Preview</div>
+                      <div className="space-y-2">
+                        <div className="w-8 h-8 rounded-full bg-[#037f0c] flex items-center justify-center mx-auto"><Icon name="play" size={12} className="text-white" /></div>
+                        {jobEditorNodes.map((node, i) => { const stateInfo = allStates.find(s => s.id === node.type); return (<React.Fragment key={node.id}><div className="w-0.5 h-4 bg-[#4a6785] mx-auto" /><div className="bg-[#1a2634] border border-[#2d4157] rounded p-2 flex items-center gap-2"><div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0" style={{backgroundColor: (stateInfo?.color || '#6b7280') + '20'}}><Icon name={stateInfo?.icon || 'box'} size={10} style={{color: stateInfo?.color}} /></div><span className="text-xs text-white truncate">{node.name}</span></div></React.Fragment>)})}
+                        <div className="w-0.5 h-4 bg-[#4a6785] mx-auto" />
+                        <div className="w-8 h-8 rounded-full bg-[#545b64] flex items-center justify-center mx-auto"><Icon name="square" size={10} className="text-white" /></div>
+                      </div>
+                    </div>
+                  </div>);
+                })()}
+
+                {/* Config Mode */}
+                {jobEditorMode === 'config' && (
+                <div className="flex-1 overflow-auto p-6">
+                  <div className="max-w-2xl mx-auto space-y-6">
+                    <div className="bg-[#161e2d] border border-[#2d4157] rounded-lg p-6">
+                      <h3 className="text-white font-medium mb-4">Details</h3>
+                      <div className="space-y-4">
+                        <div><label className="text-sm text-gray-400 block mb-1">State machine name</label><input type="text" value={jobEditorConfig.name || job.name} onChange={e => setJobEditorConfig({...jobEditorConfig, name: e.target.value})} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" /></div>
+                        <div><label className="text-sm text-gray-400 block mb-2">Type</label>
+                          <div className="grid grid-cols-2 gap-3">
+                            <label className={`p-4 rounded-lg border-2 cursor-pointer ${jobEditorConfig.type === 'STANDARD' ? 'bg-[#0073bb]/10 border-[#0073bb]' : 'bg-[#0f1b2d] border-[#2d4157]'}`}><input type="radio" name="type" className="sr-only" checked={jobEditorConfig.type === 'STANDARD'} onChange={() => setJobEditorConfig({...jobEditorConfig, type: 'STANDARD'})} /><div className="text-sm font-medium text-white">Standard</div><div className="text-sm text-gray-400 mt-1">Exactly-once workflow execution</div></label>
+                            <label className={`p-4 rounded-lg border-2 cursor-pointer ${jobEditorConfig.type === 'EXPRESS' ? 'bg-[#0073bb]/10 border-[#0073bb]' : 'bg-[#0f1b2d] border-[#2d4157]'}`}><input type="radio" name="type" className="sr-only" checked={jobEditorConfig.type === 'EXPRESS'} onChange={() => setJobEditorConfig({...jobEditorConfig, type: 'EXPRESS'})} /><div className="text-sm font-medium text-white">Express</div><div className="text-sm text-gray-400 mt-1">High-volume event processing</div></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-[#161e2d] border border-[#2d4157] rounded-lg p-6">
+                      <h3 className="text-white font-medium mb-4">Schedule</h3>
+                      <div className="space-y-4">
+                        <div><label className="text-sm text-gray-400 block mb-1">Cron expression</label><input type="text" value={jobEditorConfig.schedule} onChange={e => setJobEditorConfig({...jobEditorConfig, schedule: e.target.value})} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-[#0073bb]" /></div>
+                        <div className="text-sm text-gray-400">Runs daily at 2:00 AM UTC</div>
+                      </div>
+                    </div>
+                    <div className="bg-[#161e2d] border border-[#2d4157] rounded-lg p-6">
+                      <h3 className="text-white font-medium mb-4">Logging</h3>
+                      <div className="space-y-4">
+                        <div><label className="text-sm text-gray-400 block mb-2">Log level</label>
+                          <select value={jobEditorConfig.logging} onChange={e => setJobEditorConfig({...jobEditorConfig, logging: e.target.value})} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]">
+                            <option value="OFF">OFF</option><option value="ERROR">ERROR</option><option value="FATAL">FATAL</option><option value="ALL">ALL</option>
+                          </select>
+                        </div>
+                        <label className="flex items-center gap-3 cursor-pointer"><input type="checkbox" checked={jobEditorConfig.xray} onChange={e => setJobEditorConfig({...jobEditorConfig, xray: e.target.checked})} className="accent-[#0073bb]" /><div><div className="text-sm text-white">Enable X-Ray tracing</div><div className="text-sm text-gray-400">Trace workflow execution</div></div></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                )}
+
+                {/* Inspector Panel - Right (Design mode only) */}
+                {jobEditorMode === 'design' && (
+                <div className="w-80 border-l border-[#2d4157] bg-[#161e2d] flex flex-col">
+                  <div className="px-4 py-3 border-b border-[#2d4157] flex items-center justify-between">
+                    <span className="text-sm font-medium text-white">{jobEditorSelectedNode ? 'Configuration' : 'Inspector'}</span>
+                    {jobEditorSelectedNode && <button onClick={() => setJobEditorSelectedNode(null)} className="text-xs text-[#0073bb] hover:underline">Back</button>}
+                  </div>
+                  {!jobEditorSelectedNode ? (
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      <div className="text-sm text-gray-400 uppercase font-medium">Job Configuration</div>
+                      <div><label className="text-sm text-gray-400 block mb-1">Name</label><input type="text" value={jobEditorConfig.name || ''} onChange={e => setJobEditorConfig({...jobEditorConfig, name: e.target.value})} placeholder={job.name} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" /></div>
+                      <div><label className="text-sm text-gray-400 block mb-1">Description</label><textarea value={jobEditorConfig.description || job.description || ''} onChange={e => setJobEditorConfig({...jobEditorConfig, description: e.target.value})} rows={3} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" /></div>
+                      <div className="pt-3 border-t border-[#2d4157]"><div className="text-sm text-gray-400 uppercase font-medium mb-3">Schedule</div>
+                        <div className="flex gap-2 mb-3">{[{id: 'cron', label: 'Cron'}, {id: 'rate', label: 'Rate'}].map(t => <button key={t.id} onClick={() => setJobEditorConfig({...jobEditorConfig, scheduleType: t.id})} className={`px-3 py-1.5 text-xs rounded ${jobEditorConfig.scheduleType === t.id ? 'bg-[#0073bb] text-white' : 'bg-[#0f1b2d] text-gray-400 hover:text-white'}`}>{t.label}</button>)}</div>
+                        {jobEditorConfig.scheduleType === 'rate' ? (
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <input type="number" min="1" value={jobEditorConfig.rateValue || 1} onChange={e => {
+                                const val = parseInt(e.target.value) || 1;
+                                const unit = jobEditorConfig.rateUnit || 'hour';
+                                setJobEditorConfig({...jobEditorConfig, rateValue: val, schedule: `rate(${val} ${val === 1 ? unit : unit + 's'})`});
+                              }} className="w-24 bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" />
+                              <select value={jobEditorConfig.rateUnit || 'hour'} onChange={e => {
+                                const unit = e.target.value;
+                                const val = jobEditorConfig.rateValue || 1;
+                                setJobEditorConfig({...jobEditorConfig, rateUnit: unit, schedule: `rate(${val} ${val === 1 ? unit : unit + 's'})`});
+                              }} className="flex-1 bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                                <option value="minute">Minute(s)</option>
+                                <option value="hour">Hour(s)</option>
+                                <option value="day">Day(s)</option>
+                              </select>
+                            </div>
+                            <div className="text-xs text-gray-500">Runs every {jobEditorConfig.rateValue || 1} {(jobEditorConfig.rateUnit || 'hour')}{(jobEditorConfig.rateValue || 1) !== 1 ? 's' : ''}</div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex gap-2">
+                              <input type="text" value={jobEditorConfig.schedule || ''} onChange={e => setJobEditorConfig({...jobEditorConfig, schedule: e.target.value})} placeholder="0 2 * * *" className="flex-1 bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-[#0073bb]" />
+                              <button onClick={() => setShowCronBuilder(true)} className="px-3 py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300 flex items-center gap-1"><Icon name="calendar" size={14} />Build</button>
+                            </div>
+                            <div className="text-xs text-gray-500">Format: minute hour day month weekday</div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="pt-3 border-t border-[#2d4157]"><div className="text-sm text-gray-400 uppercase font-medium mb-3">Execution</div>
+                        <div className="mb-3"><label className="text-sm text-gray-400 block mb-1">Type</label><select value={jobEditorConfig.type || 'STANDARD'} onChange={e => setJobEditorConfig({...jobEditorConfig, type: e.target.value})} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option value="STANDARD">Standard</option><option value="EXPRESS">Express</option></select></div>
+                        <div className="mb-3"><label className="text-sm text-gray-400 block mb-1">Timeout (seconds)</label><input type="number" value={jobEditorConfig.timeout || ''} onChange={e => setJobEditorConfig({...jobEditorConfig, timeout: e.target.value})} placeholder="3600" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div>
+                      </div>
+                      <div className="pt-3 border-t border-[#2d4157]"><div className="text-sm text-gray-400 uppercase font-medium mb-3">Tags</div>
+                        <div className="flex flex-wrap gap-1 mb-2">{(jobEditorConfig.tags || []).map((tag, i) => <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-cyan-500/20 text-cyan-300 text-xs rounded"><span>{tag}</span><button onClick={() => setJobEditorConfig({...jobEditorConfig, tags: jobEditorConfig.tags.filter((_, ti) => ti !== i)})} className="hover:text-white">×</button></span>)}</div>
+                        <div className="flex gap-2"><input type="text" id="newTagInput" placeholder="Add tag..." className="flex-1 bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-1.5 text-sm text-white" onKeyDown={e => { if(e.key === 'Enter' && e.target.value) { setJobEditorConfig({...jobEditorConfig, tags: [...(jobEditorConfig.tags || []), e.target.value]}); e.target.value = ''; }}} /><button onClick={() => { const inp = document.getElementById('newTagInput'); if(inp.value) { setJobEditorConfig({...jobEditorConfig, tags: [...(jobEditorConfig.tags || []), inp.value]}); inp.value = ''; }}} className="px-3 py-1.5 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Add</button></div>
+                      </div>
+                      <div className="pt-3 border-t border-[#2d4157]"><div className="text-sm text-gray-400 uppercase font-medium mb-3">Logging & Tracing</div>
+                        <div className="mb-3"><label className="text-sm text-gray-400 block mb-1">Log level</label><select value={jobEditorConfig.logging || 'ALL'} onChange={e => setJobEditorConfig({...jobEditorConfig, logging: e.target.value})} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option value="ALL">All</option><option value="ERROR">Error</option><option value="FATAL">Fatal</option><option value="OFF">Off</option></select></div>
+                        <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={jobEditorConfig.xray !== false} onChange={e => setJobEditorConfig({...jobEditorConfig, xray: e.target.checked})} className="w-4 h-4 rounded bg-[#0f1b2d] border-[#2d4157]" /><span className="text-sm text-gray-300">Enable X-Ray tracing</span></label>
+                      </div>
+                      <div className="text-sm text-gray-400 pt-3">Click a state on the canvas to configure it.</div>
+                    </div>
+                  ) : (
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      <div className="flex items-center gap-3 pb-3 border-b border-[#2d4157]">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: (allStates.find(s => s.id === jobEditorSelectedNode.type)?.color || '#6b7280') + '20'}}><Icon name={allStates.find(s => s.id === jobEditorSelectedNode.type)?.icon || 'box'} size={18} style={{color: allStates.find(s => s.id === jobEditorSelectedNode.type)?.color}} /></div>
+                        <div><div className="text-sm font-medium text-white">{jobEditorSelectedNode.name}</div><div className="text-sm text-gray-400">{allStates.find(s => s.id === jobEditorSelectedNode.type)?.label}</div></div>
+                      </div>
+                      <div><label className="text-sm text-gray-400 block mb-1">State name</label><input type="text" value={jobEditorSelectedNode.name} onChange={e => { const updated = jobEditorNodes.map(n => n.id === jobEditorSelectedNode.id ? {...n, name: e.target.value} : n); setJobEditorNodes(updated); setJobEditorSelectedNode({...jobEditorSelectedNode, name: e.target.value}); }} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" /></div>
+                      {jobEditorSelectedNode.type === 'lambda' && <><div><label className="text-sm text-gray-400 block mb-1">Function name</label><input type="text" placeholder="arn:aws:lambda:..." className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white placeholder-gray-600" /></div><div><label className="text-sm text-gray-400 block mb-1">Payload</label><textarea placeholder='{"key.$": "$.value"}' rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-600" /></div></>}
+                      {jobEditorSelectedNode.type === 'choice' && (() => {
+                        const nodeRules = jobEditorSelectedNode.rules || [{ variable: '$.status', operator: 'StringEquals', value: 'success' }];
+                        const updateRule = (ruleIdx, field, value) => {
+                          const updatedNodes = jobEditorNodes.map(n => {
+                            if (n.id === jobEditorSelectedNode.id) {
+                              const rules = (n.rules || nodeRules).map((r, i) => i === ruleIdx ? {...r, [field]: value} : r);
+                              return {...n, rules};
+                            }
+                            return n;
+                          });
+                          setJobEditorNodes(updatedNodes);
+                          const updated = updatedNodes.find(n => n.id === jobEditorSelectedNode.id);
+                          if (updated) setJobEditorSelectedNode(updated);
+                        };
+                        const addRule = () => {
+                          const updatedNodes = jobEditorNodes.map(n => {
+                            if (n.id === jobEditorSelectedNode.id) {
+                              const rules = [...(n.rules || nodeRules), { variable: '$.field', operator: 'StringEquals', value: '' }];
+                              return {...n, rules};
+                            }
+                            return n;
+                          });
+                          setJobEditorNodes(updatedNodes);
+                          const updated = updatedNodes.find(n => n.id === jobEditorSelectedNode.id);
+                          if (updated) setJobEditorSelectedNode(updated);
+                        };
+                        const removeRule = (ruleIdx) => {
+                          if (nodeRules.length <= 1) return;
+                          const updatedNodes = jobEditorNodes.map(n => {
+                            if (n.id === jobEditorSelectedNode.id) {
+                              const rules = (n.rules || nodeRules).filter((_, i) => i !== ruleIdx);
+                              return {...n, rules};
+                            }
+                            return n;
+                          });
+                          setJobEditorNodes(updatedNodes);
+                          const updated = updatedNodes.find(n => n.id === jobEditorSelectedNode.id);
+                          if (updated) setJobEditorSelectedNode(updated);
+                        };
+                        return <><div className="text-sm text-gray-400 uppercase font-medium mb-2">Branching Rules ({nodeRules.length})</div><div className="space-y-2">{nodeRules.map((rule, rIdx) => (
+                          <div key={rIdx} className="bg-[#0f1b2d] border border-[#2d4157] rounded p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-xs text-emerald-400 font-medium">Rule {rIdx + 1}</div>
+                              {nodeRules.length > 1 && <button onClick={() => removeRule(rIdx)} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="x" size={12} /></button>}
+                            </div>
+                            <div className="space-y-2">
+                              <input type="text" value={rule.variable} onChange={e => updateRule(rIdx, 'variable', e.target.value)} placeholder="$.status" className="w-full bg-[#161e2d] border border-[#2d4157] rounded px-2 py-1.5 text-sm text-white" />
+                              <select value={rule.operator} onChange={e => updateRule(rIdx, 'operator', e.target.value)} className="w-full bg-[#161e2d] border border-[#2d4157] rounded px-2 py-1.5 text-sm text-white">
+                                <option value="StringEquals">StringEquals</option>
+                                <option value="StringEqualsPath">StringEqualsPath</option>
+                                <option value="NumericEquals">NumericEquals</option>
+                                <option value="NumericGreaterThan">NumericGreaterThan</option>
+                                <option value="NumericLessThan">NumericLessThan</option>
+                                <option value="BooleanEquals">BooleanEquals</option>
+                                <option value="IsPresent">IsPresent</option>
+                                <option value="IsNull">IsNull</option>
+                              </select>
+                              <input type="text" value={rule.value} onChange={e => updateRule(rIdx, 'value', e.target.value)} placeholder="value" className="w-full bg-[#161e2d] border border-[#2d4157] rounded px-2 py-1.5 text-sm text-white" />
+                            </div>
+                          </div>
+                        ))}<button onClick={addRule} className="w-full py-2 border border-dashed border-[#2d4157] rounded text-sm text-gray-500 hover:border-[#0073bb] hover:text-[#0073bb]">+ Add rule</button></div></>;
+                      })()}
+                      {jobEditorSelectedNode.type === 'parallel' && (() => {
+                        const nodeBranches = jobEditorSelectedNode.branches || [[], []];
+                        // Check if editing a branch state - show full config panel
+                        if (editingBranch?.nodeId === jobEditorSelectedNode.id && editingBranch?.branchIdx !== undefined && editingBranch?.stateIdx !== undefined) {
+                          const bs = nodeBranches[editingBranch.branchIdx]?.[editingBranch.stateIdx];
+                          if (bs) {
+                            const stateIcon = allStates.find(s => s.id === bs.type)?.icon || 'box';
+                            const stateColor = allStates.find(s => s.id === bs.type)?.color || '#6b7280';
+                            const stateLabel = allStates.find(s => s.id === bs.type)?.label || bs.type;
+                            const updateConfig = (field, value) => {
+                              const updatedNodes = jobEditorNodes.map(n => { if(n.id === jobEditorSelectedNode.id && n.branches) { const branches = n.branches.map((b, bi) => bi === editingBranch.branchIdx ? b.map((s, si) => si === editingBranch.stateIdx ? {...s, config: {...(s.config||{}), [field]: value}} : s) : b); return {...n, branches}; } return n; });
+                              setJobEditorNodes(updatedNodes);
+                              const updated = updatedNodes.find(n => n.id === jobEditorSelectedNode.id);
+                              if(updated) setJobEditorSelectedNode(updated);
+                            };
+                            const updateName = (newName) => {
+                              const updatedNodes = jobEditorNodes.map(n => { if(n.id === jobEditorSelectedNode.id && n.branches) { const branches = n.branches.map((b, bi) => bi === editingBranch.branchIdx ? b.map((s, si) => si === editingBranch.stateIdx ? {...s, name: newName} : s) : b); return {...n, branches}; } return n; });
+                              setJobEditorNodes(updatedNodes);
+                              const updated = updatedNodes.find(n => n.id === jobEditorSelectedNode.id);
+                              if(updated) setJobEditorSelectedNode(updated);
+                            };
+                            return (<div className="space-y-4">
+                              <button onClick={() => setEditingBranch(null)} className="flex items-center gap-2 text-xs text-[#0073bb] hover:underline"><Icon name="arrow-left" size={12} />Back to branches</button>
+                              <div className="flex items-center gap-3 pb-3 border-b border-[#2d4157]">
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{backgroundColor: stateColor + '20'}}><Icon name={stateIcon} size={18} style={{color: stateColor}} /></div>
+                                <div><div className="text-sm font-medium text-white">{bs.name}</div><div className="text-sm text-gray-400">{stateLabel} • Branch {editingBranch.branchIdx + 1}</div></div>
+                              </div>
+                              <div><label className="text-sm text-gray-400 block mb-1">State name</label><input type="text" value={bs.name} onChange={e => updateName(e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-[#0073bb]" /></div>
+                              {bs.type === 'lambda' && <><div><label className="text-sm text-gray-400 block mb-1">Function ARN</label><input type="text" placeholder="arn:aws:lambda:region:account:function:name" value={bs.config?.functionArn || ''} onChange={e => updateConfig('functionArn', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div><div><label className="text-sm text-gray-400 block mb-1">Payload</label><textarea placeholder='{"key.$": "$.value"}' value={bs.config?.payload || ''} onChange={e => updateConfig('payload', e.target.value)} rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 'glue' && <><div><label className="text-sm text-gray-400 block mb-1">Job name</label><input type="text" placeholder="my-etl-job" value={bs.config?.jobName || ''} onChange={e => updateConfig('jobName', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div><div><label className="text-sm text-gray-400 block mb-1">Arguments</label><textarea placeholder='{"--arg1": "value1"}' value={bs.config?.arguments || ''} onChange={e => updateConfig('arguments', e.target.value)} rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 'dynamodb' && <><div><label className="text-sm text-gray-400 block mb-1">Table name</label><input type="text" placeholder="my-table" value={bs.config?.tableName || ''} onChange={e => updateConfig('tableName', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div><div><label className="text-sm text-gray-400 block mb-1">Operation</label><select value={bs.config?.operation || 'PutItem'} onChange={e => updateConfig('operation', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option>PutItem</option><option>GetItem</option><option>UpdateItem</option><option>DeleteItem</option><option>Query</option><option>Scan</option></select></div><div><label className="text-sm text-gray-400 block mb-1">Item / Key</label><textarea placeholder='{"id": {"S.$": "$.id"}}' value={bs.config?.item || ''} onChange={e => updateConfig('item', e.target.value)} rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 's3' && <><div><label className="text-sm text-gray-400 block mb-1">Bucket</label><input type="text" placeholder="my-bucket" value={bs.config?.bucket || ''} onChange={e => updateConfig('bucket', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div><div><label className="text-sm text-gray-400 block mb-1">Key</label><input type="text" placeholder="path/to/object" value={bs.config?.key || ''} onChange={e => updateConfig('key', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div><div><label className="text-sm text-gray-400 block mb-1">Operation</label><select value={bs.config?.s3Op || 'GetObject'} onChange={e => updateConfig('s3Op', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option>GetObject</option><option>PutObject</option><option>DeleteObject</option><option>CopyObject</option></select></div></>}
+                              {bs.type === 'sns' && <><div><label className="text-sm text-gray-400 block mb-1">Topic ARN</label><input type="text" placeholder="arn:aws:sns:region:account:topic" value={bs.config?.topicArn || ''} onChange={e => updateConfig('topicArn', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div><div><label className="text-sm text-gray-400 block mb-1">Message</label><textarea placeholder='{"default.$": "$.message"}' value={bs.config?.message || ''} onChange={e => updateConfig('message', e.target.value)} rows={3} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 'sqs' && <><div><label className="text-sm text-gray-400 block mb-1">Queue URL</label><input type="text" placeholder="https://sqs.region.amazonaws.com/account/queue" value={bs.config?.queueUrl || ''} onChange={e => updateConfig('queueUrl', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div><div><label className="text-sm text-gray-400 block mb-1">Message body</label><textarea placeholder='{"data.$": "$.payload"}' value={bs.config?.messageBody || ''} onChange={e => updateConfig('messageBody', e.target.value)} rows={3} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 'wait' && <><div><label className="text-sm text-gray-400 block mb-1">Wait type</label><select value={bs.config?.waitType || 'Seconds'} onChange={e => updateConfig('waitType', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option value="Seconds">Seconds</option><option value="Timestamp">Timestamp</option><option value="SecondsPath">Seconds from path</option><option value="TimestampPath">Timestamp from path</option></select></div><div><label className="text-sm text-gray-400 block mb-1">{bs.config?.waitType?.includes('Path') ? 'Path' : 'Value'}</label><input type="text" placeholder={bs.config?.waitType?.includes('Path') ? '$.waitTime' : '60'} value={bs.config?.waitValue || ''} onChange={e => updateConfig('waitValue', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div></>}
+                              {bs.type === 'pass' && <><div><label className="text-sm text-gray-400 block mb-1">Result</label><textarea placeholder='{"processed": true}' value={bs.config?.result || ''} onChange={e => updateConfig('result', e.target.value)} rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div><div><label className="text-sm text-gray-400 block mb-1">Result path</label><input type="text" placeholder="$.result" value={bs.config?.resultPath || ''} onChange={e => updateConfig('resultPath', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              {bs.type === 'fail' && <><div><label className="text-sm text-gray-400 block mb-1">Error</label><input type="text" placeholder="CustomError" value={bs.config?.error || ''} onChange={e => updateConfig('error', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div><div><label className="text-sm text-gray-400 block mb-1">Cause</label><input type="text" placeholder="Something went wrong" value={bs.config?.cause || ''} onChange={e => updateConfig('cause', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div></>}
+                              {bs.type === 'success' && <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-3 text-sm text-emerald-400">This state ends the branch execution successfully.</div>}
+                              {['batch','emr','stepfn'].includes(bs.type) && <><div><label className="text-sm text-gray-400 block mb-1">API Action</label><input type="text" placeholder="arn:aws:states:::service:action" value={bs.config?.apiAction || ''} onChange={e => updateConfig('apiAction', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div><div><label className="text-sm text-gray-400 block mb-1">Parameters</label><textarea placeholder='{"Param.$": "$.value"}' value={bs.config?.parameters || ''} onChange={e => updateConfig('parameters', e.target.value)} rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono" /></div></>}
+                              <div className="pt-3 border-t border-[#2d4157]"><label className="text-sm text-gray-400 block mb-1">Comment</label><textarea placeholder="Optional description" value={bs.config?.comment || ''} onChange={e => updateConfig('comment', e.target.value)} rows={2} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div>
+                              <div className="flex gap-2 pt-2"><button onClick={() => setEditingBranch(null)} className="flex-1 py-2 bg-[#0073bb] hover:bg-[#005d99] rounded text-sm text-white font-medium">Done</button></div>
+                            </div>);
+                          }
+                        }
+                        // Normal branches view
+                        return <><div className="text-sm text-gray-400 uppercase font-medium mb-2">Branches ({nodeBranches.length})</div><div className="space-y-3">{nodeBranches.map((branch, bIdx) => (
+                          <div key={bIdx} className="bg-[#0f1b2d] border border-[#2d4157] rounded p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-medium text-cyan-400">Branch {bIdx + 1}</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-gray-500">{branch.length} states</span>
+                                {nodeBranches.length > 2 && <button onClick={() => removeBranch(jobEditorSelectedNode.id, bIdx)} className="ml-2 p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="x" size={12} /></button>}
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              {branch.map((branchState, sIdx) => {
+                                const stateIcon = allStates.find(s => s.id === branchState.type)?.icon || 'box';
+                                const stateColor = allStates.find(s => s.id === branchState.type)?.color || '#6b7280';
+                                return (
+                                <div key={branchState.id || sIdx} className="flex items-center gap-2 p-2 bg-[#1a2744] hover:bg-[#1e2f4d] rounded cursor-pointer group" onClick={() => setEditingBranch({nodeId: jobEditorSelectedNode.id, branchIdx: bIdx, stateIdx: sIdx})}>
+                                  <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0" style={{backgroundColor: stateColor + '20'}}><Icon name={stateIcon} size={10} style={{color: stateColor}} /></div>
+                                  <span className="flex-1 text-xs text-gray-300">{branchState.name}</span>
+                                  <Icon name="chevron-right" size={12} className="text-gray-500" />
+                                </div>
+                              );})}
+                            </div>
+                            {branch.length === 0 && <div className="text-xs text-gray-500 text-center py-2">No states in branch</div>}
+                            <select onChange={e => { if(e.target.value) { addBranchState(jobEditorSelectedNode.id, bIdx, e.target.value); e.target.value = ''; } }} className="w-full mt-2 bg-[#161e2d] border border-dashed border-[#2d4157] rounded px-2 py-1.5 text-sm text-gray-400 hover:border-[#0073bb]">
+                              <option value="">+ Add state...</option>
+                              {allStates.filter(s => !['choice', 'parallel'].includes(s.id)).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                            </select>
+                          </div>
+                        ))}<button onClick={() => addBranch(jobEditorSelectedNode.id)} className="w-full py-2 border border-dashed border-[#2d4157] rounded text-sm text-gray-500 hover:border-[#0073bb] hover:text-[#0073bb]">+ Add branch</button></div></>;
+                      })()}
+                      {jobEditorSelectedNode.type === 'map' && <><div className="text-sm text-gray-400 uppercase font-medium">Iterator Configuration</div><div className="space-y-3"><div><label className="text-sm text-gray-400 block mb-1">Items path</label><input type="text" placeholder="$.items" defaultValue="$.items" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-600" /></div><div><label className="text-sm text-gray-400 block mb-1">Max concurrency</label><input type="number" placeholder="0" defaultValue="0" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /><div className="text-xs text-gray-500 mt-1">0 = unlimited parallel execution</div></div><div className="bg-[#0f1b2d] border border-[#2d4157] rounded p-3"><div className="text-sm text-gray-400 mb-2">Iterator States</div><button className="w-full py-2 border border-dashed border-[#2d4157] rounded text-sm text-gray-500 hover:border-[#0073bb] hover:text-[#0073bb]">+ Add state to iterator</button></div></div></>}
+                      {jobEditorSelectedNode.type === 'wait' && <><div><label className="text-sm text-gray-400 block mb-1">Wait type</label><select className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white"><option value="seconds">Seconds</option><option value="timestamp">Timestamp</option><option value="secondsPath">Seconds from path</option><option value="timestampPath">Timestamp from path</option></select></div><div><label className="text-sm text-gray-400 block mb-1">Seconds</label><input type="number" placeholder="60" defaultValue="60" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white" /></div></>}
+                      {jobEditorSelectedNode.type === 'pass' && <div><label className="text-sm text-gray-400 block mb-1">Result</label><textarea placeholder='{"key": "value"}' rows={3} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-600" /></div>}
+                      {jobEditorSelectedNode.type === 'success' && <div className="bg-emerald-500/10 border border-emerald-500/30 rounded p-3 text-sm text-emerald-400">This state ends the execution successfully.</div>}
+                      {jobEditorSelectedNode.type === 'fail' && <><div><label className="text-sm text-gray-400 block mb-1">Error</label><input type="text" placeholder="ErrorCode" defaultValue="Error" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white placeholder-gray-600" /></div><div><label className="text-sm text-gray-400 block mb-1">Cause</label><input type="text" placeholder="Error description" defaultValue="Execution failed" className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white placeholder-gray-600" /></div></>}
+                      {['glue', 'batch', 'emr', 's3', 'dynamodb', 'sns', 'sqs', 'stepfn'].includes(jobEditorSelectedNode.type) && <><div><label className="text-sm text-gray-400 block mb-1">API action</label><input type="text" placeholder={`arn:aws:states:::${jobEditorSelectedNode.type}:action`} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-600" /></div><div><label className="text-sm text-gray-400 block mb-1">Parameters</label><textarea placeholder='{"Param.$": "$.value"}' rows={4} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-600" /></div></>}
+                      <div className="pt-3 border-t border-[#2d4157]"><label className="text-sm text-gray-400 block mb-1">Comment</label><textarea placeholder="Optional description" rows={2} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white placeholder-gray-600" /></div>
+                      <div className="pt-3 border-t border-[#2d4157]"><div className="text-sm text-gray-400 uppercase font-medium mb-2">Error handling</div><button className="w-full py-2 border border-dashed border-[#2d4157] rounded text-sm text-gray-500 hover:border-[#0073bb] hover:text-[#0073bb]">+ Add retry</button><button className="w-full py-2 border border-dashed border-[#2d4157] rounded text-sm text-gray-500 hover:border-[#0073bb] hover:text-[#0073bb] mt-2">+ Add catch</button></div>
+                    </div>
+                  )}
+                </div>
+                )}
+              </div>
+
+              {/* Cron Builder Modal */}
+              {showCronBuilder && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]" onClick={() => setShowCronBuilder(false)}>
+                <div className="bg-[#16202d] rounded-xl shadow-2xl w-[500px] max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                  <div className="px-5 py-4 border-b border-[#2d4157] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#0073bb]/20 flex items-center justify-center"><Icon name="calendar" size={20} className="text-[#0073bb]" /></div>
+                      <div><div className="font-medium text-white">Cron Expression Builder</div><div className="text-sm text-gray-400">Build your schedule visually</div></div>
+                    </div>
+                    <button onClick={() => setShowCronBuilder(false)} className="p-2 hover:bg-[#2d4157] rounded-lg text-gray-400 hover:text-white"><Icon name="x" size={18} /></button>
+                  </div>
+                  <div className="p-5 space-y-4">
+                    {(() => {
+                      const cronParts = (jobEditorConfig.schedule || '0 2 * * *').split(' ');
+                      const minute = cronParts[0] || '0';
+                      const hour = cronParts[1] || '2';
+                      const dayOfMonth = cronParts[2] || '*';
+                      const month = cronParts[3] || '*';
+                      const dayOfWeek = cronParts[4] || '*';
+                      const updateCron = (part, value) => {
+                        const parts = (jobEditorConfig.schedule || '0 2 * * *').split(' ');
+                        while (parts.length < 5) parts.push('*');
+                        const idx = { minute: 0, hour: 1, dayOfMonth: 2, month: 3, dayOfWeek: 4 }[part];
+                        parts[idx] = value;
+                        setJobEditorConfig({...jobEditorConfig, schedule: parts.join(' ')});
+                      };
+                      return (<>
+                        <div className="grid grid-cols-5 gap-3">
+                          <div>
+                            <label className="text-sm text-gray-400 block mb-2">Minute</label>
+                            <select value={minute} onChange={e => updateCron('minute', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                              <option value="*">Every (*)</option>
+                              <option value="0">:00</option>
+                              <option value="15">:15</option>
+                              <option value="30">:30</option>
+                              <option value="45">:45</option>
+                              {[...Array(60)].map((_, i) => <option key={i} value={String(i)}>{String(i).padStart(2, '0')}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-400 block mb-2">Hour</label>
+                            <select value={hour} onChange={e => updateCron('hour', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                              <option value="*">Every (*)</option>
+                              {[...Array(24)].map((_, i) => <option key={i} value={String(i)}>{String(i).padStart(2, '0')}:00</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-400 block mb-2">Day</label>
+                            <select value={dayOfMonth} onChange={e => updateCron('dayOfMonth', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                              <option value="*">Every (*)</option>
+                              {[...Array(31)].map((_, i) => <option key={i} value={String(i + 1)}>{i + 1}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-400 block mb-2">Month</label>
+                            <select value={month} onChange={e => updateCron('month', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                              <option value="*">Every (*)</option>
+                              {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => <option key={i} value={String(i + 1)}>{m}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-sm text-gray-400 block mb-2">Weekday</label>
+                            <select value={dayOfWeek} onChange={e => updateCron('dayOfWeek', e.target.value)} className="w-full bg-[#0f1b2d] border border-[#2d4157] rounded px-3 py-2 text-sm text-white">
+                              <option value="*">Every (*)</option>
+                              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => <option key={i} value={String(i)}>{d}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="bg-[#0f1b2d] border border-[#2d4157] rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm text-gray-400">Generated Expression</span>
+                            <button onClick={() => navigator.clipboard.writeText(jobEditorConfig.schedule || '0 2 * * *')} className="text-xs text-[#0073bb] hover:underline">Copy</button>
+                          </div>
+                          <div className="font-mono text-lg text-white">{jobEditorConfig.schedule || '0 2 * * *'}</div>
+                          <div className="text-sm text-gray-400 mt-2">
+                            {(() => {
+                              const m = minute === '*' ? 'every minute' : `at minute ${minute}`;
+                              const h = hour === '*' ? 'every hour' : `at ${String(hour).padStart(2, '0')}:00`;
+                              const dom = dayOfMonth === '*' ? '' : ` on day ${dayOfMonth}`;
+                              const mon = month === '*' ? '' : ` in ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][parseInt(month) - 1] || month}`;
+                              const dow = dayOfWeek === '*' ? '' : ` on ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][parseInt(dayOfWeek)] || dayOfWeek}`;
+                              return `Runs ${m}, ${h}${dom}${mon}${dow}`;
+                            })()}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '0 * * * *'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Every hour</button>
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '0 2 * * *'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Daily 2 AM</button>
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '0 0 * * 0'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Weekly Sunday</button>
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '0 0 1 * *'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Monthly 1st</button>
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '*/15 * * * *'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Every 15 min</button>
+                          <button onClick={() => setJobEditorConfig({...jobEditorConfig, schedule: '0 9-17 * * 1-5'})} className="py-2 bg-[#2d4157] hover:bg-[#3d5167] rounded text-sm text-gray-300">Business hours</button>
+                        </div>
+                      </>);
+                    })()}
+                  </div>
+                  <div className="px-5 py-4 border-t border-[#2d4157] flex justify-end gap-3">
+                    <button onClick={() => setShowCronBuilder(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => setShowCronBuilder(false)} className="px-4 py-2 bg-[#0073bb] hover:bg-[#005d99] text-sm font-medium rounded-lg text-white">Apply</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>);
+          })()}
+
+          {/* Service Editor */}
+          {showServiceEditor && serviceEditorResource && (() => {
+            const r = serviceEditorResource;
+            const currentFilters = getServiceFilters(r);
+            const phases = [{ id: 'AUTHN', name: 'Authentication', color: '#10b981' }, { id: 'AUTHZ', name: 'Authorization', color: '#06b6d4' }, { id: 'STATS', name: 'Telemetry', color: '#8b5cf6' }, { id: 'UNSPECIFIED', name: 'Default', color: '#6b7280' }];
+            const addedFilterNames = currentFilters.map(f => f.name);
+            const filteredAvailable = availableFilters.filter(f => !addedFilterNames.includes(f.name) && (serviceFilterCategory === 'all' || f.category === serviceFilterCategory));
+            const addFilter = (filter) => { setSavedServiceFilters({ ...savedServiceFilters, [r.name]: [...currentFilters, { ...filter, id: Date.now(), phase: filter.phase }] }); };
+            const removeFilter = (id) => { setSavedServiceFilters({ ...savedServiceFilters, [r.name]: currentFilters.filter(f => f.id !== id) }); };
+            const moveFilter = (id, newPhase) => { setSavedServiceFilters({ ...savedServiceFilters, [r.name]: currentFilters.map(f => f.id === id ? { ...f, phase: newPhase } : f) }); if (selectedFilterNode?.id === id) setSelectedFilterNode({ ...selectedFilterNode, phase: newPhase }); };
+            const typeLabel = r.type === 'virtualservice' ? 'Virtual Service' : r.type === 'destinationrule' ? 'Destination Rule' : r.type === 'serviceentry' ? 'Service Entry' : null;
+            const iconName = r.type === 'service' ? 'server' : r.type === 'ingress' ? 'log-in' : r.type === 'egress' ? 'log-out' : r.type === 'eastwest' ? 'repeat' : r.type === 'virtualservice' ? 'git-branch' : r.type === 'destinationrule' ? 'sliders' : 'server';
+            const iconColor = r.type === 'service' ? 'text-blue-400' : r.type === 'ingress' ? 'text-cyan-400' : r.type === 'egress' ? 'text-orange-400' : r.type === 'eastwest' ? 'text-teal-400' : r.type === 'virtualservice' ? 'text-violet-400' : r.type === 'destinationrule' ? 'text-violet-400' : 'text-amber-400';
+            const bgColor = r.type === 'service' ? 'bg-blue-500/20' : r.type === 'ingress' ? 'bg-cyan-500/20' : r.type === 'egress' ? 'bg-orange-500/20' : r.type === 'eastwest' ? 'bg-teal-500/20' : r.type === 'virtualservice' ? 'bg-violet-500/20' : r.type === 'destinationrule' ? 'bg-violet-500/20' : 'bg-amber-500/20';
+            return (
+            <div className="fixed inset-0 z-50 bg-gray-950 flex flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-900">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-lg ${bgColor} flex items-center justify-center`}><Icon name={iconName} size={16} className={iconColor} /></div>
+                    <div>{typeLabel && <div className="text-xs text-gray-500 uppercase">{typeLabel}</div>}<div className="text-sm font-medium">{r.name}</div></div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => { setShowServiceEditor(false); setSelectedFilterNode(null); }} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                  <button onClick={() => { showNotification(r.name + ' saved', 'success'); setShowServiceEditor(false); setSelectedFilterNode(null); }} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-lg">Save</button>
+                </div>
+              </div>
+              <div className="flex-1 flex overflow-hidden">
+                <div className="w-56 border-r border-gray-800 bg-gray-900/50 flex flex-col">
+                  <div className="px-3 py-2 border-b border-gray-800"><div className="flex flex-wrap gap-1">{['all', 'security', 'traffic', 'transform', 'observability'].map(cat => (<button key={cat} onClick={() => setServiceFilterCategory(cat)} className={`px-2 py-1 text-sm rounded capitalize ${serviceFilterCategory === cat ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400'}`}>{cat}</button>))}</div></div>
+                  <div className="flex-1 overflow-y-auto p-2 space-y-1">{filteredAvailable.map(filter => (<div key={filter.id} className="flex items-center justify-between p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg group"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded bg-gray-700 flex items-center justify-center"><Icon name={filter.icon} size={12} className="text-gray-400" /></div><span className="text-xs text-white">{filter.name}</span><button className="p-0.5 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'filter', id: filter.id, name: filter.name, desc: filter.desc, example: filter.example })}><Icon name="help-circle" size={16} /></button></div><button onClick={() => addFilter(filter)} className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-cyan-400"><Icon name="plus" size={14} /></button></div>))}</div>
+                </div>
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  <div className="px-4 py-2 border-b border-gray-800 text-sm text-gray-400">Request flow: AUTHN → AUTHZ → STATS → DEFAULT</div>
+                  <div className="h-1/2 p-4 overflow-auto">
+                    <div className="flex gap-4 h-full">{phases.map(phase => { const pf = currentFilters.filter(f => f.phase === phase.id); return (<div key={phase.id} className="flex-1 rounded-xl p-3 flex flex-col" style={{backgroundColor: phase.color + '15', border: '1px solid ' + phase.color + '40'}}><div className="flex items-center gap-2 mb-2"><Icon name={phase.id === 'AUTHN' ? 'key' : phase.id === 'AUTHZ' ? 'shield' : phase.id === 'STATS' ? 'activity' : 'settings'} size={14} style={{color: phase.color}} /><span className="text-sm font-medium" style={{color: phase.color}}>{phase.name}</span></div><div className="flex-1 space-y-2">{pf.map(f => { const filterDef = availableFilters.find(af => af.name === f.name); return (<div key={f.id} className={`flex items-center justify-between p-2 rounded-lg cursor-pointer ${selectedFilterNode?.id === f.id ? 'bg-white/20 ring-2 ring-white/50' : 'bg-gray-800/80 hover:bg-gray-800'}`} onClick={() => setSelectedFilterNode(f)}><div className="flex items-center gap-2 flex-1"><Icon name={f.icon} size={14} className="text-white" /><span className="text-sm text-white">{f.name}</span></div>{filterDef?.desc && <button className="p-1 text-gray-400 hover:text-cyan-400" onClick={e => { e.stopPropagation(); setShowFilterInfo({ type: 'filter', id: filterDef.id, name: filterDef.name, desc: filterDef.desc, example: filterDef.example }); }}><Icon name="help-circle" size={16} /></button>}</div>); })}</div></div>); })}</div>
+                  </div>
+                  <div className="h-1/2 border-t border-gray-800 flex flex-col">
+                    {!selectedFilterNode ? (<div className="flex-1 flex items-center justify-center text-gray-500"><div className="text-center"><Icon name="settings" size={32} className="mx-auto mb-2 opacity-50" /><div className="text-sm">Select a filter to configure</div></div></div>) : (
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                      <div className="flex items-center justify-between px-4 py-2 bg-gray-800/50 border-b border-gray-700">
+                        <div className="flex items-center gap-2"><Icon name={selectedFilterNode.icon} size={16} className="text-cyan-400" /><span className="text-sm font-medium">{selectedFilterNode.name}</span></div>
+                        <button onClick={() => { removeFilter(selectedFilterNode.id); setSelectedFilterNode(null); }} className="p-1 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash2" size={14} /></button>
+                      </div>
+                      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div><label className="text-sm font-medium text-gray-300 block mb-2">Phase</label><select value={selectedFilterNode.phase} onChange={(e) => moveFilter(selectedFilterNode.id, e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option value="AUTHN">Authentication</option><option value="AUTHZ">Authorization</option><option value="STATS">Telemetry</option><option value="UNSPECIFIED">Default</option></select></div>
+                        {selectedFilterNode.name === 'JWT Auth' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Issuer URL</label><input type="text" defaultValue="https://auth.example.com" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Audience</label><input type="text" defaultValue="api.example.com" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'RBAC' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Action</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>ALLOW</option><option>DENY</option></select></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Paths</label><input type="text" defaultValue="/api/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Rate Limit' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Requests/sec</label><input type="number" defaultValue="100" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Burst Size</label><input type="number" defaultValue="200" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Spike Arrest' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Rate</label><div className="flex gap-2"><input type="number" defaultValue="10" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /><select className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>per second</option><option>per minute</option></select></div></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Message Weight</label><input type="number" defaultValue="1" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Circuit Breaker' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Max Connections</label><input type="number" defaultValue="1000" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Max Retries</label><input type="number" defaultValue="3" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Tracing' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Sampling %</label><input type="number" defaultValue="100" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Provider</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>Jaeger</option><option>Zipkin</option></select></div></>)}
+                        {selectedFilterNode.name === 'Timeout' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Request Timeout</label><input type="text" defaultValue="30s" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div>)}
+                        {selectedFilterNode.name === 'Retry' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Max Retries</label><input type="number" defaultValue="3" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Retry On</label><input type="text" defaultValue="5xx" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'CORS' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Allowed Origins</label><input type="text" defaultValue="*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Methods</label><input type="text" defaultValue="GET,POST,PUT" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Compression' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Algorithm</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>gzip</option><option>br</option></select></div>)}
+                        {selectedFilterNode.name === 'Path Rewrite' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Match Prefix</label><input type="text" defaultValue="/api/v1" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Rewrite To</label><input type="text" defaultValue="/v1" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Access Log' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Format</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>JSON</option><option>TEXT</option></select></div>)}
+                        {selectedFilterNode.name === 'mTLS' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Mode</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>STRICT</option><option>PERMISSIVE</option></select></div>)}
+                        {selectedFilterNode.name === 'OAuth2' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Token Endpoint</label><input type="text" defaultValue="https://auth.example.com/token" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Client ID</label><input type="text" defaultValue="my-client" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Headers' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Add Header</label><input type="text" defaultValue="X-Custom: value" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Remove Header</label><input type="text" defaultValue="X-Remove" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                      </div>
+                    </div>)}
+                  </div>
+                </div>
+                <div className="w-72 border-l border-gray-800 bg-gray-900/50 p-4 space-y-3 overflow-y-auto">
+                  <div className="text-sm font-medium flex items-center gap-2"><Icon name="settings" size={14} /> Properties</div>
+                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Name</label><input type="text" defaultValue={r.name} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
+                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Type</label><select defaultValue={r.type} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option value="service">Service</option><option value="virtualservice">Virtual Service</option><option value="ingress">Ingress Gateway</option><option value="egress">Egress Gateway</option><option value="eastwest">East-West Gateway</option></select></div>
+                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Namespace</label><input type="text" defaultValue={r.namespace} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
+                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Host</label><input type="text" defaultValue={r.name + '.' + r.namespace + '.svc.cluster.local'} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-xs font-mono focus:border-cyan-500 focus:outline-none" /></div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">Port</label><input type="text" defaultValue={r.port || '8080'} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">Protocol</label><select defaultValue={r.protocol || 'HTTP'} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option>HTTP</option><option>HTTPS</option><option>gRPC</option><option>TCP</option></select></div>
+                  </div>
+                  <div><label className="text-sm font-medium text-gray-300 block mb-1">Status</label><select defaultValue={r.status} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option value="healthy">Healthy</option><option value="warning">Warning</option><option value="degraded">Degraded</option><option value="error">Error</option></select></div>
+
+                  {/* Type-specific fields */}
+                  {r.type === 'virtualservice' && (<>
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">Gateway</label><input type="text" defaultValue={r.gateway || ''} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">Routes</label><input type="number" defaultValue={r.routes || 0} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>
+                  </>)}
+                  {['ingress', 'egress', 'eastwest'].includes(r.type) && (<>
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">TLS Mode</label><select defaultValue={r.tls || 'SIMPLE'} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none"><option>SIMPLE</option><option>MUTUAL</option><option>PASSTHROUGH</option><option>AUTO_PASSTHROUGH</option><option>ORIGINATE</option></select></div>
+                    <div><label className="text-sm font-medium text-gray-300 block mb-1">Hosts ({r.hosts?.length || 0})</label><div className="max-h-20 overflow-y-auto space-y-1">{(r.hosts || []).map((h, i) => <div key={i} className="text-sm text-gray-400 bg-gray-700/30 px-2 py-1 rounded truncate">{h}</div>)}</div></div>
+                  </>)}
+                  {r.type === 'service' && (<div><label className="text-sm font-medium text-gray-300 block mb-1">Endpoints</label><input type="number" defaultValue={r.endpoints || 0} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none" /></div>)}
+
+                  <div className="pt-2 border-t border-gray-700"><label className="text-sm font-medium text-gray-300 block mb-2">Filters ({currentFilters.length})</label><div className="space-y-1">{currentFilters.length === 0 ? <div className="text-sm text-gray-400">No filters configured</div> : currentFilters.map(f => (<div key={f.id} className="text-sm text-gray-400 flex items-center justify-between"><span><span className="text-cyan-400">{f.name}</span> ({f.phase})</span><button onClick={() => { removeFilter(f.id); if(selectedFilterNode?.id === f.id) setSelectedFilterNode(null); }} className="text-gray-500 hover:text-red-400"><Icon name="x" size={12} /></button></div>))}</div></div>
+
+                  {/* Related Resources */}
+                  <div className="pt-2 border-t border-gray-700">
+                    <label className="text-sm font-medium text-gray-300 block mb-2">Related Resources</label>
+                    {(() => {
+                      const relatedDR = mockMeshResources.find(res => res.type === 'destinationrule' && res.host === r.name);
+                      const relatedVS = r.type === 'service' ? mockMeshResources.find(res => res.type === 'virtualservice' && res.namespace === r.namespace) : null;
+                      const relatedGW = r.type === 'virtualservice' ? mockMeshResources.find(res => ['ingress', 'egress', 'eastwest'].includes(res.type) && res.name === r.gateway) : null;
+                      const relatedSE = ['egress'].includes(r.type) ? mockMeshResources.filter(res => res.type === 'serviceentry' && r.hosts?.some(h => res.hosts?.some(sh => h.includes(sh.replace('*.', '')) || sh.includes(h.replace('*.', ''))))) : [];
+                      return (
+                        <div className="space-y-1.5">
+                          {relatedDR && <div className="flex items-center gap-2 text-xs p-1.5 bg-violet-500/10 rounded"><Icon name="sliders" size={10} className="text-violet-400" /><span className="text-violet-300">{relatedDR.name}</span><span className="text-gray-500">DR</span></div>}
+                          {relatedVS && <div className="flex items-center gap-2 text-xs p-1.5 bg-violet-500/10 rounded"><Icon name="git-branch" size={10} className="text-violet-400" /><span className="text-violet-300">{relatedVS.name}</span><span className="text-gray-500">VS</span></div>}
+                          {relatedGW && <div className="flex items-center gap-2 text-xs p-1.5 bg-cyan-500/10 rounded"><Icon name="log-in" size={10} className="text-cyan-400" /><span className="text-cyan-300">{relatedGW.name}</span><span className="text-gray-500">GW</span></div>}
+                          {relatedSE.map(se => <div key={se.id} className="flex items-center gap-2 text-xs p-1.5 bg-cyan-500/10 rounded"><Icon name="external-link" size={10} className="text-cyan-400" /><span className="text-cyan-300">{se.name}</span><span className="text-gray-500">SE</span></div>)}
+                          {!relatedDR && !relatedVS && !relatedGW && relatedSE.length === 0 && <div className="text-sm text-gray-400">No linked resources</div>}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </div>);
+          })()}
+
+          {/* DestinationRule Editor Modal */}
+          {editingDestinationRule && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingDestinationRule(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                      <Icon name="sliders" size={20} className="text-violet-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingDestinationRule.isNew ? 'Create Destination Rule' : editingDestinationRule.name}</div>
+                      <div className="text-sm text-gray-400">{editingDestinationRule.isNew ? 'Configure traffic policy' : 'Edit traffic policy'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingDestinationRule(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Name</label>
+                      <input type="text" defaultValue={editingDestinationRule.name || ''} placeholder={`${editingDestinationRule.host || 'service'}-dr`} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Namespace</label>
+                      <input type="text" defaultValue={editingDestinationRule.namespace || ''} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                    </div>
+                  </div>
+
+                  {/* Host */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Host</h3>
+                    <input type="text" defaultValue={editingDestinationRule.host || ''} placeholder="service.namespace.svc.cluster.local" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                  </div>
+
+                  {/* Traffic Policy */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="sliders" size={14} className="text-gray-400" />Traffic Policy</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1.5">Load Balancer</label>
+                        <select defaultValue={editingDestinationRule.trafficPolicy || 'ROUND_ROBIN'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                          <option value="ROUND_ROBIN">ROUND_ROBIN</option>
+                          <option value="LEAST_CONN">LEAST_CONN</option>
+                          <option value="RANDOM">RANDOM</option>
+                          <option value="PASSTHROUGH">PASSTHROUGH</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1.5">TLS Mode</label>
+                        <select defaultValue={editingDestinationRule.mtls || 'ISTIO_MUTUAL'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                          <option value="DISABLE">DISABLE</option>
+                          <option value="SIMPLE">SIMPLE</option>
+                          <option value="MUTUAL">MUTUAL</option>
+                          <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Circuit Breaker */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Circuit Breaker (Outlier Detection)</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm text-gray-300">Enable Circuit Breaker</label>
+                        <input type="checkbox" defaultChecked={editingDestinationRule.circuitBreaker} className="w-4 h-4 rounded bg-gray-700 border-gray-600" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Consecutive 5xx Errors</label>
+                          <input type="number" defaultValue="5" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Interval</label>
+                          <input type="text" defaultValue="30s" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Base Ejection Time</label>
+                          <input type="text" defaultValue="60s" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subsets */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="git-branch" size={14} className="text-gray-400" />Subsets ({(editingDestinationRule.subsets || []).length})</h3>
+                    <div className="space-y-2">
+                      {(editingDestinationRule.subsets || []).map((subset, idx) => (
+                        <div key={idx} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-amber-400">Subset {idx + 1}</span>
+                            <button onClick={() => setEditingDestinationRule({...editingDestinationRule, subsets: editingDestinationRule.subsets.filter((_, i) => i !== idx)})} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash2" size={12} /></button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Name</label>
+                              <input type="text" value={subset.name || ''} onChange={(e) => { const newSubsets = [...editingDestinationRule.subsets]; newSubsets[idx] = {...subset, name: e.target.value}; setEditingDestinationRule({...editingDestinationRule, subsets: newSubsets}); }} placeholder="stable, canary" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Version Label</label>
+                              <input type="text" value={subset.labels?.version || ''} onChange={(e) => { const newSubsets = [...editingDestinationRule.subsets]; newSubsets[idx] = {...subset, labels: {...subset.labels, version: e.target.value}}; setEditingDestinationRule({...editingDestinationRule, subsets: newSubsets}); }} placeholder="v1, v2" className="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-violet-500" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(editingDestinationRule.subsets || []).length === 0 && (
+                        <div className="text-center py-3 text-sm text-gray-400">No subsets - add subsets for canary/blue-green deployments</div>
+                      )}
+                      <button onClick={() => setEditingDestinationRule({...editingDestinationRule, subsets: [...(editingDestinationRule.subsets || []), { name: '', labels: { version: '' } }]})} className="w-full py-2 border border-dashed border-gray-600 rounded-lg text-sm text-gray-400 hover:border-violet-500 hover:text-violet-400 flex items-center justify-center gap-2">
+                        <Icon name="plus" size={12} />Add Subset
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-sm text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ${editingDestinationRule.name || editingDestinationRule.host + '-dr'}
+  namespace: ${editingDestinationRule.namespace || 'default'}
+spec:
+  host: ${editingDestinationRule.host || 'my-service'}
+  trafficPolicy:
+    loadBalancer:
+      simple: ${editingDestinationRule.trafficPolicy || 'ROUND_ROBIN'}
+    tls:
+      mode: ${editingDestinationRule.mtls || 'ISTIO_MUTUAL'}${editingDestinationRule.circuitBreaker ? `
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 60s` : ''}${(editingDestinationRule.subsets || []).length > 0 ? `
+  subsets:${(editingDestinationRule.subsets || []).filter(s => s.name).map(s => `
+  - name: ${s.name}
+    labels:
+      version: ${s.labels?.version || 'v1'}`).join('')}` : ''}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-sm text-gray-400">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    DestinationRule defines traffic policy after routing
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingDestinationRule(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingDestinationRule.isNew) {
+                          const newDR = {
+                            id: Date.now(),
+                            name: editingDestinationRule.name || `${editingDestinationRule.host}-dr`,
+                            type: 'destinationrule',
+                            namespace: editingDestinationRule.namespace,
+                            status: 'healthy',
+                            host: editingDestinationRule.host,
+                            trafficPolicy: editingDestinationRule.trafficPolicy || 'ROUND_ROBIN',
+                            circuitBreaker: editingDestinationRule.circuitBreaker || false,
+                            mtls: editingDestinationRule.mtls || 'ISTIO_MUTUAL',
+                            subsets: editingDestinationRule.subsets || [],
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newDR]);
+                        }
+                        showNotification(editingDestinationRule.isNew ? 'DestinationRule created' : 'DestinationRule updated', 'success');
+                        setEditingDestinationRule(null);
+                      }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-sm font-medium rounded-lg">
+                      {editingDestinationRule.isNew ? 'Create Rule' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AuthZ Policy Editor Modal */}
+          {editingAuthPolicy && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingAuthPolicy(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                      <Icon name="shield" size={20} className="text-rose-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingAuthPolicy.isNew ? 'Create Authorization Policy' : editingAuthPolicy.name}</div>
+                      <div className="text-sm text-gray-400">{editingAuthPolicy.isNew ? 'Define access control rules' : 'Edit policy rules'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingAuthPolicy(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Policy Name</label>
+                      <input type="text" defaultValue={editingAuthPolicy.name || ''} placeholder={`${editingAuthPolicy.targetService || 'service'}-authz`} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Namespace</label>
+                      <input type="text" defaultValue={editingAuthPolicy.namespace || ''} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                    </div>
+                  </div>
+
+                  {/* Target Selector */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="target" size={14} className="text-gray-400" />Target Selector</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1.5">Match Labels (app)</label>
+                        <input type="text" defaultValue={editingAuthPolicy.targetService || ''} placeholder="my-service" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Action</h3>
+                    <div className="flex gap-3">
+                      {['ALLOW', 'DENY', 'AUDIT'].map(action => (
+                        <button key={action} className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${editingAuthPolicy.action === action ? (action === 'ALLOW' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : action === 'DENY' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-amber-500/20 border-amber-500 text-amber-400') : 'bg-gray-800 border-gray-600 text-gray-400 hover:border-gray-500'}`}>
+                          <Icon name={action === 'ALLOW' ? 'check-circle' : action === 'DENY' ? 'x-circle' : 'eye'} size={14} className="inline mr-2" />{action}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Rules */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="list" size={14} className="text-gray-400" />Rules ({(editingAuthPolicy.rules || []).length})</h3>
+                    <div className="space-y-3">
+                      {(editingAuthPolicy.rules || []).map((rule, idx) => (
+                        <div key={idx} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-medium text-rose-400">Rule {idx + 1}</span>
+                            <button onClick={() => setEditingAuthPolicy({...editingAuthPolicy, rules: editingAuthPolicy.rules.filter((_, i) => i !== idx)})} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash2" size={12} /></button>
+                          </div>
+                          <div className="space-y-3">
+                            <div>
+                              <div className="text-xs text-gray-500 mb-1.5">From (Source)</div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <input type="text" value={rule.principals || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, principals: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="cluster.local/ns/*/sa/*" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.namespaces || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, namespaces: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="namespaces" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                              </div>
+                            </div>
+                            <div>
+                              <div className="text-xs text-gray-500 mb-1.5">To (Operation)</div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <input type="text" value={rule.methods || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, methods: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="GET, POST" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.paths || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, paths: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="/api/*" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                                <input type="text" value={rule.ports || ''} onChange={(e) => { const newRules = [...editingAuthPolicy.rules]; newRules[idx] = {...rule, ports: e.target.value}; setEditingAuthPolicy({...editingAuthPolicy, rules: newRules}); }} placeholder="8080" className="bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-rose-500" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(editingAuthPolicy.rules || []).length === 0 && (
+                        <div className="text-center py-4 text-sm text-gray-400">No rules defined - add a rule to specify access controls</div>
+                      )}
+                      <button onClick={() => setEditingAuthPolicy({...editingAuthPolicy, rules: [...(editingAuthPolicy.rules || []), { id: Date.now(), principals: '', namespaces: '', methods: '', paths: '', ports: '' }]})} className="w-full py-2 border border-dashed border-gray-600 rounded-lg text-sm text-gray-400 hover:border-rose-500 hover:text-rose-400 flex items-center justify-center gap-2">
+                        <Icon name="plus" size={12} />Add Rule
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-sm text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: ${editingAuthPolicy.name || editingAuthPolicy.targetService + '-authz'}
+  namespace: ${editingAuthPolicy.namespace || 'default'}
+spec:
+  selector:
+    matchLabels:
+      app: ${editingAuthPolicy.targetService || 'my-service'}
+  action: ${editingAuthPolicy.action || 'ALLOW'}${(editingAuthPolicy.rules || []).length > 0 ? `
+  rules:${(editingAuthPolicy.rules || []).map(r => `
+  - from:
+    - source:
+        ${r.principals ? `principals: [${r.principals.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : 'principals: ["*"]'}${r.namespaces ? `
+        namespaces: [${r.namespaces.split(',').map(n => `"${n.trim()}"`).join(', ')}]` : ''}
+    to:
+    - operation:
+        ${r.methods ? `methods: [${r.methods.split(',').map(m => `"${m.trim()}"`).join(', ')}]` : ''}${r.paths ? `
+        paths: [${r.paths.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : ''}${r.ports ? `
+        ports: [${r.ports.split(',').map(p => `"${p.trim()}"`).join(', ')}]` : ''}`).join('')}` : `
+  rules:
+  - from:
+    - source:
+        principals: ["*"]`}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-sm text-gray-400">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    AuthorizationPolicy controls access to workloads in the mesh
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingAuthPolicy(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingAuthPolicy.isNew) {
+                          const newPolicy = {
+                            id: Date.now(),
+                            name: editingAuthPolicy.name || `${editingAuthPolicy.targetService}-authz`,
+                            type: 'authpolicy',
+                            namespace: editingAuthPolicy.namespace,
+                            status: 'healthy',
+                            action: editingAuthPolicy.action || 'ALLOW',
+                            rules: (editingAuthPolicy.rules || []).length,
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newPolicy]);
+                        }
+                        showNotification(editingAuthPolicy.isNew ? 'AuthorizationPolicy created' : 'AuthorizationPolicy updated', 'success');
+                        setEditingAuthPolicy(null);
+                      }} className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-sm font-medium rounded-lg">
+                      {editingAuthPolicy.isNew ? 'Create Policy' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Gateway Editor Modal */}
+          {editingGateway && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setEditingGateway(null)}>
+              <div className="absolute inset-0 bg-black/60" />
+              <div className="relative w-[600px] max-h-[80vh] bg-gray-900 border border-gray-700 rounded-xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${editingGateway.type === 'ingress' ? 'bg-cyan-500/20' : 'bg-orange-500/20'}`}>
+                      <Icon name={editingGateway.type === 'ingress' ? 'log-in' : 'log-out'} size={20} className={editingGateway.type === 'ingress' ? 'text-cyan-400' : 'text-orange-400'} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">{editingGateway.isNew ? 'Create Gateway' : editingGateway.name}</div>
+                      <div className="text-sm text-gray-400">{editingGateway.isNew ? 'Configure external access' : `Edit ${editingGateway.type} gateway`}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setEditingGateway(null)} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white">
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Name</label>
+                      <input type="text" defaultValue={editingGateway.name || ''} className={`w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${editingGateway.type === 'ingress' ? 'focus:border-cyan-500' : 'focus:border-orange-500'}`} />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Namespace</label>
+                      <select defaultValue={editingGateway.namespace || 'istio-system'} onChange={e => setEditingGateway({...editingGateway, namespace: e.target.value})} className={`w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${editingGateway.type === 'ingress' ? 'focus:border-cyan-500' : 'focus:border-orange-500'}`}>
+                        {namespaces.map(ns => <option key={ns.id} value={ns.name}>{ns.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="layers" size={14} className="text-gray-400" />Gateway Type</h3>
+                    <div className="flex gap-3">
+                      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${editingGateway.type === 'ingress' ? 'border-cyan-500 bg-cyan-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                        <input type="radio" name="gwType" value="ingress" defaultChecked={editingGateway.type === 'ingress'} className="hidden" />
+                        <Icon name="log-in" size={20} className={editingGateway.type === 'ingress' ? 'text-cyan-400' : 'text-gray-500'} />
+                        <div>
+                          <div className="text-sm font-medium">Ingress</div>
+                          <div className="text-sm text-gray-400">External traffic into mesh</div>
+                        </div>
+                      </label>
+                      <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg border cursor-pointer ${editingGateway.type === 'egress' ? 'border-orange-500 bg-orange-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                        <input type="radio" name="gwType" value="egress" defaultChecked={editingGateway.type === 'egress'} className="hidden" />
+                        <Icon name="log-out" size={20} className={editingGateway.type === 'egress' ? 'text-orange-400' : 'text-gray-500'} />
+                        <div>
+                          <div className="text-sm font-medium">Egress</div>
+                          <div className="text-sm text-gray-400">Traffic leaving mesh</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Servers */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Server Configuration</h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1.5">Port</label>
+                          <input type="number" defaultValue={editingGateway.port || 443} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1.5">Protocol</label>
+                          <select defaultValue="HTTPS" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                            <option value="HTTP">HTTP</option>
+                            <option value="HTTPS">HTTPS</option>
+                            <option value="GRPC">GRPC</option>
+                            <option value="TCP">TCP</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1.5">Hosts</label>
+                        <input type="text" defaultValue={editingGateway.hosts?.join(', ') || '*.example.com'} placeholder="*.example.com, api.example.com" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TLS */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="lock" size={14} className="text-gray-400" />TLS Configuration</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1.5">TLS Mode</label>
+                        <select defaultValue={editingGateway.tls || 'SIMPLE'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                          <option value="PASSTHROUGH">PASSTHROUGH</option>
+                          <option value="SIMPLE">SIMPLE</option>
+                          <option value="MUTUAL">MUTUAL</option>
+                          <option value="AUTO_PASSTHROUGH">AUTO_PASSTHROUGH</option>
+                          <option value="ISTIO_MUTUAL">ISTIO_MUTUAL</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1.5">Credential Name</label>
+                          <input type="text" defaultValue={editingGateway.credentialName || ''} placeholder="my-tls-secret" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1.5">Min TLS Version</label>
+                          <select defaultValue="TLSV1_2" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-500">
+                            <option value="TLSV1_0">TLS 1.0</option>
+                            <option value="TLSV1_1">TLS 1.1</option>
+                            <option value="TLSV1_2">TLS 1.2</option>
+                            <option value="TLSV1_3">TLS 1.3</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* YAML Preview */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-gray-400" />YAML Preview</h3>
+                    <pre className="text-sm text-gray-400 bg-gray-900/50 rounded-lg p-3 overflow-x-auto">{`apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ${editingGateway.name || 'my-gateway'}
+  namespace: ${editingGateway.namespace || 'istio-system'}
+spec:
+  selector:
+    istio: ${editingGateway.type === 'ingress' ? 'ingressgateway' : 'egressgateway'}
+  servers:
+  - port:
+      number: ${editingGateway.port || 443}
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "${editingGateway.hosts?.[0] || '*.example.com'}"
+    tls:
+      mode: ${editingGateway.tls || 'SIMPLE'}
+      credentialName: ${editingGateway.credentialName || 'my-tls-secret'}`}</pre>
+                  </div>
+                </div>
+                <div className="px-5 py-4 border-t border-gray-700 bg-gray-800/30 flex items-center justify-between">
+                  <div className="text-sm text-gray-400">
+                    <Icon name="info" size={12} className="inline mr-1" />
+                    Gateway manages inbound/outbound traffic at mesh edge
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setEditingGateway(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+                    <button onClick={() => {
+                        if (editingGateway.isNew) {
+                          const newGW = {
+                            id: Date.now(),
+                            name: editingGateway.name || `new-${editingGateway.type}-gateway`,
+                            type: editingGateway.type,
+                            namespace: editingGateway.namespace || 'istio-system',
+                            status: 'healthy',
+                            hosts: editingGateway.hosts || ['*.example.com'],
+                            tls: editingGateway.tls || 'SIMPLE',
+                            port: editingGateway.port || 443,
+                            owner: 'user',
+                            bu: 'Enterprise',
+                            created: new Date().toISOString().split('T')[0]
+                          };
+                          setMeshResources(prev => [...prev, newGW]);
+                        }
+                        showNotification(editingGateway.isNew ? 'Gateway created' : 'Gateway updated', 'success');
+                        setEditingGateway(null);
+                      }} className={`px-4 py-2 text-sm font-medium rounded-lg ${editingGateway.type === 'ingress' ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-orange-600 hover:bg-orange-500'}`}>
+                      {editingGateway.isNew ? 'Create Gateway' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };

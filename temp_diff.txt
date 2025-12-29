@@ -1,0 +1,1563 @@
+14a15,32
+>   <script>
+>     // Auto-refresh on code changes
+>     (function() {
+>       let lastHash = null;
+>       async function checkForChanges() {
+>         try {
+>           const response = await fetch(window.location.href, { cache: 'no-store' });
+>           const text = await response.text();
+>           const hash = text.length + '-' + text.slice(0, 1000).split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+>           if (lastHash && lastHash !== hash) {
+>             window.location.reload();
+>           }
+>           lastHash = hash;
+>         } catch (e) {}
+>       }
+>       setInterval(checkForChanges, 1000);
+>     })();
+>   </script>
+97a116,121
+>         gauge: <><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12L19 5"/><circle cx="12" cy="12" r="2"/></>,
+>         'zap-off': <><polyline points="12.41 6.75 13 2 10.57 4.92"/><polyline points="18.57 12.91 21 10 15.66 10"/><polyline points="8 8 3 14 12 14 11 22 16 16"/><line x1="1" y1="1" x2="23" y2="23"/></>,
+>         'edit-3': <><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
+>         'minimize-2': <><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></>,
+>         'bar-chart-2': <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
+>         clipboard: <><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></>,
+225a250,298
+>     // ToggleSwitch Component
+>     const ToggleSwitch = ({ label, enabled, onChange, description }) => (
+>       <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+>         <div>
+>           <div className="text-sm font-medium">{label}</div>
+>           {description && <div className="text-xs text-gray-500">{description}</div>}
+>         </div>
+>         <button onClick={onChange} className={`relative w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+>           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${enabled ? 'translate-x-7' : 'translate-x-1'}`} />
+>         </button>
+>       </div>
+>     );
+> 
+>     // SliderInput Component
+>     const SliderInput = ({ label, value, min, max, unit, onChange }) => (
+>       <div className="p-3 bg-gray-800/50 rounded-lg">
+>         <div className="flex items-center justify-between mb-2">
+>           <span className="text-sm font-medium">{label}</span>
+>           <span className="text-sm text-amber-400 font-mono">{value}{unit}</span>
+>         </div>
+>         <input type="range" min={min} max={max} value={value} onChange={e => onChange(parseInt(e.target.value))}
+>           className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-amber-500" />
+>         <div className="flex justify-between text-xs text-gray-500 mt-1"><span>{min}{unit}</span><span>{max}{unit}</span></div>
+>       </div>
+>     );
+> 
+>     // TagEditor Component
+>     const TagEditor = ({ label, tags, onAdd, onRemove }) => {
+>       const [newTag, setNewTag] = React.useState('');
+>       return (
+>         <div className="p-3 bg-gray-800/50 rounded-lg">
+>           <div className="text-sm font-medium mb-2">{label}</div>
+>           <div className="flex flex-wrap gap-2 mb-2">
+>             {tags.map((tag, i) => (
+>               <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-700 rounded-lg text-xs">
+>                 {tag}
+>                 <button onClick={() => onRemove(i)} className="hover:text-red-400"><Icon name="x" size={12} /></button>
+>               </span>
+>             ))}
+>           </div>
+>           <div className="flex gap-2">
+>             <input type="text" value={newTag} onChange={e => setNewTag(e.target.value)} placeholder="Add tag..."
+>               className="flex-1 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm focus:border-amber-500 focus:outline-none" />
+>             <button onClick={() => { if(newTag) { onAdd(newTag); setNewTag(''); }}} className="px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded text-sm">Add</button>
+>           </div>
+>         </div>
+>       );
+>     };
+> 
+578a652,669
+>       // Full-screen Service Editor state (ROSIE-style)
+>       const [showServiceEditor, setShowServiceEditor] = useState(false);
+>       const [serviceEditorResource, setServiceEditorResource] = useState(null);
+>       const [serviceEditorMode, setServiceEditorMode] = useState('visual'); // 'visual' or 'code'
+>       const [serviceFilterCategory, setServiceFilterCategory] = useState('all'); // 'all', 'lua', 'wasm'
+>       const [selectedFilterNode, setSelectedFilterNode] = useState(null);
+>       const [serviceFilterChain, setServiceFilterChain] = useState([]);
+>       const [savedServiceFilters, setSavedServiceFilters] = useState({}); // Persisted filter configs by service name
+>       const [savedMomResources, setSavedMomResources] = useState([]); // M.O.M. created resources
+>       const [savedMessaging, setSavedMessaging] = useState([]); // A.U.N.T.I.E. created resources
+>       const [savedJobs, setSavedJobs] = useState([]); // R.O.S.I.E. created jobs
+>       const [savedDadResources, setSavedDadResources] = useState([]); // D.A.D. created resources
+>       const [savedDatastores, setSavedDatastores] = useState([]); // U.N.C.L.E. created datastores
+>       // U.N.C.L.E. Full-screen Datastore Editor state
+>       const [showDatastoreEditor, setShowDatastoreEditor] = useState(false);
+>       const [datastoreEditorResource, setDatastoreEditorResource] = useState(null);
+>       const [datastoreEditorMode, setDatastoreEditorMode] = useState('visual'); // 'visual' or 'code'
+>       const [datastoreConfig, setDatastoreConfig] = useState({});
+591c682,683
+<         dadCertificates: false
+---
+>         dadCertificates: false,
+>         dadLua: false
+593a686,730
+>       // Helper function to get existing WASM filters for a service (checks saved first, then mock data)
+>       const getServiceFilters = (service) => {
+>         // Return saved configuration if it exists
+>         if (savedServiceFilters[service.name]) {
+>           return savedServiceFilters[service.name];
+>         }
+>         // Otherwise return default mock data
+>         const mockFilters = {
+>           'loan-service': [
+>             { id: 1, name: 'JWT Auth', icon: 'key', desc: 'Validate JWT tokens', phase: 'AUTHN', config: { issuer: 'https://auth.fm.com', audience: 'loan-api' } },
+>             { id: 2, name: 'RBAC', icon: 'users', desc: 'Role-based access control', phase: 'AUTHZ', config: { policy: 'allow-authenticated' } },
+>             { id: 3, name: 'Tracing', icon: 'activity', desc: 'Distributed tracing', phase: 'STATS', config: { sampling: '100%' } }
+>           ],
+>           'user-service': [
+>             { id: 1, name: 'OAuth2', icon: 'lock', desc: 'OAuth2 authentication', phase: 'AUTHN', config: { provider: 'okta' } },
+>             { id: 2, name: 'Rate Limit', icon: 'gauge', desc: 'Request rate limiting', phase: 'AUTHZ', config: { requests_per_minute: 1000 } }
+>           ],
+>           'payment-gateway': [
+>             { id: 1, name: 'mTLS', icon: 'shield', desc: 'Mutual TLS enforcement', phase: 'AUTHN', config: { mode: 'STRICT' } },
+>             { id: 2, name: 'JWT Auth', icon: 'key', desc: 'Validate JWT tokens', phase: 'AUTHN', config: { issuer: 'https://auth.fm.com' } },
+>             { id: 3, name: 'RBAC', icon: 'users', desc: 'Role-based access control', phase: 'AUTHZ', config: { policy: 'payments-access' } },
+>             { id: 4, name: 'Audit', icon: 'clipboard', desc: 'Audit logging', phase: 'STATS', config: { log_level: 'INFO' } }
+>           ],
+>           'notification-service': [
+>             { id: 1, name: 'JWT Auth', icon: 'key', desc: 'Validate JWT tokens', phase: 'AUTHN', config: {} },
+>             { id: 2, name: 'Metrics', icon: 'bar-chart-2', desc: 'Custom metrics', phase: 'STATS', config: {} }
+>           ]
+>         };
+>         const vsFilters = {
+>           'loan-vs': [
+>             { id: 1, name: 'CORS', icon: 'globe', desc: 'Cross-origin settings', phase: 'AUTHN', config: { origins: ['*.fm.com'] } },
+>             { id: 2, name: 'Path Rewrite', icon: 'edit-3', desc: 'URL path manipulation', phase: 'AUTHZ', config: { prefix: '/api/v2' } },
+>             { id: 3, name: 'Timeout', icon: 'clock', desc: 'Request timeouts', phase: 'UNSPECIFIED', config: { timeout: '30s' } }
+>           ],
+>           'payment-vs': [
+>             { id: 1, name: 'Rate Limit', icon: 'gauge', desc: 'Request rate limiting', phase: 'AUTHZ', config: { requests_per_minute: 500 } },
+>             { id: 2, name: 'Circuit Breaker', icon: 'zap-off', desc: 'Prevent cascade failures', phase: 'AUTHZ', config: { threshold: 5 } },
+>             { id: 3, name: 'Retry', icon: 'refresh-cw', desc: 'Automatic retry logic', phase: 'UNSPECIFIED', config: { attempts: 3 } }
+>           ]
+>         };
+>         return service.type === 'virtualservice'
+>           ? (vsFilters[service.name] || [])
+>           : (mockFilters[service.name] || []);
+>       };
+> 
+605a743,748
+>       // Combine mock jobs with saved jobs (saved jobs override mock jobs by id, maintaining order)
+>       const allJobs = [
+>         ...mockJobs.map(m => savedJobs.find(s => s.id === m.id) || m), // Replace mock with saved if exists
+>         ...savedJobs.filter(s => !mockJobs.find(m => m.id === s.id))   // Add new saved jobs not in mock
+>       ];
+> 
+607c750
+<       const filteredJobs = mockJobs.filter(job => {
+---
+>       const filteredJobs = allJobs.filter(job => {
+616,619c759,762
+<         active: mockJobs.filter(j => j.status === 'active').length,
+<         paused: mockJobs.filter(j => j.status === 'paused').length,
+<         failed24h: mockJobs.filter(j => j.lastRunStatus === 'failed').length,
+<         successRate: (mockJobs.reduce((acc, j) => acc + j.successRate, 0) / mockJobs.length).toFixed(1)
+---
+>         active: allJobs.filter(j => j.status === 'active').length,
+>         paused: allJobs.filter(j => j.status === 'paused').length,
+>         failed24h: allJobs.filter(j => j.lastRunStatus === 'failed').length,
+>         successRate: allJobs.length > 0 ? (allJobs.reduce((acc, j) => acc + (j.successRate || 0), 0) / allJobs.length).toFixed(1) : '0'
+660,661c803,804
+<           scheduleType: job.schedule.startsWith('rate') ? 'rate' : 'cron',
+<           cronExpression: job.schedule.startsWith('rate') ? '0 2 * * *' : job.schedule,
+---
+>           scheduleType: job.schedule?.startsWith('rate') ? 'rate' : 'cron',
+>           cronExpression: job.schedule?.startsWith('rate') ? '0 2 * * *' : (job.schedule || '0 2 * * *'),
+665c808
+<           target: job.target,
+---
+>           target: job.target || 'eventbridge',
+670c813
+<         // Load workflow nodes based on job type
+---
+>         // Load workflow nodes based on job type - include color and config from nodeTypeConfigs
+673,676c816,819
+<             { id: 1, type: 's3', name: 'Read Source' },
+<             { id: 2, type: 'glue', name: 'Transform Data' },
+<             { id: 3, type: 'aurora', name: 'Load to DW' },
+<             { id: 4, type: 'sns', name: 'Send Alert' },
+---
+>             { id: 1, type: 's3', name: 'Read Source', color: 'blue', config: { bucket: '', prefix: '', wildcard: '*.csv' } },
+>             { id: 2, type: 'glue', name: 'Transform Data', color: 'amber', config: { job_name: '', allocated_capacity: 2 } },
+>             { id: 3, type: 'aurora', name: 'Load to DW', color: 'blue', config: { connection: '', query: '' } },
+>             { id: 4, type: 'sns', name: 'Send Alert', color: 'pink', config: { topic_arn: '', message: '' } },
+680c823
+<             { id: 1, type: 'lambda', name: job.name },
+---
+>             { id: 1, type: 'lambda', name: job.name, color: 'amber', config: { function_name: '', payload: '{}' } },
+707,710c850,896
+<         const message = editingJob
+<           ? `Job "${editingJob.name}" updated successfully`
+<           : `Job "${jobConfig.name}" created successfully`;
+<         showNotification(message);
+---
+>         if (editingJob) {
+>           // Update existing job - preserve all original fields and update specific ones
+>           const updatedJob = {
+>             ...editingJob,
+>             name: jobConfig.name || editingJob.name,
+>             description: jobConfig.description || editingJob.description || '',
+>             schedule: jobConfig.cronExpression || editingJob.schedule,
+>             scheduleHuman: jobConfig.scheduleType === 'cron' ? (jobConfig.cronExpression || editingJob.schedule) : `Every ${jobConfig.rateValue} ${jobConfig.rateUnit}`,
+>             target: jobConfig.target || editingJob.target,
+>             tags: jobConfig.tags || editingJob.tags || [],
+>             taskCount: workflowNodes.length
+>           };
+>           // Check if job exists in savedJobs
+>           const existsInSaved = savedJobs.find(j => j.id === editingJob.id);
+>           if (existsInSaved) {
+>             const newSaved = savedJobs.map(j => j.id === editingJob.id ? updatedJob : j);
+>             setSavedJobs(newSaved);
+>           } else {
+>             // Job is from mockJobs, add to savedJobs (will override in allJobs)
+>             const newSaved = [...savedJobs, updatedJob];
+>             setSavedJobs(newSaved);
+>           }
+>           showNotification(`Job "${updatedJob.name}" updated successfully`, 'success');
+>         } else {
+>           // Create new job
+>           const newJob = {
+>             id: Date.now(),
+>             name: jobConfig.name,
+>             type: 'dag',
+>             target: jobConfig.target,
+>             schedule: jobConfig.cronExpression,
+>             scheduleHuman: jobConfig.scheduleType === 'cron' ? jobConfig.cronExpression : `Every ${jobConfig.rateValue} ${jobConfig.rateUnit}`,
+>             status: 'active',
+>             lastRun: 'Never',
+>             lastRunStatus: 'pending',
+>             nextRun: 'Pending',
+>             owner: 'current-user',
+>             tags: jobConfig.tags || [],
+>             successRate: 0,
+>             avgDuration: '-',
+>             estimatedCost: '$0.00',
+>             taskCount: workflowNodes.length,
+>             description: jobConfig.description || ''
+>           };
+>           setSavedJobs([...savedJobs, newJob]);
+>           showNotification(`Job "${jobConfig.name}" created successfully`, 'success');
+>         }
+1480c1666,1686
+<                   <button onClick={() => { showNotification(`Datastore "${newDatastoreData.name}" created successfully`); setShowNewDatastore(false); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-lg">Create Datastore</button>
+---
+>                   <button onClick={() => {
+>                     const newDatastore = {
+>                       id: Date.now(),
+>                       name: newDatastoreData.name || 'new-datastore',
+>                       type: newDatastoreData.type || 'aurora',
+>                       status: 'provisioning',
+>                       environment: newDatastoreData.environment || 'prod',
+>                       accountName: newDatastoreData.accountName,
+>                       ldapAdmin: newDatastoreData.ldapAdmin,
+>                       ldapDev: newDatastoreData.ldapDev,
+>                       ldapRead: newDatastoreData.ldapRead,
+>                       description: newDatastoreData.description,
+>                       owner: 'current-user',
+>                       created: new Date().toISOString().split('T')[0],
+>                       monthlyCost: '$0.00'
+>                     };
+>                     setSavedDatastores([...savedDatastores, newDatastore]);
+>                     showNotification(`Datastore "${newDatastoreData.name}" created successfully`, 'success');
+>                     setShowNewDatastore(false);
+>                     setNewDatastoreData({ name: '', type: 'aurora', engine: '', region: 'us-east-1', owner: '', description: '' });
+>                   }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-lg">Create Datastore</button>
+1677a1884,2395
+>       // D.A.D. Full-Screen Service Editor (ROSIE-style)
+>       const ServiceEditor = () => {
+>         if (!showServiceEditor || !serviceEditorResource) return null;
+>         const r = serviceEditorResource;
+>         const isService = r.type === 'service';
+>         const isVirtualService = r.type === 'virtualservice';
+> 
+>         // The four Istio WASM plugin insertion phases
+>         const phases = [
+>           { id: 'AUTHN', name: 'Authentication', desc: 'Before JWT/authn logic', color: 'emerald', icon: 'key' },
+>           { id: 'AUTHZ', name: 'Authorization', desc: 'Before RBAC/authz filters', color: 'amber', icon: 'shield' },
+>           { id: 'STATS', name: 'Telemetry', desc: 'Before stats/metrics', color: 'violet', icon: 'activity' },
+>           { id: 'UNSPECIFIED', name: 'Default', desc: 'Near end, before router', color: 'gray', icon: 'layers' }
+>         ];
+> 
+>         // Available WASM filters organized by category with suggested phases
+>         const filterTypes = {
+>           security: [
+>             { id: 'jwt_auth', name: 'JWT Auth', icon: 'key', desc: 'Validate JWT tokens', suggestedPhase: 'AUTHN' },
+>             { id: 'oauth2', name: 'OAuth2', icon: 'lock', desc: 'OAuth2 authentication', suggestedPhase: 'AUTHN' },
+>             { id: 'mtls', name: 'mTLS', icon: 'shield', desc: 'Mutual TLS enforcement', suggestedPhase: 'AUTHN' },
+>             { id: 'rbac', name: 'RBAC', icon: 'users', desc: 'Role-based access control', suggestedPhase: 'AUTHZ' },
+>           ],
+>           traffic: [
+>             { id: 'rate_limit', name: 'Rate Limit', icon: 'gauge', desc: 'Request rate limiting', suggestedPhase: 'AUTHZ' },
+>             { id: 'circuit_breaker', name: 'Circuit Breaker', icon: 'zap-off', desc: 'Prevent cascade failures', suggestedPhase: 'AUTHZ' },
+>             { id: 'retry', name: 'Retry', icon: 'refresh-cw', desc: 'Automatic retry logic', suggestedPhase: 'UNSPECIFIED' },
+>             { id: 'timeout', name: 'Timeout', icon: 'clock', desc: 'Request timeouts', suggestedPhase: 'UNSPECIFIED' },
+>           ],
+>           transform: [
+>             { id: 'header_mutation', name: 'Headers', icon: 'file-text', desc: 'Add/remove headers', suggestedPhase: 'AUTHZ' },
+>             { id: 'path_rewrite', name: 'Path Rewrite', icon: 'edit-3', desc: 'URL path manipulation', suggestedPhase: 'AUTHZ' },
+>             { id: 'cors', name: 'CORS', icon: 'globe', desc: 'Cross-origin settings', suggestedPhase: 'AUTHN' },
+>             { id: 'compression', name: 'Compression', icon: 'minimize-2', desc: 'Response compression', suggestedPhase: 'STATS' },
+>           ],
+>           observability: [
+>             { id: 'access_log', name: 'Access Log', icon: 'file-text', desc: 'Request logging', suggestedPhase: 'STATS' },
+>             { id: 'tracing', name: 'Tracing', icon: 'activity', desc: 'Distributed tracing', suggestedPhase: 'STATS' },
+>             { id: 'metrics', name: 'Metrics', icon: 'bar-chart-2', desc: 'Custom metrics', suggestedPhase: 'STATS' },
+>             { id: 'audit', name: 'Audit', icon: 'clipboard', desc: 'Audit logging', suggestedPhase: 'STATS' },
+>           ]
+>         };
+> 
+>         const allFilters = Object.values(filterTypes).flat();
+>         const getFiltersByCategory = () => {
+>           if (serviceFilterCategory === 'all') return allFilters;
+>           return filterTypes[serviceFilterCategory] || [];
+>         };
+> 
+>         // Get filters by phase
+>         const getFiltersByPhase = (phaseId) => serviceFilterChain.filter(f => f.phase === phaseId);
+> 
+>         const handleAddFilter = (filter, targetPhase) => {
+>           const phase = targetPhase || filter.suggestedPhase || 'UNSPECIFIED';
+>           const phaseFilters = getFiltersByPhase(phase);
+>           const newFilter = {
+>             id: Date.now(),
+>             ...filter,
+>             phase,
+>             position: phaseFilters.length + 1,
+>             config: {}
+>           };
+>           setServiceFilterChain([...serviceFilterChain, newFilter]);
+>           setSelectedFilterNode(newFilter);
+>         };
+> 
+>         const handleRemoveFilter = (filterId) => {
+>           setServiceFilterChain(serviceFilterChain.filter(f => f.id !== filterId));
+>           if (selectedFilterNode?.id === filterId) setSelectedFilterNode(null);
+>         };
+> 
+>         const handleSelectFilter = (filter) => {
+>           setSelectedFilterNode(selectedFilterNode?.id === filter.id ? null : filter);
+>         };
+> 
+>         return (
+>           <div className="fixed inset-0 z-50 bg-gray-950 flex flex-col">
+>             {/* Header */}
+>             <div className="flex items-center justify-between px-3 py-2 border-b border-gray-800 bg-gray-900">
+>               <div className="flex items-center gap-3">
+>                 <div className="flex items-center gap-2">
+>                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isService ? 'bg-blue-500/20 text-blue-400' : 'bg-violet-500/20 text-violet-400'}`}>
+>                     <Icon name={isService ? 'server' : 'git-branch'} size={14} />
+>                   </div>
+>                   <div>
+>                     <div className="text-[10px] text-gray-500">{isService ? 'Service' : 'Virtual Service'}</div>
+>                     <div className="text-sm font-medium leading-tight">{r.name}</div>
+>                   </div>
+>                 </div>
+>                 <div className="w-px h-5 bg-gray-700" />
+>                 <div className="flex gap-1">
+>                   <button
+>                     onClick={() => setServiceEditorMode('visual')}
+>                     className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-all ${
+>                       serviceEditorMode === 'visual'
+>                         ? 'bg-cyan-500/20 text-cyan-300'
+>                         : 'text-gray-400 hover:bg-gray-800'
+>                     }`}
+>                   >
+>                     <Icon name="layout" size={12} />
+>                     Visual
+>                   </button>
+>                   <button
+>                     onClick={() => setServiceEditorMode('code')}
+>                     className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-all ${
+>                       serviceEditorMode === 'code'
+>                         ? 'bg-cyan-500/20 text-cyan-300'
+>                         : 'text-gray-400 hover:bg-gray-800'
+>                     }`}
+>                   >
+>                     <Icon name="code" size={12} />
+>                     YAML
+>                   </button>
+>                 </div>
+>               </div>
+>               <div className="flex items-center gap-2">
+>                 <button
+>                   onClick={() => { setShowServiceEditor(false); setServiceEditorResource(null); setSelectedFilterNode(null); }}
+>                   className="px-2 py-1 text-xs text-gray-400 hover:text-gray-200"
+>                 >
+>                   Cancel
+>                 </button>
+>                 <button
+>                   onClick={() => {
+>                     setSavedServiceFilters({...savedServiceFilters, [r.name]: serviceFilterChain});
+>                     showNotification(`${r.name} configuration saved!`, 'success');
+>                     setShowServiceEditor(false);
+>                     setServiceEditorResource(null);
+>                     setSelectedFilterNode(null);
+>                   }}
+>                   className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded text-xs font-medium"
+>                 >
+>                   <Icon name="check" size={12} />
+>                   Save
+>                 </button>
+>               </div>
+>             </div>
+> 
+>             {serviceEditorMode === 'visual' ? (
+>               <div className="flex-1 flex overflow-hidden">
+>                 {/* Left: Filter Palette */}
+>                 <div className="w-56 border-r border-gray-800 bg-gray-900/50 flex flex-col">
+>                   <div className="px-2 py-2 border-b border-gray-800">
+>                     <div className="flex flex-wrap gap-0.5">
+>                       {['all', 'security', 'traffic', 'transform', 'observability'].map(cat => (
+>                         <button
+>                           key={cat}
+>                           onClick={() => setServiceFilterCategory(cat)}
+>                           className={`px-1.5 py-0.5 text-[10px] rounded transition-colors ${
+>                             serviceFilterCategory === cat
+>                               ? 'bg-cyan-500/20 text-cyan-300'
+>                               : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800'
+>                           }`}
+>                         >
+>                           {cat.charAt(0).toUpperCase() + cat.slice(1)}
+>                         </button>
+>                       ))}
+>                     </div>
+>                   </div>
+>                   <div className="flex-1 overflow-auto p-1.5 space-y-1">
+>                     {getFiltersByCategory().map(filter => {
+>                       const isAdded = serviceFilterChain.some(f => f.name === filter.name);
+>                       return (
+>                         <button
+>                           key={filter.id}
+>                           onClick={() => !isAdded && handleAddFilter(filter)}
+>                           disabled={isAdded}
+>                           className={`w-full flex items-center gap-2 px-2 py-1.5 border rounded text-left transition-colors ${
+>                             isAdded
+>                               ? 'bg-gray-800/30 border-gray-700/50 opacity-50 cursor-not-allowed'
+>                               : 'bg-gray-800/50 border-gray-700 hover:border-cyan-500/50 group'
+>                           }`}
+>                         >
+>                           <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 ${
+>                             isAdded ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400 group-hover:bg-cyan-500/30'
+>                           }`}>
+>                             <Icon name={isAdded ? 'check' : filter.icon} size={12} />
+>                           </div>
+>                           <div className="flex-1 min-w-0">
+>                             <div className={`text-xs font-medium ${isAdded ? 'text-gray-500' : 'text-gray-200'}`}>{filter.name}</div>
+>                           </div>
+>                           {isAdded ? (
+>                             <span className="text-[9px] text-emerald-400">Added</span>
+>                           ) : (
+>                             <Icon name="plus" size={10} className="text-gray-600 group-hover:text-cyan-400" />
+>                           )}
+>                         </button>
+>                       );
+>                     })}
+>                   </div>
+>                 </div>
+> 
+>                 {/* Center: Filter Chain Canvas with 4 Phases - 50/50 split */}
+>                 <div className="flex-1 flex flex-col bg-gray-950/50">
+>                   {/* Top 50%: Phase Boxes */}
+>                   <div className="h-1/2 p-3 flex flex-col">
+>                     {/* Request Flow Header */}
+>                     <div className="flex items-center gap-1.5 mb-2 text-[10px] text-gray-500">
+>                       <Icon name="arrow-right" size={10} />
+>                       <span>Request flow: AUTHN → AUTHZ → STATS → UNSPECIFIED</span>
+>                     </div>
+> 
+>                     {/* Four Phase Boxes - Full Width */}
+>                     <div className="flex-1 flex gap-2">
+>                       {phases.map((phase, phaseIdx) => {
+>                         const phaseFilters = getFiltersByPhase(phase.id);
+>                         const colorClasses = {
+>                           emerald: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', headerBg: 'bg-emerald-500/20' },
+>                           amber: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', headerBg: 'bg-amber-500/20' },
+>                           violet: { bg: 'bg-violet-500/10', border: 'border-violet-500/30', text: 'text-violet-400', headerBg: 'bg-violet-500/20' },
+>                           gray: { bg: 'bg-gray-500/10', border: 'border-gray-500/30', text: 'text-gray-400', headerBg: 'bg-gray-500/20' }
+>                         }[phase.color];
+> 
+>                         return (
+>                           <div key={phase.id} className={`flex-1 rounded-lg border ${colorClasses.border} ${colorClasses.bg} overflow-hidden flex flex-col`}>
+>                             {/* Phase Header */}
+>                             <div className={`px-3 py-2 ${colorClasses.headerBg} border-b ${colorClasses.border}`}>
+>                               <div className={`flex items-center gap-2 ${colorClasses.text} font-medium text-sm`}>
+>                                 <Icon name={phase.icon} size={14} />
+>                                 {phase.name}
+>                               </div>
+>                               <div className="text-[10px] text-gray-500 mt-0.5">{phase.desc}</div>
+>                             </div>
+> 
+>                             {/* Phase Filters */}
+>                             <div className="flex-1 p-2 space-y-1.5 overflow-auto">
+>                               {phaseFilters.map(filter => (
+>                                 <div
+>                                   key={filter.id}
+>                                   onClick={() => handleSelectFilter(filter)}
+>                                   className={`relative px-2.5 py-1.5 rounded-lg border cursor-pointer transition-all group ${
+>                                     selectedFilterNode?.id === filter.id
+>                                       ? `ring-2 ring-cyan-500 ${colorClasses.border} bg-gray-800`
+>                                       : `${colorClasses.border} bg-gray-800/50 hover:bg-gray-800`
+>                                   }`}
+>                                 >
+>                                   <button
+>                                     onClick={(e) => { e.stopPropagation(); handleRemoveFilter(filter.id); }}
+>                                     className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-400"
+>                                   >
+>                                     <Icon name="x" size={10} />
+>                                   </button>
+>                                   <div className="flex items-center gap-2">
+>                                     <div className={`w-6 h-6 rounded ${colorClasses.headerBg} flex items-center justify-center ${colorClasses.text}`}>
+>                                       <Icon name={filter.icon} size={12} />
+>                                     </div>
+>                                     <span className="text-sm text-gray-200">{filter.name}</span>
+>                                   </div>
+>                                 </div>
+>                               ))}
+> 
+>                               {phaseFilters.length === 0 && (
+>                                 <div className="h-full flex items-center justify-center text-gray-600">
+>                                   <div className="text-center">
+>                                     <Icon name="plus" size={20} className="mx-auto opacity-40" />
+>                                     <div className="text-xs mt-1">Add filter</div>
+>                                   </div>
+>                                 </div>
+>                               )}
+>                             </div>
+>                           </div>
+>                         );
+>                       })}
+>                     </div>
+>                   </div>
+> 
+>                   {/* Bottom 50%: Filter Configuration */}
+>                   <div className="h-1/2 border-t border-gray-800 bg-gray-900/50 p-4 overflow-auto">
+>                     {selectedFilterNode ? (
+>                       <>
+>                         {/* Header */}
+>                         <div className="flex items-center justify-between mb-4">
+>                           <div className="flex items-center gap-3">
+>                             <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+>                               <Icon name={selectedFilterNode.icon} size={20} />
+>                             </div>
+>                             <div>
+>                               <div className="text-lg font-medium text-gray-200">{selectedFilterNode.name}</div>
+>                               <div className="text-xs text-gray-500">{selectedFilterNode.desc}</div>
+>                             </div>
+>                           </div>
+>                           <div className="flex items-center gap-3">
+>                             <select
+>                               value={selectedFilterNode.phase}
+>                               onChange={(e) => {
+>                                 const newPhase = e.target.value;
+>                                 setServiceFilterChain(serviceFilterChain.map(f =>
+>                                   f.id === selectedFilterNode.id ? { ...f, phase: newPhase } : f
+>                                 ));
+>                                 setSelectedFilterNode({ ...selectedFilterNode, phase: newPhase });
+>                               }}
+>                               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"
+>                             >
+>                               {phases.map(p => <option key={p.id} value={p.id}>{p.name} ({p.id})</option>)}
+>                             </select>
+>                             <select className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+>                               <option value="yes">Enabled</option>
+>                               <option value="no">Disabled</option>
+>                             </select>
+>                           </div>
+>                         </div>
+>                         {/* Filter-specific config */}
+>                         <div className="grid grid-cols-4 gap-4">
+>                           {(selectedFilterNode.name === 'Rate Limit') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Requests/sec</label><input type="number" defaultValue={100} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Burst Size</label><input type="number" defaultValue={200} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Rate Limit Key</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Client IP</option><option>User ID</option><option>API Key</option><option>Header Value</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Fail Open</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>No</option><option>Yes</option></select></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'JWT Auth') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Issuer URL</label><input type="text" placeholder="https://auth.example.com" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">JWKS URI</label><input type="text" placeholder="/.well-known/jwks.json" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Audiences</label><input type="text" placeholder="api.example.com" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Forward JWT</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Yes</option><option>No</option></select></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'OAuth2') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Token Endpoint</label><input type="text" placeholder="https://auth.example.com/oauth/token" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Client ID</label><input type="text" placeholder="client-id" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Scopes</label><input type="text" placeholder="openid profile" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Grant Type</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>client_credentials</option><option>authorization_code</option></select></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'mTLS') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Mode</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>STRICT</option><option>PERMISSIVE</option><option>DISABLE</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Client Cert Header</label><input type="text" defaultValue="X-Client-Cert" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Trust Domain</label><input type="text" placeholder="cluster.local" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Verify Depth</label><input type="number" defaultValue={1} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'RBAC') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Action</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>ALLOW</option><option>DENY</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Principals</label><input type="text" placeholder="cluster.local/ns/*/sa/*" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Methods</label><input type="text" placeholder="GET, POST" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Paths</label><input type="text" placeholder="/api/*" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Circuit Breaker') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Connections</label><input type="number" defaultValue={1000} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Pending</label><input type="number" defaultValue={100} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Requests</label><input type="number" defaultValue={1000} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Retries</label><input type="number" defaultValue={3} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Retry') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Attempts</label><input type="number" defaultValue={3} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Per Try Timeout</label><input type="text" defaultValue="2s" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Retry On</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>5xx</option><option>gateway-error</option><option>connect-failure</option><option>retriable-4xx</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Backoff</label><input type="text" defaultValue="25ms" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Timeout') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Request Timeout</label><input type="text" defaultValue="30s" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Idle Timeout</label><input type="text" defaultValue="60s" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Stream Duration</label><input type="text" placeholder="0s (unlimited)" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">gRPC Timeout Header</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Yes</option><option>No</option></select></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Headers') && <>
+>                             <div className="col-span-2"><label className="block text-xs text-gray-400 mb-1.5">Add Headers</label><input type="text" placeholder="X-Custom: value, X-Request-ID: %REQ_ID%" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div className="col-span-2"><label className="block text-xs text-gray-400 mb-1.5">Remove Headers</label><input type="text" placeholder="X-Internal, X-Debug" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Path Rewrite') && <>
+>                             <div className="col-span-2"><label className="block text-xs text-gray-400 mb-1.5">Match Pattern</label><input type="text" placeholder="/api/v1/(.*)" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div className="col-span-2"><label className="block text-xs text-gray-400 mb-1.5">Rewrite To</label><input type="text" placeholder="/internal/$1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'CORS') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Allow Origins</label><input type="text" placeholder="*" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Allow Methods</label><input type="text" defaultValue="GET,POST,PUT,DELETE" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Allow Headers</label><input type="text" defaultValue="Authorization,Content-Type" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Age (sec)</label><input type="number" defaultValue={86400} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Compression') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Algorithm</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>gzip</option><option>br</option><option>deflate</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Min Length</label><input type="number" defaultValue={1024} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Content Types</label><input type="text" defaultValue="text/*,application/json" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Level</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>BEST_SPEED</option><option>DEFAULT</option><option>BEST_COMPRESSION</option></select></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Access Log') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Log Format</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>JSON</option><option>TEXT</option><option>CEL</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Destination</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>STDOUT</option><option>FILE</option><option>gRPC</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Flush Interval</label><input type="text" defaultValue="10s" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Sample Rate</label><input type="text" defaultValue="100%" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Tracing') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Provider</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Zipkin</option><option>Jaeger</option><option>OpenTelemetry</option><option>Datadog</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Sampling Rate</label><input type="text" defaultValue="1%" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Max Tag Length</label><input type="number" defaultValue={256} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Custom Tags</label><input type="text" placeholder="env:prod,version:v1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Metrics') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Provider</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Prometheus</option><option>StatsD</option><option>OpenTelemetry</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Prefix</label><input type="text" defaultValue="istio_" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Dimensions</label><input type="text" placeholder="source,destination,status" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Histogram Buckets</label><input type="text" defaultValue="0.01,0.1,1,10" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+>                           </>}
+>                           {(selectedFilterNode.name === 'Audit') && <>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Audit Policy</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Request</option><option>RequestResponse</option><option>Metadata</option><option>None</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Destination</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Log File</option><option>Webhook</option><option>Both</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Include Headers</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>Yes</option><option>No</option></select></div>
+>                             <div><label className="block text-xs text-gray-400 mb-1.5">Include Body</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option>No</option><option>Yes</option></select></div>
+>                           </>}
+>                         </div>
+>                       </>
+>                     ) : (
+>                       <div className="h-full flex items-center justify-center text-gray-500">
+>                         <div className="text-center">
+>                           <Icon name="settings" size={40} className="mx-auto mb-3 opacity-30" />
+>                           <div className="text-sm">Select a filter to configure</div>
+>                           <div className="text-xs text-gray-600 mt-1">Click on a filter in the phases above</div>
+>                         </div>
+>                       </div>
+>                     )}
+>                   </div>
+>                 </div>
+> 
+>                 {/* Right: Service Properties */}
+>                 <div className="w-64 border-l border-gray-800 bg-gray-900/50 overflow-auto">
+>                   <div className="px-3 py-2 border-b border-gray-800">
+>                     <h3 className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
+>                       <Icon name="settings" size={12} className="text-gray-500" />
+>                       Properties
+>                     </h3>
+>                   </div>
+>                   <div className="p-2 space-y-2">
+>                     <div><label className="block text-[10px] text-gray-500 mb-0.5">Name</label><input type="text" value={r.name} readOnly className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs" /></div>
+>                     <div><label className="block text-[10px] text-gray-500 mb-0.5">Namespace</label><input type="text" value={r.namespace} readOnly className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs" /></div>
+>                     {isService && (
+>                       <>
+>                         <div><label className="block text-[10px] text-gray-500 mb-0.5">Host</label><input type="text" defaultValue={r.host} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs font-mono focus:outline-none focus:border-cyan-500" /></div>
+>                         <div className="grid grid-cols-2 gap-2">
+>                           <div><label className="block text-[10px] text-gray-500 mb-0.5">Port</label><input type="number" defaultValue={r.port} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-cyan-500" /></div>
+>                           <div><label className="block text-[10px] text-gray-500 mb-0.5">Protocol</label><select defaultValue={r.protocol} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-cyan-500"><option>HTTP</option><option>HTTPS</option><option>gRPC</option><option>TCP</option></select></div>
+>                         </div>
+>                       </>
+>                     )}
+>                     {isVirtualService && (
+>                       <>
+>                         <div><label className="block text-[10px] text-gray-500 mb-0.5">Host</label><input type="text" defaultValue={r.host} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs font-mono focus:outline-none focus:border-cyan-500" /></div>
+>                         <div><label className="block text-[10px] text-gray-500 mb-0.5">Gateway</label><input type="text" defaultValue={r.gateway} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-cyan-500" /></div>
+>                       </>
+>                     )}
+>                     <div><label className="block text-[10px] text-gray-500 mb-0.5">Owner</label><input type="text" defaultValue={r.owner} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-cyan-500" /></div>
+>                     <div className="pt-2 border-t border-gray-700">
+>                       <div className="flex items-center justify-between">
+>                         <span className="text-[10px] text-gray-500">Status</span>
+>                         <StatusBadge status={r.status} />
+>                       </div>
+>                     </div>
+>                     <div className="pt-2 border-t border-gray-700">
+>                       <div className="text-[10px] text-gray-500 mb-1">Filters ({serviceFilterChain.length})</div>
+>                       <div className="space-y-0.5 max-h-24 overflow-auto">
+>                         {serviceFilterChain.map((f, i) => (
+>                           <div key={f.id} className="flex items-center gap-1.5 text-[10px]">
+>                             <span className="w-3 h-3 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[8px]">{i + 1}</span>
+>                             <span className="text-gray-300">{f.name}</span>
+>                             <span className="text-gray-600">({f.phase})</span>
+>                           </div>
+>                         ))}
+>                         {serviceFilterChain.length === 0 && <div className="text-[10px] text-gray-500 italic">None</div>}
+>                       </div>
+>                     </div>
+>                   </div>
+>                 </div>
+>               </div>
+>             ) : (
+>               /* Code View */
+>               <div className="flex-1 p-6 overflow-auto">
+>                 <div className="max-w-4xl mx-auto">
+>                   <div className="bg-gray-900 border border-gray-700 rounded-xl overflow-hidden">
+>                     <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50">
+>                       <span className="text-sm text-gray-400 font-mono">{r.name}.yaml</span>
+>                       <button className="text-xs text-gray-500 hover:text-gray-300 flex items-center gap-1"><Icon name="copy" size={12} />Copy</button>
+>                     </div>
+>                     <pre className="p-4 text-sm font-mono text-gray-300 overflow-auto">
+> {`apiVersion: networking.istio.io/v1beta1
+> kind: ${isService ? 'Service' : 'VirtualService'}
+> metadata:
+>   name: ${r.name}
+>   namespace: ${r.namespace}
+> spec:
+> ${isVirtualService ? `  hosts:
+>     - ${r.host}
+>   gateways:
+>     - ${r.gateway}
+>   http:
+>     - route:
+>         - destination:
+>             host: ${r.name}
+>             port:
+>               number: 80` : `  selector:
+>     app: ${r.name}
+>   ports:
+>     - port: ${r.port}
+>       targetPort: ${r.port}
+>       protocol: ${r.protocol}`}
+> ${serviceFilterChain.length > 0 ? `
+> ---
+> apiVersion: extensions.istio.io/v1alpha1
+> kind: WasmPlugin
+> metadata:
+>   name: ${r.name}-filters
+>   namespace: ${r.namespace}
+> spec:
+>   selector:
+>     matchLabels:
+>       app: ${r.name}
+>   plugins:
+> ${serviceFilterChain.map((f, i) => `    - name: ${f.id}
+>       priority: ${i + 1}`).join('\n')}` : ''}`}
+>                     </pre>
+>                   </div>
+>                 </div>
+>               </div>
+>             )}
+>           </div>
+>         );
+>       };
+> 
+1702c2420
+<               { id: 'lua', label: 'Lua', icon: 'code' },
+---
+>               ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua', icon: 'code' }] : []),
+1789c2507,2516
+<                         <button onClick={() => { setSelectedService(r); setEditFormData({...r}); setDadDetailEditMode(true); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+---
+>                         <button onClick={() => {
+>                           if (r.type === 'service' || r.type === 'virtualservice') {
+>                             setServiceEditorResource(r);
+>                             setServiceFilterChain(getServiceFilters(r));
+>                             setSelectedFilterNode(null);
+>                             setShowServiceEditor(true);
+>                           } else {
+>                             setSelectedService(r); setEditFormData({...r}); setDadDetailEditMode(true);
+>                           }
+>                         }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+1940c2667,2693
+<                                     <button onClick={() => setEditingWasmPlugin(p)} className="p-1 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={12} /></button>
+---
+>                                     <button onClick={() => {
+>                                       // Create a resource object for the Service Editor based on the WASM plugin's target
+>                                       const targetResource = {
+>                                         id: p.id,
+>                                         name: p.targetGateway || p.name,
+>                                         type: 'service',
+>                                         namespace: p.namespace,
+>                                         status: p.status,
+>                                         host: `${p.targetGateway}.${p.namespace}.svc.cluster.local`,
+>                                         port: 8080,
+>                                         protocol: 'HTTP',
+>                                         owner: p.owner
+>                                       };
+>                                       setServiceEditorResource(targetResource);
+>                                       // Load the plugin as a filter in the chain
+>                                       const pluginAsFilter = {
+>                                         id: p.id,
+>                                         name: p.module || p.name.split('-')[0],
+>                                         icon: 'cpu',
+>                                         desc: `${p.name} plugin`,
+>                                         phase: p.phase,
+>                                         config: p.config
+>                                       };
+>                                       setServiceFilterChain([pluginAsFilter]);
+>                                       setSelectedFilterNode(null);
+>                                       setShowServiceEditor(true);
+>                                     }} className="p-1 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={12} /></button>
+1963c2716
+<           {dadActiveTab === 'lua' && (() => {
+---
+>           {dadActiveTab === 'lua' && featureFlags.dadLua && (() => {
+2163c2916
+<           {editingLuaFilter && (() => {
+---
+>           {featureFlags.dadLua && editingLuaFilter && (() => {
+2320c3073
+<           {viewingLuaScript && (
+---
+>           {featureFlags.dadLua && viewingLuaScript && (
+2643c3396,3408
+<                         <button onClick={() => { showNotification(`${r.name} saved successfully!`, 'success'); setDadDetailEditMode(false); }} className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm font-medium flex items-center gap-1"><Icon name="check" size={14} />Save</button>
+---
+>                         <button onClick={() => {
+>                           // Save updates to the resource
+>                           const updatedResource = { ...r, ...editFormData };
+>                           setSavedDadResources(prev => {
+>                             const existing = prev.find(p => p.id === r.id);
+>                             if (existing) {
+>                               return prev.map(p => p.id === r.id ? updatedResource : p);
+>                             }
+>                             return [...prev, updatedResource];
+>                           });
+>                           showNotification(`${r.name} saved successfully!`, 'success');
+>                           setDadDetailEditMode(false);
+>                         }} className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm font-medium flex items-center gap-1"><Icon name="check" size={14} />Save</button>
+2648c3413,3423
+<                         <button onClick={() => { setEditFormData({...r}); setDadDetailEditMode(true); }} className="p-2 text-gray-400 hover:text-amber-400 hover:bg-amber-500/20 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
+---
+>                         <button onClick={() => {
+>                           if (r.type === 'service' || r.type === 'virtualservice') {
+>                             setSelectedService(null);
+>                             setServiceEditorResource(r);
+>                             setServiceFilterChain(getServiceFilters(r));
+>                             setSelectedFilterNode(null);
+>                             setShowServiceEditor(true);
+>                           } else {
+>                             setEditFormData({...r}); setDadDetailEditMode(true);
+>                           }
+>                         }} className="p-2 text-gray-400 hover:text-amber-400 hover:bg-amber-500/20 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
+2719,2731d3493
+<                       {/* Lua Filters */}
+<                       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+<                         <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-amber-400" />Lua Filters</h3>
+<                         <div className="space-y-2 text-sm">
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">1</span>
+<                               <span className="font-mono text-amber-300">request_logging</span>
+<                             </div>
+<                             <span className="text-xs text-gray-500">Position 1</span>
+<                           </div>
+<                         </div>
+<                       </div>
+2896c3658
+<                               { id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length },
+---
+>                               ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length }] : []),
+2944,2952c3706,3708
+<                               <div className="grid grid-cols-2 gap-3">
+<                                 <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+<                                   <div className="flex items-center gap-2 mb-2 text-amber-400 text-sm"><Icon name="code" size={14} />Lua Filters ({luaFilters.length})</div>
+<                                   <div className="space-y-1.5">{luaFilters.map(f => (<div key={f.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{f.name}</span><span className="text-gray-500">Pos {f.position}</span></div>))}</div>
+<                                 </div>
+<                                 <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+<                                   <div className="flex items-center gap-2 mb-2 text-cyan-400 text-sm"><Icon name="cpu" size={14} />WASM Plugins ({wasmPlugins.length})</div>
+<                                   <div className="space-y-1.5">{wasmPlugins.map(p => (<div key={p.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{p.name}</span><span className="text-gray-500">Pos {p.position}</span></div>))}</div>
+<                                 </div>
+---
+>                               <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+>                                 <div className="flex items-center gap-2 mb-2 text-cyan-400 text-sm"><Icon name="cpu" size={14} />WASM Plugins ({wasmPlugins.length})</div>
+>                                 <div className="space-y-1.5">{wasmPlugins.map(p => (<div key={p.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{p.name}</span><span className="text-gray-500">Pos {p.position}</span></div>))}</div>
+2956c3712
+<                             {editTab === 'lua' && <>
+---
+>                             {featureFlags.dadLua && editTab === 'lua' && <>
+3005,3017d3760
+<                       {/* Lua Filters */}
+<                       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+<                         <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-amber-400" />Lua Filters</h3>
+<                         <div className="space-y-2 text-sm">
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">1</span>
+<                               <span className="font-mono text-amber-300">trace_context</span>
+<                             </div>
+<                             <span className="text-xs text-gray-500">Position 1</span>
+<                           </div>
+<                         </div>
+<                       </div>
+3019,3025c3762,3778
+<                       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+<                         <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="cpu" size={14} className="text-cyan-400" />WASM Plugins</h3>
+<                         <div className="space-y-2 text-sm">
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">1</span>
+<                               <span className="font-mono text-blue-300">service_auth</span>
+---
+>                       {(() => {
+>                         const filters = savedServiceFilters[r.name] || getServiceFilters(r);
+>                         return (
+>                           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+>                             <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="cpu" size={14} className="text-cyan-400" />WASM Plugins ({filters.length})</h3>
+>                             <div className="space-y-2 text-sm">
+>                               {filters.length > 0 ? filters.map((f, idx) => (
+>                                 <div key={f.id || idx} className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+>                                   <div className="flex items-center gap-2">
+>                                     <span className="w-5 h-5 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">{idx + 1}</span>
+>                                     <span className="font-mono text-cyan-300">{f.name}</span>
+>                                   </div>
+>                                   <span className="text-xs text-gray-500">{f.phase}</span>
+>                                 </div>
+>                               )) : (
+>                                 <div className="text-gray-500 text-center py-2">No filters configured</div>
+>                               )}
+3027d3779
+<                             <span className="text-xs text-gray-500">Position 2</span>
+3029,3030c3781,3782
+<                         </div>
+<                       </div>
+---
+>                         );
+>                       })()}
+3063c3815
+<                               { id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length },
+---
+>                               ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length }] : []),
+3104,3112c3856,3858
+<                               <div className="grid grid-cols-2 gap-3">
+<                                 <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+<                                   <div className="flex items-center gap-2 mb-2 text-amber-400 text-sm"><Icon name="code" size={14} />Lua Filters ({luaFilters.length})</div>
+<                                   <div className="space-y-1.5">{luaFilters.map(f => (<div key={f.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{f.name}</span><span className="text-gray-500">Pos {f.position}</span></div>))}</div>
+<                                 </div>
+<                                 <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+<                                   <div className="flex items-center gap-2 mb-2 text-cyan-400 text-sm"><Icon name="cpu" size={14} />WASM Plugins ({wasmPlugins.length})</div>
+<                                   <div className="space-y-1.5">{wasmPlugins.map(p => (<div key={p.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{p.name}</span><span className="text-gray-500">Pos {p.position}</span></div>))}</div>
+<                                 </div>
+---
+>                               <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+>                                 <div className="flex items-center gap-2 mb-2 text-cyan-400 text-sm"><Icon name="cpu" size={14} />WASM Plugins ({wasmPlugins.length})</div>
+>                                 <div className="space-y-1.5">{wasmPlugins.map(p => (<div key={p.name} className="flex items-center justify-between p-1.5 bg-gray-900/50 rounded text-xs"><span className="text-gray-200">{p.name}</span><span className="text-gray-500">Pos {p.position}</span></div>))}</div>
+3116c3862
+<                             {editTab === 'lua' && <>
+---
+>                             {featureFlags.dadLua && editTab === 'lua' && <>
+3287,3306d4032
+<                       {/* Lua Filters */}
+<                       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+<                         <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="code" size={14} className="text-amber-400" />Lua Filters</h3>
+<                         <div className="space-y-2 text-sm">
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">1</span>
+<                               <span className="font-mono text-amber-300">rate_limit</span>
+<                             </div>
+<                             <span className="text-xs text-gray-500">Position 1</span>
+<                           </div>
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">2</span>
+<                               <span className="font-mono text-amber-300">header_inject</span>
+<                             </div>
+<                             <span className="text-xs text-gray-500">Position 3</span>
+<                           </div>
+<                         </div>
+<                       </div>
+3308,3321c4034,4050
+<                       <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+<                         <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="cpu" size={14} className="text-cyan-400" />WASM Plugins</h3>
+<                         <div className="space-y-2 text-sm">
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">1</span>
+<                               <span className="font-mono text-cyan-300">auth_check</span>
+<                             </div>
+<                             <span className="text-xs text-gray-500">Position 2</span>
+<                           </div>
+<                           <div className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+<                             <div className="flex items-center gap-2">
+<                               <span className="w-5 h-5 rounded bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs">2</span>
+<                               <span className="font-mono text-violet-300">custom_metrics</span>
+---
+>                       {(() => {
+>                         const filters = savedServiceFilters[r.name] || getServiceFilters(r);
+>                         return (
+>                           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+>                             <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="cpu" size={14} className="text-cyan-400" />WASM Plugins ({filters.length})</h3>
+>                             <div className="space-y-2 text-sm">
+>                               {filters.length > 0 ? filters.map((f, idx) => (
+>                                 <div key={f.id || idx} className="flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+>                                   <div className="flex items-center gap-2">
+>                                     <span className="w-5 h-5 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">{idx + 1}</span>
+>                                     <span className="font-mono text-cyan-300">{f.name}</span>
+>                                   </div>
+>                                   <span className="text-xs text-gray-500">{f.phase}</span>
+>                                 </div>
+>                               )) : (
+>                                 <div className="text-gray-500 text-center py-2">No filters configured</div>
+>                               )}
+3323d4051
+<                             <span className="text-xs text-gray-500">Position 4</span>
+3325,3326c4053,4054
+<                         </div>
+<                       </div>
+---
+>                         );
+>                       })()}
+3582,3627d4309
+<             const ToggleSwitch = ({ label, enabled, onChange, description }) => (
+<               <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+<                 <div>
+<                   <div className="text-sm font-medium">{label}</div>
+<                   {description && <div className="text-xs text-gray-500">{description}</div>}
+<                 </div>
+<                 <button onClick={onChange} className={`relative w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+<                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${enabled ? 'translate-x-7' : 'translate-x-1'}`} />
+<                 </button>
+<               </div>
+<             );
+< 
+<             const SliderInput = ({ label, value, min, max, unit, onChange }) => (
+<               <div className="p-3 bg-gray-800/50 rounded-lg">
+<                 <div className="flex items-center justify-between mb-2">
+<                   <span className="text-sm font-medium">{label}</span>
+<                   <span className="text-sm text-amber-400 font-mono">{value}{unit}</span>
+<                 </div>
+<                 <input type="range" min={min} max={max} value={value} onChange={e => onChange(parseInt(e.target.value))}
+<                   className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-amber-500" />
+<                 <div className="flex justify-between text-xs text-gray-500 mt-1"><span>{min}{unit}</span><span>{max}{unit}</span></div>
+<               </div>
+<             );
+< 
+<             const TagEditor = ({ label, tags, onAdd, onRemove }) => {
+<               const [newTag, setNewTag] = React.useState('');
+<               return (
+<                 <div className="p-3 bg-gray-800/50 rounded-lg">
+<                   <div className="text-sm font-medium mb-2">{label}</div>
+<                   <div className="flex flex-wrap gap-2 mb-2">
+<                     {tags.map((tag, i) => (
+<                       <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-700 rounded-lg text-xs">
+<                         {tag}
+<                         <button onClick={() => onRemove(i)} className="hover:text-red-400"><Icon name="x" size={12} /></button>
+<                       </span>
+<                     ))}
+<                   </div>
+<                   <div className="flex gap-2">
+<                     <input type="text" value={newTag} onChange={e => setNewTag(e.target.value)} placeholder="Add host..."
+<                       className="flex-1 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm focus:border-amber-500 focus:outline-none" />
+<                     <button onClick={() => { if(newTag) { onAdd(newTag); setNewTag(''); }}} className="px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded text-sm">Add</button>
+<                   </div>
+<                 </div>
+<               );
+<             };
+< 
+3934,3935c4616,4617
+<                             { id: 'chain', label: 'Unified Chain', icon: 'layers', count: svcWasm.length + svcLua.length },
+<                             { id: 'lua', label: 'Lua Filters', icon: 'code', count: svcLua.length },
+---
+>                             { id: 'chain', label: 'Unified Chain', icon: 'layers', count: svcWasm.length },
+>                             ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua Filters', icon: 'code', count: svcLua.length }] : []),
+4016,4037c4698,4706
+<                           <div className="grid grid-cols-2 gap-4">
+<                             <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+<                               <div className="flex items-center gap-2 mb-3 text-amber-400"><Icon name="code" size={16} /><span className="font-medium">Lua Filters ({svcLua.length})</span></div>
+<                               <div className="space-y-2">
+<                                 {svcLua.map((f, i) => (
+<                                   <div key={f} className="flex items-center justify-between p-2 bg-gray-900/50 rounded">
+<                                     <span className="text-sm text-gray-200">{f}</span>
+<                                     <span className="text-xs text-gray-500">Position {i + 1}</span>
+<                                   </div>
+<                                 ))}
+<                               </div>
+<                             </div>
+<                             <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+<                               <div className="flex items-center gap-2 mb-3 text-cyan-400"><Icon name="cpu" size={16} /><span className="font-medium">WASM Plugins ({svcWasm.length})</span></div>
+<                               <div className="space-y-2">
+<                                 {svcWasm.map((p, i) => (
+<                                   <div key={p} className="flex items-center justify-between p-2 bg-gray-900/50 rounded">
+<                                     <span className="text-sm text-gray-200">{p}</span>
+<                                     <span className="text-xs text-gray-500">Position {i + 1}</span>
+<                                   </div>
+<                                 ))}
+<                               </div>
+---
+>                           <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
+>                             <div className="flex items-center gap-2 mb-3 text-cyan-400"><Icon name="cpu" size={16} /><span className="font-medium">WASM Plugins ({svcWasm.length})</span></div>
+>                             <div className="space-y-2">
+>                               {svcWasm.map((p, i) => (
+>                                 <div key={p} className="flex items-center justify-between p-2 bg-gray-900/50 rounded">
+>                                   <span className="text-sm text-gray-200">{p}</span>
+>                                   <span className="text-xs text-gray-500">Position {i + 1}</span>
+>                                 </div>
+>                               ))}
+4043c4712
+<                         {svcEditTab === 'lua' && <>
+---
+>                         {featureFlags.dadLua && svcEditTab === 'lua' && <>
+4372c5041
+<                       { id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length },
+---
+>                       ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length }] : []),
+4529,4537d5197
+<                           <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
+<                             <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-3"><Icon name="code" size={16} />Lua Filters ({luaFilters.length})</div>
+<                             {luaFilters.map((f, i) => (
+<                               <div key={i} className="flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0">
+<                                 <span className="text-sm text-gray-300">{f.name}</span>
+<                                 <span className="text-xs text-gray-500">Position {f.position}</span>
+<                               </div>
+<                             ))}
+<                           </div>
+4552c5212
+<                     {vsFilterTab === 'lua' && (
+---
+>                     {featureFlags.dadLua && vsFilterTab === 'lua' && (
+5515c6175,6200
+<                       <button onClick={() => { showNotification(editingMessaging ? `Resource "${newMessagingData.name}" updated successfully` : `Resource "${newMessagingData.name}" created successfully`, 'success'); setShowNewMessaging(false); setSelectedMessaging(null); setSelectedBlueprint(null); }} className="px-4 py-2 text-sm bg-pink-600 hover:bg-pink-500 rounded-lg font-medium">{editingMessaging ? 'Save Changes' : 'Create Resource'}</button>
+---
+>                       <button onClick={() => {
+>                         if (editingMessaging) {
+>                           // Update existing resource
+>                           setSavedMessaging(savedMessaging.map(m => m.id === editingMessaging.id ? { ...editingMessaging, ...newMessagingData } : m));
+>                           showNotification(`Resource "${newMessagingData.name}" updated successfully`, 'success');
+>                         } else {
+>                           // Create new resource
+>                           const newResource = {
+>                             id: Date.now(),
+>                             name: newMessagingData.name,
+>                             type: newMessagingData.type || 'sns',
+>                             zone: newMessagingData.zone || 'local',
+>                             status: 'active',
+>                             owner: newMessagingData.owner || 'current-user',
+>                             messagesDay: '0',
+>                             monthlyCost: '$0.00',
+>                             created: new Date().toISOString().split('T')[0],
+>                             ...newMessagingData
+>                           };
+>                           setSavedMessaging([...savedMessaging, newResource]);
+>                           showNotification(`Resource "${newMessagingData.name}" created successfully`, 'success');
+>                         }
+>                         setShowNewMessaging(false);
+>                         setSelectedMessaging(null);
+>                         setSelectedBlueprint(null);
+>                       }} className="px-4 py-2 text-sm bg-pink-600 hover:bg-pink-500 rounded-lg font-medium">{editingMessaging ? 'Save Changes' : 'Create Resource'}</button>
+5531,5543c6216,6223
+<             <div className="flex h-full">
+<               <div className="flex-1 flex flex-col">
+<                 <div className="border-b border-gray-800 px-4 py-2 flex items-center justify-between bg-gray-900/50">
+<                   <div className="flex items-center gap-4">
+<                     {editingJob && (
+<                       <div className="flex items-center gap-2 pr-4 border-r border-gray-700">
+<                         <Icon name="edit" size={16} className="text-pink-400" />
+<                         <span className="text-sm font-medium">Editing: <span className="text-pink-300">{editingJob.name}</span></span>
+<                       </div>
+<                     )}
+<                     <div className="flex items-center gap-2">
+<                       <button onClick={() => setDesignerMode('visual')} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${designerMode === 'visual' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' : 'text-gray-400 hover:bg-gray-800'}`}><Icon name="layout" size={16} />Visual Designer</button>
+<                       <button onClick={() => setDesignerMode('code')} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${designerMode === 'code' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' : 'text-gray-400 hover:bg-gray-800'}`}><Icon name="code" size={16} />Code View</button>
+---
+>             <div className="fixed inset-0 z-50 bg-gray-950 flex flex-col">
+>               {/* Header */}
+>               <div className="border-b border-gray-800 px-4 py-2 flex items-center justify-between bg-gray-900 flex-shrink-0">
+>                 <div className="flex items-center gap-4">
+>                   {editingJob && (
+>                     <div className="flex items-center gap-2 pr-4 border-r border-gray-700">
+>                       <Icon name="edit" size={16} className="text-pink-400" />
+>                       <span className="text-sm font-medium">Editing: <span className="text-pink-300">{editingJob.name}</span></span>
+5545c6225
+<                   </div>
+---
+>                   )}
+5547,5548c6227,6228
+<                     <button onClick={handleCloseDesigner} className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+<                     <button onClick={handleSaveJob} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 rounded-lg text-sm font-medium"><Icon name="save" size={16} />{editingJob ? 'Save Changes' : 'Deploy Job'}</button>
+---
+>                     <button onClick={() => setDesignerMode('visual')} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${designerMode === 'visual' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' : 'text-gray-400 hover:bg-gray-800'}`}><Icon name="layout" size={16} />Visual</button>
+>                     <button onClick={() => setDesignerMode('code')} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${designerMode === 'code' ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30' : 'text-gray-400 hover:bg-gray-800'}`}><Icon name="code" size={16} />Code</button>
+5551,5589c6231,6235
+<                 {designerMode === 'visual' ? (
+<                   <div className="flex-1 p-6 bg-gray-950/50 overflow-auto">
+<                     {/* Operator Palette with Category Filter */}
+<                     <div className="mb-4 bg-gray-800/50 border border-gray-700 rounded-lg overflow-hidden">
+<                       <div className="px-3 py-2 border-b border-gray-700 flex items-center justify-between">
+<                         <div className="text-xs text-gray-400 font-medium">OPERATORS</div>
+<                         <div className="flex gap-1">
+<                           {['all', 'sources', 'process', 'destinations', 'control'].map(cat => (
+<                             <button key={cat} onClick={() => setOperatorCategory(cat)} className={`px-2 py-0.5 text-xs rounded transition-colors ${operatorCategory === cat ? 'bg-pink-500/20 text-pink-300' : 'text-gray-500 hover:text-gray-300'}`}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
+<                           ))}
+<                         </div>
+<                       </div>
+<                       <div className="p-3 flex gap-2 flex-wrap">
+<                         {/* Sources */}
+<                         {(operatorCategory === 'all' || operatorCategory === 'sources') && <>
+<                           {[{ type: 's3', icon: 'hard-drive', label: 'S3 Sensor' }, { type: 'aurora', icon: 'database', label: 'Aurora Query' }, { type: 'api', icon: 'globe', label: 'API Call' }].map(op => (
+<                             <button key={op.type} onClick={() => handleAddNode(op.type)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm hover:border-blue-500/50"><Icon name={op.icon} size={14} className="text-blue-400" />{op.label}</button>
+<                           ))}
+<                         </>}
+<                         {/* Process */}
+<                         {(operatorCategory === 'all' || operatorCategory === 'process') && <>
+<                           {[{ type: 'lambda', icon: 'zap', label: 'Lambda' }, { type: 'glue', icon: 'refresh-cw', label: 'Glue Job' }, { type: 'batch', icon: 'layers', label: 'Batch Job' }, { type: 'emr', icon: 'cpu', label: 'EMR Step' }].map(op => (
+<                             <button key={op.type} onClick={() => handleAddNode(op.type)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm hover:border-amber-500/50"><Icon name={op.icon} size={14} className="text-amber-400" />{op.label}</button>
+<                           ))}
+<                         </>}
+<                         {/* Destinations */}
+<                         {(operatorCategory === 'all' || operatorCategory === 'destinations') && <>
+<                           {[{ type: 's3-write', icon: 'upload', label: 'S3 Write' }, { type: 'dsql', icon: 'server', label: 'DSQL' }, { type: 'dynamodb', icon: 'table', label: 'DynamoDB' }, { type: 'sqs', icon: 'mail', label: 'SQS Publish' }].map(op => (
+<                             <button key={op.type} onClick={() => handleAddNode(op.type)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm hover:border-emerald-500/50"><Icon name={op.icon} size={14} className="text-emerald-400" />{op.label}</button>
+<                           ))}
+<                         </>}
+<                         {/* Control */}
+<                         {(operatorCategory === 'all' || operatorCategory === 'control') && <>
+<                           {[{ type: 'branch', icon: 'git-branch', label: 'Branch' }, { type: 'sensor', icon: 'clock', label: 'Wait/Sensor' }, { type: 'sns', icon: 'bell', label: 'SNS Notify' }].map(op => (
+<                             <button key={op.type} onClick={() => handleAddNode(op.type)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm hover:border-pink-500/50"><Icon name={op.icon} size={14} className="text-pink-400" />{op.label}</button>
+<                           ))}
+<                         </>}
+<                       </div>
+<                     </div>
+---
+>                 <div className="flex items-center gap-2">
+>                   <button onClick={handleCloseDesigner} className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+>                   <button onClick={handleSaveJob} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 rounded-lg text-sm font-medium"><Icon name="save" size={16} />Save</button>
+>                 </div>
+>               </div>
+5591,5618c6237,6245
+<                     {/* Canvas */}
+<                     <div className="relative bg-gray-900 border border-gray-700 rounded-xl min-h-[300px] p-6">
+<                       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #666 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+<                       {workflowNodes.length > 0 && !selectedNode && <div className="absolute top-2 right-2 text-xs text-gray-500 bg-gray-800/80 px-2 py-1 rounded">Click a node to edit properties</div>}
+<                       <div className="relative flex items-center gap-4 flex-wrap">
+<                         {workflowNodes.map((node, index) => {
+<                           const colorMap = {
+<                             blue: { ring: 'ring-blue-500', border: 'border-blue-500/50 hover:border-blue-500', bg: 'bg-blue-500/20 text-blue-400' },
+<                             amber: { ring: 'ring-amber-500', border: 'border-amber-500/50 hover:border-amber-500', bg: 'bg-amber-500/20 text-amber-400' },
+<                             emerald: { ring: 'ring-emerald-500', border: 'border-emerald-500/50 hover:border-emerald-500', bg: 'bg-emerald-500/20 text-emerald-400' },
+<                             pink: { ring: 'ring-pink-500', border: 'border-pink-500/50 hover:border-pink-500', bg: 'bg-pink-500/20 text-pink-400' },
+<                           };
+<                           const colors = colorMap[node.color] || colorMap.blue;
+<                           const typeConfig = nodeTypeConfigs[node.type] || { icon: 'box', operator: 'Operator' };
+<                           return (
+<                           <React.Fragment key={node.id}>
+<                             <div onClick={() => handleSelectNode(node)} className={`relative bg-gray-800 border-2 rounded-xl p-4 min-w-[140px] group cursor-pointer transition-all ${selectedNode?.id === node.id ? `ring-2 ring-offset-2 ring-offset-gray-900 ${colors.ring} border-transparent` : colors.border}`}>
+<                               <button onClick={(e) => { e.stopPropagation(); handleRemoveNode(node.id); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-400"><Icon name="x" size={12} /></button>
+<                               <div className={`w-10 h-10 rounded-lg mb-2 flex items-center justify-center ${colors.bg}`}><Icon name={typeConfig.icon} size={18} /></div>
+<                               <div className="text-sm font-medium">{node.name}</div>
+<                               <div className="text-xs text-gray-500 mt-1 truncate max-w-[120px]">{node.config && Object.values(node.config)[0] || 'Configure...'}</div>
+<                               {selectedNode?.id === node.id && <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-pink-400 rounded-full" />}
+<                             </div>
+<                             {index < workflowNodes.length - 1 && <Icon name="arrow-right" className="text-gray-600 flex-shrink-0" size={20} />}
+<                           </React.Fragment>
+<                         );})}
+<                         {workflowNodes.length === 0 && <div className="w-full text-center py-12 text-gray-500"><Icon name="plus" size={48} className="mx-auto mb-3 opacity-50" /><p>Add operators from the palette above to build your workflow</p></div>}
+<                       </div>
+---
+>               {/* Main Content: 3-column layout */}
+>               <div className="flex-1 flex overflow-hidden">
+>                 {/* Left: Operator Palette */}
+>                 <div className="w-36 border-r border-gray-800 bg-gray-900/80 flex flex-col flex-shrink-0">
+>                   <div className="p-2 border-b border-gray-800">
+>                     <div className="flex flex-wrap gap-1">
+>                       {['All', 'Src', 'Proc', 'Dest', 'Ctrl'].map(cat => (
+>                         <button key={cat} onClick={() => setOperatorCategory(cat === 'Src' ? 'sources' : cat === 'Proc' ? 'process' : cat === 'Ctrl' ? 'control' : cat === 'Dest' ? 'destinations' : 'all')} className={`px-1.5 py-0.5 text-[10px] rounded ${(operatorCategory === 'all' && cat === 'All') || (operatorCategory === 'sources' && cat === 'Src') || (operatorCategory === 'process' && cat === 'Proc') || (operatorCategory === 'destinations' && cat === 'Dest') || (operatorCategory === 'control' && cat === 'Ctrl') ? 'bg-pink-500/20 text-pink-300' : 'text-gray-500 hover:text-gray-300'}`}>{cat}</button>
+>                       ))}
+5619a6247,6282
+>                   </div>
+>                   <div className="flex-1 overflow-auto p-2 space-y-1">
+>                     {(operatorCategory === 'all' || operatorCategory === 'sources') &&
+>                       [{ type: 's3', icon: 'hard-drive', label: 'S3 Sensor', color: 'blue' }, { type: 'aurora', icon: 'database', label: 'Aurora', color: 'blue' }, { type: 'api', icon: 'globe', label: 'API Call', color: 'blue' }].map(op => (
+>                         <button key={op.type} onClick={() => handleAddNode(op.type)} className="w-full flex items-center gap-2 px-2 py-1.5 bg-gray-800/50 border border-gray-700 rounded text-left hover:border-blue-500/50 group">
+>                           <div className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center text-blue-400"><Icon name={op.icon} size={11} /></div>
+>                           <span className="text-xs text-gray-300">{op.label}</span>
+>                         </button>
+>                       ))
+>                     }
+>                     {(operatorCategory === 'all' || operatorCategory === 'process') &&
+>                       [{ type: 'lambda', icon: 'zap', label: 'Lambda' }, { type: 'glue', icon: 'refresh-cw', label: 'Glue Job' }, { type: 'batch', icon: 'layers', label: 'Batch' }, { type: 'emr', icon: 'cpu', label: 'EMR Step' }].map(op => (
+>                         <button key={op.type} onClick={() => handleAddNode(op.type)} className="w-full flex items-center gap-2 px-2 py-1.5 bg-gray-800/50 border border-gray-700 rounded text-left hover:border-amber-500/50 group">
+>                           <div className="w-5 h-5 rounded bg-amber-500/20 flex items-center justify-center text-amber-400"><Icon name={op.icon} size={11} /></div>
+>                           <span className="text-xs text-gray-300">{op.label}</span>
+>                         </button>
+>                       ))
+>                     }
+>                     {(operatorCategory === 'all' || operatorCategory === 'destinations') &&
+>                       [{ type: 's3-write', icon: 'upload', label: 'S3 Write' }, { type: 'dsql', icon: 'server', label: 'DSQL' }, { type: 'dynamodb', icon: 'table', label: 'DynamoDB' }, { type: 'sqs', icon: 'mail', label: 'SQS' }].map(op => (
+>                         <button key={op.type} onClick={() => handleAddNode(op.type)} className="w-full flex items-center gap-2 px-2 py-1.5 bg-gray-800/50 border border-gray-700 rounded text-left hover:border-emerald-500/50 group">
+>                           <div className="w-5 h-5 rounded bg-emerald-500/20 flex items-center justify-center text-emerald-400"><Icon name={op.icon} size={11} /></div>
+>                           <span className="text-xs text-gray-300">{op.label}</span>
+>                         </button>
+>                       ))
+>                     }
+>                     {(operatorCategory === 'all' || operatorCategory === 'control') &&
+>                       [{ type: 'branch', icon: 'git-branch', label: 'Branch' }, { type: 'sensor', icon: 'clock', label: 'Wait' }, { type: 'sns', icon: 'bell', label: 'SNS Notify' }].map(op => (
+>                         <button key={op.type} onClick={() => handleAddNode(op.type)} className="w-full flex items-center gap-2 px-2 py-1.5 bg-gray-800/50 border border-gray-700 rounded text-left hover:border-pink-500/50 group">
+>                           <div className="w-5 h-5 rounded bg-pink-500/20 flex items-center justify-center text-pink-400"><Icon name={op.icon} size={11} /></div>
+>                           <span className="text-xs text-gray-300">{op.label}</span>
+>                         </button>
+>                       ))
+>                     }
+>                   </div>
+>                 </div>
+5621,5635c6284,6312
+<                     {/* Node Configuration Panel */}
+<                     {selectedNode && (
+<                       <div className="mt-4 bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+<                         <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between bg-gray-800/50">
+<                           <div className="flex items-center gap-3">
+<                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedNode.color === 'blue' ? 'bg-blue-500/20 text-blue-400' : selectedNode.color === 'amber' ? 'bg-amber-500/20 text-amber-400' : selectedNode.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-pink-500/20 text-pink-400'}`}><Icon name={nodeTypeConfigs[selectedNode.type]?.icon || 'box'} size={16} /></div>
+<                             <div><div className="font-medium text-sm">Configure: {selectedNode.name}</div><div className="text-xs text-gray-500">{selectedNode.type.replace(/-/g, ' ')}</div></div>
+<                           </div>
+<                           <button onClick={() => setSelectedNode(null)} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200"><Icon name="x" size={16} /></button>
+<                         </div>
+<                         <div className="p-4 grid grid-cols-2 gap-4">
+<                           <div><label className="block text-sm text-gray-400 mb-1.5">Step Name</label><input type="text" value={selectedNode.name} onChange={e => handleUpdateNodeName(selectedNode.id, e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500" /></div>
+<                           {selectedNode.config && Object.entries(selectedNode.config).slice(0, 3).map(([key, val]) => (
+<                             <div key={key}><label className="block text-sm text-gray-400 mb-1.5">{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label><input type="text" value={val} onChange={e => handleUpdateNodeConfig(selectedNode.id, key, e.target.value)} placeholder={`Enter ${key}`} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-pink-500" /></div>
+<                           ))}
+---
+>                 {/* Center: Canvas + Config */}
+>                 <div className="flex-1 flex flex-col min-w-0">
+>                   {designerMode === 'visual' ? (<>
+>                     {/* Canvas */}
+>                     <div className="flex-1 p-4 overflow-auto">
+>                       <div className="relative bg-gray-900/80 border border-gray-700 rounded-lg h-full min-h-[200px] p-4">
+>                         <div className="absolute inset-0 opacity-10 rounded-lg" style={{ backgroundImage: 'radial-gradient(circle, #666 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+>                         <div className="relative flex items-start gap-3 flex-wrap">
+>                           {workflowNodes.map((node, index) => {
+>                             const colorMap = {
+>                               blue: { ring: 'ring-blue-500', border: 'border-blue-500/50 hover:border-blue-500', bg: 'bg-blue-500/20 text-blue-400' },
+>                               amber: { ring: 'ring-amber-500', border: 'border-amber-500/50 hover:border-amber-500', bg: 'bg-amber-500/20 text-amber-400' },
+>                               emerald: { ring: 'ring-emerald-500', border: 'border-emerald-500/50 hover:border-emerald-500', bg: 'bg-emerald-500/20 text-emerald-400' },
+>                               pink: { ring: 'ring-pink-500', border: 'border-pink-500/50 hover:border-pink-500', bg: 'bg-pink-500/20 text-pink-400' },
+>                             };
+>                             const colors = colorMap[node.color] || colorMap.blue;
+>                             const typeConfig = nodeTypeConfigs[node.type] || { icon: 'box' };
+>                             return (
+>                             <React.Fragment key={node.id}>
+>                               <div onClick={() => handleSelectNode(node)} className={`relative bg-gray-800 border-2 rounded-lg p-3 min-w-[90px] group cursor-pointer ${selectedNode?.id === node.id ? `ring-2 ring-offset-2 ring-offset-gray-900 ${colors.ring} border-transparent` : colors.border}`}>
+>                                 <button onClick={(e) => { e.stopPropagation(); handleRemoveNode(node.id); }} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-400"><Icon name="x" size={12} /></button>
+>                                 <div className={`w-8 h-8 rounded-lg mx-auto mb-2 flex items-center justify-center ${colors.bg}`}><Icon name={typeConfig.icon} size={16} /></div>
+>                                 <div className="text-xs font-medium text-center">{node.name}</div>
+>                                 <div className="text-[10px] text-gray-500 text-center mt-0.5">Configure...</div>
+>                               </div>
+>                               {index < workflowNodes.length - 1 && <div className="flex items-center self-center"><Icon name="arrow-right" className="text-gray-600" size={16} /></div>}
+>                             </React.Fragment>
+>                           );})}
+>                           {workflowNodes.length === 0 && <div className="w-full text-center py-12 text-gray-500"><Icon name="plus" size={40} className="mx-auto mb-3 opacity-30" /><p className="text-sm">Click operators on the left to add them</p></div>}
+5638,5644c6315,6325
+<                     )}
+< 
+<                     {recommendation && (
+<                       <div className={`mt-4 p-4 rounded-xl border ${recommendation.platform === 'mwaa' ? 'bg-fuchsia-500/10 border-fuchsia-500/30' : 'bg-cyan-500/10 border-cyan-500/30'}`}>
+<                         <div className="flex items-start gap-3">
+<                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${recommendation.platform === 'mwaa' ? 'bg-fuchsia-500/20 text-fuchsia-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
+<                             <Icon name={recommendation.platform === 'mwaa' ? 'git-branch' : 'zap'} size={16} />
+---
+>                     </div>
+>                     {/* Config Panel */}
+>                     <div className="h-48 border-t border-gray-800 bg-gray-900/50 p-4 overflow-auto flex-shrink-0">
+>                       {selectedNode ? (
+>                         <div>
+>                           <div className="flex items-center justify-between mb-3">
+>                             <div className="flex items-center gap-2">
+>                               <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${selectedNode.color === 'blue' ? 'bg-blue-500/20 text-blue-400' : selectedNode.color === 'amber' ? 'bg-amber-500/20 text-amber-400' : selectedNode.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-pink-500/20 text-pink-400'}`}><Icon name={nodeTypeConfigs[selectedNode.type]?.icon || 'box'} size={14} /></div>
+>                               <div><div className="font-medium text-sm">{selectedNode.name}</div><div className="text-xs text-gray-500">{selectedNode.type}</div></div>
+>                             </div>
+>                             <button onClick={() => setSelectedNode(null)} className="p-1.5 hover:bg-gray-700 rounded text-gray-400"><Icon name="x" size={14} /></button>
+5646,5648c6327,6331
+<                           <div>
+<                             <div className="font-medium text-sm">Recommended Target: <span className={recommendation.platform === 'mwaa' ? 'text-fuchsia-300' : 'text-cyan-300'}>{recommendation.platform === 'mwaa' ? 'Airflow (MWAA)' : 'Step Function'}</span></div>
+<                             <div className="text-sm text-gray-400 mt-1">{recommendation.reason}</div>
+---
+>                           <div className="grid grid-cols-3 gap-3">
+>                             <div><label className="block text-xs text-gray-400 mb-1">Step Name</label><input type="text" value={selectedNode.name} onChange={e => handleUpdateNodeName(selectedNode.id, e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm" /></div>
+>                             {selectedNode.config && Object.entries(selectedNode.config).map(([key, val]) => (
+>                               <div key={key}><label className="block text-xs text-gray-400 mb-1">{key.replace(/_/g, ' ')}</label><input type="text" value={val} onChange={e => handleUpdateNodeConfig(selectedNode.id, key, e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm" /></div>
+>                             ))}
+5650a6334,6352
+>                       ) : (
+>                         <div className="h-full flex items-center justify-center text-gray-500">
+>                           <div className="text-center"><Icon name="settings" size={32} className="mx-auto mb-2 opacity-30" /><div className="text-sm">Select a node to configure</div></div>
+>                         </div>
+>                       )}
+>                     </div>
+>                   </>) : (
+>                     <div className="flex-1 p-4 overflow-auto">
+>                       <div className="bg-gray-900 border border-gray-700 rounded-xl overflow-hidden h-full">
+>                         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50">
+>                           <div className="flex items-center gap-2 text-sm"><Icon name="git-branch" size={14} className="text-gray-400" /><span className="text-gray-300">workflow.py</span></div>
+>                           <span className="text-xs text-gray-500">Python (Airflow DAG)</span>
+>                         </div>
+>                         <pre className="p-4 text-sm font-mono text-gray-300 overflow-auto h-[calc(100%-40px)]">{`from airflow import DAG
+> from datetime import datetime
+> 
+> with DAG('${jobConfig.name || 'my_workflow'}', schedule='${jobConfig.cronExpression}') as dag:
+> ${workflowNodes.map(n => `    ${n.name.toLowerCase().replace(/\s+/g, '_')} = ${nodeTypeConfigs[n.type]?.operator || 'Operator'}(task_id='${n.name.toLowerCase().replace(/\s+/g, '_')}')`).join('\n')}
+> ${workflowNodes.length > 1 ? `\n    ${workflowNodes.map(n => n.name.toLowerCase().replace(/\s+/g, '_')).join(' >> ')}` : ''}`}</pre>
+5652,5705d6353
+<                     )}
+<                   </div>
+<                 ) : (
+<                   <div className="flex-1 p-6 bg-gray-950/50 overflow-auto">
+<                     <div className="bg-gray-900 border border-gray-700 rounded-xl overflow-hidden">
+<                       <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-gray-800/50">
+<                         <div className="flex items-center gap-2 text-sm"><Icon name="git-branch" size={14} className="text-gray-400" /><span className="text-gray-300">loan_etl.py</span></div>
+<                         <span className="text-xs text-gray-500">Python (Airflow DAG)</span>
+<                       </div>
+<                       <pre className="p-4 text-sm font-mono text-gray-300 overflow-x-auto">{`from airflow import DAG
+< from airflow.providers.amazon.aws.sensors.s3 import S3KeySensor
+< from airflow.providers.amazon.aws.operators.glue import GlueJobOperator
+< from airflow.providers.amazon.aws.operators.rds import RdsOperator
+< from airflow.providers.amazon.aws.operators.sns import SnsPublishOperator
+< from datetime import datetime, timedelta
+< 
+< default_args = {
+<     'owner': 'loan-team',
+<     'retries': 3,
+<     'retry_delay': timedelta(minutes=5),
+< }
+< 
+< with DAG(
+<     'loan_data_pipeline',
+<     default_args=default_args,
+<     schedule='0 2 * * *',
+<     start_date=datetime(2025, 1, 1),
+< ) as dag:
+< 
+<     wait_for_source = S3KeySensor(
+<         task_id='wait_for_source',
+<         bucket_name='loan-data-bucket',
+<         bucket_key='raw/loans/*.parquet'
+<     )
+< 
+<     transform_data = GlueJobOperator(
+<         task_id='transform_data',
+<         job_name='loan-transform-job'
+<     )
+< 
+<     load_to_warehouse = RdsOperator(
+<         task_id='load_to_warehouse',
+<         db_identifier='loan-service-db',
+<         sql='COPY loans.daily_loans FROM s3://loan-data-bucket/processed/',
+<         database='loans'
+<     )
+< 
+<     send_notification = SnsPublishOperator(
+<         task_id='send_notification',
+<         target_arn='arn:aws:sns:us-east-1:loan-alerts',
+<         message='Pipeline completed'
+<     )
+< 
+<     wait_for_source >> transform_data >> load_to_warehouse >> send_notification`}</pre>
+5707,5710c6355,6359
+<                   </div>
+<                 )}
+<               </div>
+<               <div className="w-80 border-l border-gray-800 bg-gray-900/50 overflow-auto">
+---
+>                   )}
+>                 </div>
+> 
+>                 {/* Right: Job Properties */}
+>                 <div className="w-72 border-l border-gray-800 bg-gray-900/50 overflow-auto flex-shrink-0">
+5782c6431
+<                 <div className="text-2xl font-semibold text-pink-300">{mockJobs.length}</div>
+---
+>                 <div className="text-2xl font-semibold text-pink-300">{allJobs.length}</div>
+5807,5809c6456,6458
+<                   { id: 'all', label: 'All', count: mockJobs.length },
+<                   { id: 'active', label: 'Active', count: mockJobs.filter(j => j.status === 'active').length },
+<                   { id: 'paused', label: 'Paused', count: mockJobs.filter(j => j.status === 'paused').length }
+---
+>                   { id: 'all', label: 'All', count: allJobs.length },
+>                   { id: 'active', label: 'Active', count: allJobs.filter(j => j.status === 'active').length },
+>                   { id: 'paused', label: 'Paused', count: allJobs.filter(j => j.status === 'paused').length }
+5819,5821c6468,6470
+<                   { id: 'all', label: 'All Platforms', count: mockJobs.length },
+<                   { id: 'eventbridge', label: 'Step Function', count: mockJobs.filter(j => j.target === 'eventbridge').length },
+<                   { id: 'mwaa', label: 'MWAA', count: mockJobs.filter(j => j.target === 'mwaa').length }
+---
+>                   { id: 'all', label: 'All Platforms', count: allJobs.length },
+>                   { id: 'eventbridge', label: 'Step Function', count: allJobs.filter(j => j.target === 'eventbridge').length },
+>                   { id: 'mwaa', label: 'MWAA', count: allJobs.filter(j => j.target === 'mwaa').length }
+5877,5878c6526,6527
+<               <div className="flex items-center justify-between mb-3"><div className="text-sm font-medium text-gray-300">Platform Distribution (90/10 Target)</div><div className="text-xs text-gray-500">Your jobs: {Math.round(mockJobs.filter(j => j.target === 'eventbridge').length / mockJobs.length * 100)}% Step Function / {Math.round(mockJobs.filter(j => j.target === 'mwaa').length / mockJobs.length * 100)}% Airflow</div></div>
+<               <div className="flex h-3 rounded-full overflow-hidden bg-gray-700"><div className="bg-cyan-500" style={{ width: `${mockJobs.filter(j => j.target === 'eventbridge').length / mockJobs.length * 100}%` }} /><div className="bg-fuchsia-500" style={{ width: `${mockJobs.filter(j => j.target === 'mwaa').length / mockJobs.length * 100}%` }} /></div>
+---
+>               <div className="flex items-center justify-between mb-3"><div className="text-sm font-medium text-gray-300">Platform Distribution (90/10 Target)</div><div className="text-xs text-gray-500">Your jobs: {allJobs.length > 0 ? Math.round(allJobs.filter(j => j.target === 'eventbridge').length / allJobs.length * 100) : 0}% Step Function / {allJobs.length > 0 ? Math.round(allJobs.filter(j => j.target === 'mwaa').length / allJobs.length * 100) : 0}% Airflow</div></div>
+>               <div className="flex h-3 rounded-full overflow-hidden bg-gray-700"><div className="bg-cyan-500" style={{ width: `${allJobs.length > 0 ? allJobs.filter(j => j.target === 'eventbridge').length / allJobs.length * 100 : 0}%` }} /><div className="bg-fuchsia-500" style={{ width: `${allJobs.length > 0 ? allJobs.filter(j => j.target === 'mwaa').length / allJobs.length * 100 : 0}%` }} /></div>
+6455a7105,7107
+>           {/* D.A.D. Service Full-Screen Editor */}
+>           <ServiceEditor />
+> 
+6572a7225,7239
+>                       <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+>                         <div className="flex items-center gap-3">
+>                           <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+>                             <Icon name="code" size={16} className="text-amber-400" />
+>                           </div>
+>                           <div>
+>                             <div className="text-sm font-medium">Lua Filters</div>
+>                             <div className="text-xs text-gray-500">Enable Lua filter support (legacy)</div>
+>                           </div>
+>                         </div>
+>                         <button onClick={() => setFeatureFlags({...featureFlags, dadLua: !featureFlags.dadLua})}
+>                           className={`relative w-12 h-6 rounded-full transition-colors ${featureFlags.dadLua ? 'bg-emerald-500' : 'bg-gray-600'}`}>
+>                           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${featureFlags.dadLua ? 'translate-x-7' : 'translate-x-1'}`} />
+>                         </button>
+>                       </div>
+6746c7413,7430
+<                   <button onClick={() => { showNotification(`Resource "${newMomData.name || 'new-resource'}" created successfully`, 'success'); setShowNewMomResource(false); }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-sm font-medium rounded-lg">Create Resource</button>
+---
+>                   <button onClick={() => {
+>                     const newResource = {
+>                       id: Date.now(),
+>                       name: newMomData.name || 'new-resource',
+>                       type: newMomData.type,
+>                       status: 'provisioning',
+>                       region: newMomData.region,
+>                       owner: newMomData.owner || 'current-user',
+>                       created: new Date().toISOString().split('T')[0],
+>                       monthlyCost: '$0.00',
+>                       description: newMomData.description,
+>                       ...newMomData
+>                     };
+>                     setSavedMomResources([...savedMomResources, newResource]);
+>                     showNotification(`Resource "${newMomData.name || 'new-resource'}" created successfully`, 'success');
+>                     setShowNewMomResource(false);
+>                     setNewMomData({ name: '', type: 'ec2', size: '', region: 'us-east-1', owner: '', description: '' });
+>                   }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-sm font-medium rounded-lg">Create Resource</button>

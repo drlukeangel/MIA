@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx:*)",
+      "Bash(node --check:*)",
+      "Bash(start \"\" \"c:\\\\_dev\\\\MIA\\\\index.html\")",
+      "Bash(explorer \"c:\\\\_dev\\\\MIA\\\\index.html\")",
+      "Bash(cmd /c start \"\" \"c:\\\\_dev\\\\MIA\\\\index.html\")",
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(start http://localhost:3000)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill /F /PID 16464)",
+      "Bash(start http://localhost:3000/?dashboard=dad)",
+      "Bash(start http://localhost:3000/?dashboard=auntie)",
+      "Bash(start http://localhost:3000/?dashboard=rosie)",
+      "Bash(start:*)",
+      "Bash(timeout /t 2 /nobreak)",
+      "Bash(fc:*)",
+      "Bash(copy \"c:\\\\_dev\\\\MIA\\\\index.html\" \"c:\\\\_dev\\\\MIA\\\\index.broken.html\")",
+      "Bash(copy \"c:\\\\_dev\\\\MIA\\\\index.backup.html\" \"c:\\\\_dev\\\\MIA\\\\index.html\")",
+      "Bash(cp:*)",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(taskkill:*)"
+    ]
+  }
+}
