@@ -885,7 +885,7 @@ import React, { useState } from 'react';
         dad: true,
         auntie: true,
         rosie: true,
-        bro: true,
+        bro: false,
         darkMode: true,
         notifications: true,
         autoRefresh: false,
