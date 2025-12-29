@@ -241,6 +241,17 @@
       height: 20px !important;
     }
 
+    /* Dark theme input styling - white text, gray placeholders */
+    .theme-dark input,
+    .theme-dark select,
+    .theme-dark textarea {
+      color: white !important;
+    }
+    .theme-dark input::placeholder,
+    .theme-dark textarea::placeholder {
+      color: #6B7280 !important;
+    }
+
     /* B.R.O. table specific styling */
     .bro-table tbody tr:nth-child(odd) {
       background-color: rgba(17, 24, 39, 0.3) !important;
@@ -1965,11 +1976,11 @@
                   <div className="p-6 space-y-4">
                     <div>
                       <label className="text-sm text-gray-400 mb-1.5 block">Resource Name</label>
-                      <input type="text" value={momEditData.name || ''} onChange={e => setMomEditData({...momEditData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
+                      <input type="text" value={momEditData.name || ''} onChange={e => setMomEditData({...momEditData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500" />
                     </div>
                     <div>
                       <label className="text-sm text-gray-400 mb-1.5 block">Region</label>
-                      <select value={momEditData.region || 'us-east-1'} onChange={e => setMomEditData({...momEditData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
+                      <select value={momEditData.region || 'us-east-1'} onChange={e => setMomEditData({...momEditData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
                         <option value="us-east-1">us-east-1</option><option value="us-west-2">us-west-2</option><option value="eu-west-1">eu-west-1</option><option value="ap-southeast-1">ap-southeast-1</option>
                       </select>
                     </div>
@@ -1978,12 +1989,12 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-cyan-400 font-medium">aws_instance configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">ami</label><input type="text" value={momEditData.ami || ''} onChange={e => setMomEditData({...momEditData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">instance_type</label><select value={momEditData.instanceType || 't3.medium'} onChange={e => setMomEditData({...momEditData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="r5.large">r5.large</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={momEditData.subnetId || ''} onChange={e => setMomEditData({...momEditData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={momEditData.keyName || ''} onChange={e => setMomEditData({...momEditData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">security_groups</label><input type="text" value={momEditData.securityGroups || ''} onChange={e => setMomEditData({...momEditData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" placeholder="sg-xxx, sg-yyy" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={momEditData.iamInstanceProfile || ''} onChange={e => setMomEditData({...momEditData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">ami</label><input type="text" value={momEditData.ami || ''} onChange={e => setMomEditData({...momEditData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">instance_type</label><select value={momEditData.instanceType || 't3.medium'} onChange={e => setMomEditData({...momEditData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="r5.large">r5.large</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={momEditData.subnetId || ''} onChange={e => setMomEditData({...momEditData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={momEditData.keyName || ''} onChange={e => setMomEditData({...momEditData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">security_groups</label><input type="text" value={momEditData.securityGroups || ''} onChange={e => setMomEditData({...momEditData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="sg-xxx, sg-yyy" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={momEditData.iamInstanceProfile || ''} onChange={e => setMomEditData({...momEditData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
                         </div>
                       </div>
                     )}
@@ -1992,12 +2003,12 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-amber-400 font-medium">aws_lambda_function configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">runtime</label><select value={momEditData.runtime || 'python3.11'} onChange={e => setMomEditData({...momEditData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="go1.x">go1.x</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">handler</label><input type="text" value={momEditData.handler || ''} onChange={e => setMomEditData({...momEditData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">memory_size</label><select value={momEditData.memory || 512} onChange={e => setMomEditData({...momEditData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">timeout</label><input type="number" value={momEditData.timeout || 30} onChange={e => setMomEditData({...momEditData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role</label><input type="text" value={momEditData.role || ''} onChange={e => setMomEditData({...momEditData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers</label><input type="text" value={momEditData.layers || ''} onChange={e => setMomEditData({...momEditData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-cyan-500" placeholder="comma-separated ARNs" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">runtime</label><select value={momEditData.runtime || 'python3.11'} onChange={e => setMomEditData({...momEditData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="go1.x">go1.x</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">handler</label><input type="text" value={momEditData.handler || ''} onChange={e => setMomEditData({...momEditData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">memory_size</label><select value={momEditData.memory || 512} onChange={e => setMomEditData({...momEditData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">timeout</label><input type="number" value={momEditData.timeout || 30} onChange={e => setMomEditData({...momEditData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role</label><input type="text" value={momEditData.role || ''} onChange={e => setMomEditData({...momEditData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers</label><input type="text" value={momEditData.layers || ''} onChange={e => setMomEditData({...momEditData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="comma-separated ARNs" /></div>
                         </div>
                       </div>
                     )}
@@ -2006,14 +2017,14 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-orange-400 font-medium">aws_ecs_service configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">cluster</label><input type="text" value={momEditData.cluster || ''} onChange={e => setMomEditData({...momEditData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">launch_type</label><select value={momEditData.launchType || 'FARGATE'} onChange={e => setMomEditData({...momEditData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={momEditData.desiredCount || 2} onChange={e => setMomEditData({...momEditData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">cpu</label><select value={momEditData.cpu || 512} onChange={e => setMomEditData({...momEditData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">memory</label><select value={momEditData.memoryMb || 1024} onChange={e => setMomEditData({...momEditData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option></select></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image</label><input type="text" value={momEditData.image || ''} onChange={e => setMomEditData({...momEditData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-orange-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={momEditData.taskRole || ''} onChange={e => setMomEditData({...momEditData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-orange-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={momEditData.executionRole || ''} onChange={e => setMomEditData({...momEditData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">cluster</label><input type="text" value={momEditData.cluster || ''} onChange={e => setMomEditData({...momEditData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">launch_type</label><select value={momEditData.launchType || 'FARGATE'} onChange={e => setMomEditData({...momEditData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={momEditData.desiredCount || 2} onChange={e => setMomEditData({...momEditData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">cpu</label><select value={momEditData.cpu || 512} onChange={e => setMomEditData({...momEditData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">memory</label><select value={momEditData.memoryMb || 1024} onChange={e => setMomEditData({...momEditData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option></select></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image</label><input type="text" value={momEditData.image || ''} onChange={e => setMomEditData({...momEditData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={momEditData.taskRole || ''} onChange={e => setMomEditData({...momEditData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={momEditData.executionRole || ''} onChange={e => setMomEditData({...momEditData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
                         </div>
                       </div>
                     )}
@@ -2022,13 +2033,13 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-purple-400 font-medium">aws_emr_cluster configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">release_label</label><select value={momEditData.releaseLabel || 'emr-6.10.0'} onChange={e => setMomEditData({...momEditData, releaseLabel: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="emr-7.0.0">emr-7.0.0</option><option value="emr-6.15.0">emr-6.15.0</option><option value="emr-6.10.0">emr-6.10.0</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">applications</label><input type="text" value={momEditData.applications || ''} onChange={e => setMomEditData({...momEditData, applications: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" placeholder="Spark,Hive" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={momEditData.masterInstanceType || 'm5.xlarge'} onChange={e => setMomEditData({...momEditData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={momEditData.coreInstanceType || 'r5.xlarge'} onChange={e => setMomEditData({...momEditData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">core_count</label><input type="number" value={momEditData.coreCount || 2} onChange={e => setMomEditData({...momEditData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={momEditData.serviceRole || ''} onChange={e => setMomEditData({...momEditData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_role</label><input type="text" value={momEditData.ec2Role || ''} onChange={e => setMomEditData({...momEditData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">release_label</label><select value={momEditData.releaseLabel || 'emr-6.10.0'} onChange={e => setMomEditData({...momEditData, releaseLabel: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="emr-7.0.0">emr-7.0.0</option><option value="emr-6.15.0">emr-6.15.0</option><option value="emr-6.10.0">emr-6.10.0</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">applications</label><input type="text" value={momEditData.applications || ''} onChange={e => setMomEditData({...momEditData, applications: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" placeholder="Spark,Hive" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={momEditData.masterInstanceType || 'm5.xlarge'} onChange={e => setMomEditData({...momEditData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={momEditData.coreInstanceType || 'r5.xlarge'} onChange={e => setMomEditData({...momEditData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">core_count</label><input type="number" value={momEditData.coreCount || 2} onChange={e => setMomEditData({...momEditData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={momEditData.serviceRole || ''} onChange={e => setMomEditData({...momEditData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_role</label><input type="text" value={momEditData.ec2Role || ''} onChange={e => setMomEditData({...momEditData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
                         </div>
                       </div>
                     )}
@@ -2037,9 +2048,9 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-cyan-400 font-medium">aws_apigatewayv2_api configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">protocol_type</label><select value={momEditData.protocolType || 'HTTP'} onChange={e => setMomEditData({...momEditData, protocolType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="HTTP">HTTP</option><option value="WEBSOCKET">WEBSOCKET</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">endpoint_type</label><select value={momEditData.endpointType || 'REGIONAL'} onChange={e => setMomEditData({...momEditData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="REGIONAL">REGIONAL</option><option value="EDGE">EDGE</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">default_authorizer</label><select value={momEditData.defaultAuthorizer || 'NONE'} onChange={e => setMomEditData({...momEditData, defaultAuthorizer: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="NONE">NONE</option><option value="JWT">JWT</option><option value="AWS_IAM">AWS_IAM</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">protocol_type</label><select value={momEditData.protocolType || 'HTTP'} onChange={e => setMomEditData({...momEditData, protocolType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="HTTP">HTTP</option><option value="WEBSOCKET">WEBSOCKET</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">endpoint_type</label><select value={momEditData.endpointType || 'REGIONAL'} onChange={e => setMomEditData({...momEditData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="REGIONAL">REGIONAL</option><option value="EDGE">EDGE</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">default_authorizer</label><select value={momEditData.defaultAuthorizer || 'NONE'} onChange={e => setMomEditData({...momEditData, defaultAuthorizer: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="NONE">NONE</option><option value="JWT">JWT</option><option value="AWS_IAM">AWS_IAM</option></select></div>
                           <div className="flex items-center gap-2 pt-5"><input type="checkbox" checked={momEditData.corsEnabled || false} onChange={e => setMomEditData({...momEditData, corsEnabled: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" /><label className="text-sm text-gray-400">Enable CORS</label></div>
                         </div>
                       </div>
@@ -2049,18 +2060,18 @@
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-teal-400 font-medium">aws_pipes_pipe configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">source_type</label><select value={momEditData.sourceType || 'SQS'} onChange={e => setMomEditData({...momEditData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB</option><option value="Kinesis">Kinesis</option><option value="MSK">MSK</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">target_type</label><select value={momEditData.targetType || 'EventBridge'} onChange={e => setMomEditData({...momEditData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option></select></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source_arn</label><input type="text" value={momEditData.sourceArn || ''} onChange={e => setMomEditData({...momEditData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target_arn</label><input type="text" value={momEditData.targetArn || ''} onChange={e => setMomEditData({...momEditData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-teal-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={momEditData.enrichmentType || 'None'} onChange={e => setMomEditData({...momEditData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={momEditData.batchSize || 10} onChange={e => setMomEditData({...momEditData, batchSize: parseInt(e.target.value) || 10})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">source_type</label><select value={momEditData.sourceType || 'SQS'} onChange={e => setMomEditData({...momEditData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB</option><option value="Kinesis">Kinesis</option><option value="MSK">MSK</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">target_type</label><select value={momEditData.targetType || 'EventBridge'} onChange={e => setMomEditData({...momEditData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option></select></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source_arn</label><input type="text" value={momEditData.sourceArn || ''} onChange={e => setMomEditData({...momEditData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target_arn</label><input type="text" value={momEditData.targetArn || ''} onChange={e => setMomEditData({...momEditData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={momEditData.enrichmentType || 'None'} onChange={e => setMomEditData({...momEditData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={momEditData.batchSize || 10} onChange={e => setMomEditData({...momEditData, batchSize: parseInt(e.target.value) || 10})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" /></div>
                         </div>
                       </div>
                     )}
                     <div>
                       <label className="text-sm text-gray-400 mb-1.5 block">Description</label>
-                      <textarea value={momEditData.description || ''} onChange={e => setMomEditData({...momEditData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500 resize-none" />
+                      <textarea value={momEditData.description || ''} onChange={e => setMomEditData({...momEditData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500 resize-none" />
                     </div>
                   </div>
                 ) : (
@@ -2869,66 +2880,68 @@
           {/* New Datastore Modal */}
           {showNewDatastore && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowNewDatastore(false)}>
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
                   <h2 className="text-lg font-semibold">Create New Datastore</h2>
                   <button onClick={() => setShowNewDatastore(false)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
                 </div>
-                <div className="p-4 space-y-4">
+                <div className="p-4 space-y-4 overflow-y-auto flex-1">
                   <div>
                     <label className="block text-sm text-gray-400 mb-1.5">Name</label>
-                    <input type="text" value={newDatastoreData.name} onChange={e => setNewDatastoreData({...newDatastoreData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="my-database" />
+                    <input type="text" value={newDatastoreData.name} onChange={e => setNewDatastoreData({...newDatastoreData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="my-database" />
                   </div>
                   <div>
                     <label className="block text-sm text-gray-400 mb-1.5">Type</label>
                     <div className="grid grid-cols-5 gap-2">
-                      {[
-                        { id: 'postgresql', label: 'PostgreSQL', icon: 'database', color: 'blue' },
-                        { id: 'mongodb', label: 'MongoDB', icon: 'file-text', color: 'emerald' },
-                        { id: 'documentdb', label: 'DocumentDB', icon: 'clipboard', color: 'teal' },
-                        { id: 'dynamodb', label: 'DynamoDB', icon: 'layers', color: 'amber' },
-                        { id: 'dsql', label: 'DSQL', icon: 'server', color: 'violet' }
-                      ].map(t => (
-                        <button key={t.id} onClick={() => setNewDatastoreData({...newDatastoreData, type: t.id})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === t.id ? `border-${t.color}-500 bg-${t.color}-500/10` : 'border-gray-700 hover:border-gray-600'}`}>
-                          <Icon name={t.icon} size={20} className={newDatastoreData.type === t.id ? `text-${t.color}-400` : 'text-gray-400'} />
-                          <span className="text-xs">{t.label}</span>
+                      <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'postgresql'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'postgresql' ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="database" size={20} className="text-blue-400" />
+                          <span className="text-xs text-white">PostgreSQL</span>
                         </button>
-                      ))}
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'mongodb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'mongodb' ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="file-text" size={20} className="text-emerald-400" />
+                          <span className="text-xs text-white">MongoDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'documentdb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'documentdb' ? 'border-teal-500 bg-teal-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="clipboard" size={20} className="text-teal-400" />
+                          <span className="text-xs text-white">DocumentDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'dynamodb'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'dynamodb' ? 'border-amber-500 bg-amber-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="layers" size={20} className="text-amber-400" />
+                          <span className="text-xs text-white">DynamoDB</span>
+                        </button>
+                        <button onClick={() => setNewDatastoreData({...newDatastoreData, type: 'dsql'})} className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border ${newDatastoreData.type === 'dsql' ? 'border-violet-500 bg-violet-500/10' : 'border-gray-700 hover:border-gray-600'}`}>
+                          <Icon name="server" size={20} className="text-violet-400" />
+                          <span className="text-xs text-white">DSQL</span>
+                        </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
-                      <select value={newDatastoreData.environment || 'prod'} onChange={e => setNewDatastoreData({...newDatastoreData, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                        <option value="prod">Production</option>
-                        <option value="np">Non-Production</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm text-gray-400 mb-1.5">Account Name</label>
-                      <input type="text" value={newDatastoreData.accountName || ''} onChange={e => setNewDatastoreData({...newDatastoreData, accountName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="aws-account-name" />
-                    </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
+                    <select value={newDatastoreData.environment || 'prod'} onChange={e => setNewDatastoreData({...newDatastoreData, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                      <option value="prod">Production</option>
+                      <option value="np">Non-Production</option>
+                    </select>
                   </div>
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                     <label className="block text-sm text-gray-400 mb-3">Ownership</label>
                     <div className="space-y-3">
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">LDAP Group - Admin</label>
-                        <input type="text" value={newDatastoreData.ldapAdmin || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapAdmin: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="cn=db-admins,ou=groups,dc=corp" />
+                        <input type="text" value={newDatastoreData.ldapAdmin || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapAdmin: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-admins,ou=groups,dc=corp" />
                       </div>
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">LDAP Group - Dev</label>
-                        <input type="text" value={newDatastoreData.ldapDev || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapDev: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="cn=db-developers,ou=groups,dc=corp" />
+                        <input type="text" value={newDatastoreData.ldapDev || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapDev: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-developers,ou=groups,dc=corp" />
                       </div>
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">LDAP Group - Read</label>
-                        <input type="text" value={newDatastoreData.ldapRead || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapRead: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="cn=db-readonly,ou=groups,dc=corp" />
+                        <input type="text" value={newDatastoreData.ldapRead || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapRead: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-readonly,ou=groups,dc=corp" />
                       </div>
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-400 mb-1.5">Description</label>
-                    <textarea value={newDatastoreData.description} onChange={e => setNewDatastoreData({...newDatastoreData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="What is this datastore for?" />
+                    <textarea value={newDatastoreData.description} onChange={e => setNewDatastoreData({...newDatastoreData, description: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500 resize-none" placeholder="What is this datastore for?" />
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700">
@@ -3361,13 +3374,13 @@
           {/* Sub-tabs: Traffic Config | External Services */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex bg-gray-800/50 border border-gray-700 rounded-lg p-1">
-              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'traffic' ? {backgroundColor: '#10B981', color: '#FFFFFF', border: '1px solid #059669'} : {}}>
-                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? 'text-white' : ''} />Traffic Config
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'traffic' ? 'bg-white/25 text-white' : 'bg-gray-700 text-gray-300'}`}>{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
+              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? 'text-cyan-400' : ''} />Traffic Configuration
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'traffic' ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-700 text-gray-300'}`}>{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
               </button>
-              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'external' ? {backgroundColor: '#10B981', color: '#FFFFFF', border: '1px solid #059669'} : {}}>
-                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? 'text-white' : ''} />External Services
-                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'external' ? 'bg-white/25 text-white' : 'bg-gray-700 text-gray-300'}`}>{meshStats.serviceEntries}</span>
+              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? 'bg-gray-700 text-white' : 'text-gray-400 hover:text-gray-300'}`}>
+                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? 'text-cyan-400' : ''} />External Services
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'external' ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-700 text-gray-300'}`}>{meshStats.serviceEntries}</span>
               </button>
             </div>
           </div>
@@ -3386,13 +3399,13 @@
                 <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
               ) : (
                 <div key={cat.id} className="flex items-center gap-1">
-                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'border border-amber-500/50' : 'text-gray-400 hover:bg-gray-800'}`} style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.25)', color: '#FFFFFF'} : {}}>
-                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? 'text-white' : ''} />
+                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-800'}`}>
+                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? 'text-cyan-400' : ''} />
                     <div className="flex flex-col items-center">
                       <span>{cat.id}</span>
-                      {cat.sublabel && <span className={`text-sm ${dadFilter === cat.id ? 'text-white/70' : 'text-gray-400'}`}>{cat.sublabel}</span>}
+                      {cat.sublabel && <span className={`text-sm ${dadFilter === cat.id ? 'text-gray-300' : 'text-gray-500'}`}>{cat.sublabel}</span>}
                     </div>
-                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium" style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.4)', color: '#FFFFFF'} : {backgroundColor: 'rgb(55,65,81)', color: '#d1d5db'}}>{cat.count}</span>
+                    <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${dadFilter === cat.id ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-600 text-gray-300'}`}>{cat.count}</span>
                   </button>
                   <button className="p-1 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'resource', id: cat.id, name: cat.id + (cat.sublabel ? ' ' + cat.sublabel : ''), desc: resourceTypeInfo[cat.id].desc, example: resourceTypeInfo[cat.id].example })}><Icon name="help-circle" size={14} /></button>
                 </div>
@@ -3428,7 +3441,7 @@
                   <div onClick={() => setExpandedTrafficId(isExpanded ? null : r.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
                     <div className="flex items-center gap-4">
                       <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${typeConfig.color}-500/20 text-${typeConfig.color}-400`}><Icon name={typeConfig.icon} size={16} /></div>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${typeConfig.color}-500/20 text-${typeConfig.color}-400`}><Icon name={typeConfig.icon} size={20} /></div>
                       <div>
                         <div className="text-base font-semibold">{r.name}</div>
                         <div className="text-sm text-gray-400">{r.namespace}</div>
@@ -3522,7 +3535,7 @@
                   <div onClick={() => setExpandedSeId(isExpanded ? null : se.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
                     <div className="flex items-center gap-4">
                       <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${se.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}><Icon name="external-link" size={16} /></div>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${se.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}><Icon name="external-link" size={20} /></div>
                       <div>
                         <div className="font-medium">{se.name}</div>
                         <div className="text-sm text-gray-400">{se.namespace}</div>
@@ -6360,17 +6373,22 @@
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Type</label>
                         <div className="grid grid-cols-4 gap-2">
-                          {[
-                            { id: 'sns', label: 'SNS', icon: 'radio', color: 'cyan' },
-                            { id: 'sqs', label: 'SQS', icon: 'mail', color: 'cyan' },
-                            { id: 'eventbridge', label: 'EventBridge', icon: 'zap', color: 'violet' },
-                            { id: 'kafka', label: 'Kafka', icon: 'activity', color: 'amber' }
-                          ].map(t => (
-                            <button key={t.id} onClick={() => setNewMessagingData({ ...newMessagingData, type: t.id })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === t.id ? `bg-${t.color}-500/20 border-${t.color}-500/50 text-${t.color}-300` : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'}`}>
-                              <Icon name={t.icon} size={20} className="mx-auto mb-1" />
-                              <div className="text-xs">{t.label}</div>
-                            </button>
-                          ))}
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'sns' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'sns' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="radio" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'sns' ? 'text-cyan-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'sns' ? 'text-cyan-300' : 'text-gray-400'}`}>SNS</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'sqs' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'sqs' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="mail" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'sqs' ? 'text-cyan-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'sqs' ? 'text-cyan-300' : 'text-gray-400'}`}>SQS</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'eventbridge' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'eventbridge' ? 'bg-violet-500/20 border-violet-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="zap" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'eventbridge' ? 'text-violet-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'eventbridge' ? 'text-violet-300' : 'text-gray-400'}`}>EventBridge</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'kafka' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'kafka' ? 'bg-amber-500/20 border-amber-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <Icon name="activity" size={20} className={`mx-auto mb-1 ${newMessagingData.type === 'kafka' ? 'text-amber-400' : 'text-gray-400'}`} />
+                            <div className={`text-xs ${newMessagingData.type === 'kafka' ? 'text-amber-300' : 'text-gray-400'}`}>Kafka</div>
+                          </button>
                         </div>
                       </div>
                       {/* Type-specific Configuration */}
@@ -8882,12 +8900,12 @@
               <div className="flex-1 flex overflow-hidden">
                 <div className="w-56 border-r border-gray-800 bg-gray-900/50 flex flex-col">
                   <div className="px-3 py-2 border-b border-gray-800"><div className="flex flex-wrap gap-1">{['all', 'security', 'traffic', 'transform', 'observability'].map(cat => (<button key={cat} onClick={() => setServiceFilterCategory(cat)} className={`px-2 py-1 text-sm rounded capitalize ${serviceFilterCategory === cat ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400'}`}>{cat}</button>))}</div></div>
-                  <div className="flex-1 overflow-y-auto p-2 space-y-1">{filteredAvailable.map(filter => (<div key={filter.id} className="flex items-center justify-between p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg group"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded bg-gray-700 flex items-center justify-center"><Icon name={filter.icon} size={12} className="text-gray-400" /></div><span className="text-xs">{filter.name}</span><button className="p-0.5 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'filter', id: filter.id, name: filter.name, desc: filter.desc, example: filter.example })}><Icon name="help-circle" size={12} /></button></div><button onClick={() => addFilter(filter)} className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded"><Icon name="plus" size={12} /></button></div>))}</div>
+                  <div className="flex-1 overflow-y-auto p-2 space-y-1">{filteredAvailable.map(filter => (<div key={filter.id} className="flex items-center justify-between p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg group"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded bg-gray-700 flex items-center justify-center"><Icon name={filter.icon} size={12} className="text-gray-400" /></div><span className="text-xs text-white">{filter.name}</span><button className="p-0.5 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'filter', id: filter.id, name: filter.name, desc: filter.desc, example: filter.example })}><Icon name="help-circle" size={16} /></button></div><button onClick={() => addFilter(filter)} className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded text-cyan-400"><Icon name="plus" size={14} /></button></div>))}</div>
                 </div>
                 <div className="flex-1 flex flex-col overflow-hidden">
                   <div className="px-4 py-2 border-b border-gray-800 text-sm text-gray-400">Request flow: AUTHN → AUTHZ → STATS → DEFAULT</div>
                   <div className="h-1/2 p-4 overflow-auto">
-                    <div className="flex gap-4 h-full">{phases.map(phase => { const pf = currentFilters.filter(f => f.phase === phase.id); return (<div key={phase.id} className="flex-1 rounded-xl p-3 flex flex-col" style={{backgroundColor: phase.color + '15', border: '1px solid ' + phase.color + '40'}}><div className="flex items-center gap-2 mb-2"><Icon name={phase.id === 'AUTHN' ? 'key' : phase.id === 'AUTHZ' ? 'shield' : phase.id === 'STATS' ? 'activity' : 'settings'} size={14} style={{color: phase.color}} /><span className="text-sm font-medium" style={{color: phase.color}}>{phase.name}</span></div><div className="flex-1 space-y-2">{pf.map(f => { const filterDef = availableFilters.find(af => af.name === f.name); return (<div key={f.id} className={`flex items-center justify-between p-2 rounded-lg ${selectedFilterNode?.id === f.id ? 'bg-white/20 ring-2 ring-white/50' : 'bg-gray-800/80 hover:bg-gray-800'}`}><div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => setSelectedFilterNode(f)}><Icon name={f.icon} size={14} className="text-white" /><span className="text-sm">{f.name}</span></div>{filterDef?.desc && <button className="p-1 text-gray-400 hover:text-cyan-400" onClick={e => { e.stopPropagation(); setShowFilterInfo({ type: 'filter', id: filterDef.id, name: filterDef.name, desc: filterDef.desc, example: filterDef.example }); }}><Icon name="help-circle" size={12} /></button>}</div>); })}</div></div>); })}</div>
+                    <div className="flex gap-4 h-full">{phases.map(phase => { const pf = currentFilters.filter(f => f.phase === phase.id); return (<div key={phase.id} className="flex-1 rounded-xl p-3 flex flex-col" style={{backgroundColor: phase.color + '15', border: '1px solid ' + phase.color + '40'}}><div className="flex items-center gap-2 mb-2"><Icon name={phase.id === 'AUTHN' ? 'key' : phase.id === 'AUTHZ' ? 'shield' : phase.id === 'STATS' ? 'activity' : 'settings'} size={14} style={{color: phase.color}} /><span className="text-sm font-medium" style={{color: phase.color}}>{phase.name}</span></div><div className="flex-1 space-y-2">{pf.map(f => { const filterDef = availableFilters.find(af => af.name === f.name); return (<div key={f.id} className={`flex items-center justify-between p-2 rounded-lg cursor-pointer ${selectedFilterNode?.id === f.id ? 'bg-white/20 ring-2 ring-white/50' : 'bg-gray-800/80 hover:bg-gray-800'}`} onClick={() => setSelectedFilterNode(f)}><div className="flex items-center gap-2 flex-1"><Icon name={f.icon} size={14} className="text-white" /><span className="text-sm text-white">{f.name}</span></div>{filterDef?.desc && <button className="p-1 text-gray-400 hover:text-cyan-400" onClick={e => { e.stopPropagation(); setShowFilterInfo({ type: 'filter', id: filterDef.id, name: filterDef.name, desc: filterDef.desc, example: filterDef.example }); }}><Icon name="help-circle" size={16} /></button>}</div>); })}</div></div>); })}</div>
                   </div>
                   <div className="h-1/2 border-t border-gray-800 flex flex-col">
                     {!selectedFilterNode ? (<div className="flex-1 flex items-center justify-center text-gray-500"><div className="text-center"><Icon name="settings" size={32} className="mx-auto mb-2 opacity-50" /><div className="text-sm">Select a filter to configure</div></div></div>) : (
