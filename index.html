@@ -1835,7 +1835,7 @@
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Monthly Spend</span>
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
                 <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.mom.trend}</span>
               </div>
               <div className="text-2xl font-semibold text-emerald-300">${platformCosts.mom.total.toLocaleString()}</div>
@@ -1843,7 +1843,7 @@
             </div>
             <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Total Resources</span>
+                <span className="text-base font-semibold text-gray-300">Total Resources</span>
                 <Icon name="layers" size={14} className="text-violet-400" />
               </div>
               <div className="text-2xl font-semibold text-violet-300">{infraResources.length}</div>
@@ -1851,7 +1851,7 @@
             </div>
             <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Health Score</span>
+                <span className="text-base font-semibold text-gray-300">Health Score</span>
                 <Icon name="activity" size={14} className="text-blue-400" />
               </div>
               <div className="text-2xl font-semibold text-blue-300">{infraResources.length > 0 ? Math.round((infraResources.filter(r => ['active', 'running', 'waiting'].includes(r.status)).length / infraResources.length) * 100) : 0}%</div>
@@ -1859,7 +1859,7 @@
             </div>
             <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Active Alerts</span>
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
                 <Icon name="alert-triangle" size={14} className="text-red-400" />
               </div>
               <div className="text-2xl font-semibold text-red-300">1</div>
@@ -5835,7 +5835,7 @@
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Monthly Spend</span>
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
                 <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.auntie.trend}</span>
               </div>
               <div className="text-2xl font-semibold text-emerald-300">${platformCosts.auntie.total.toLocaleString()}</div>
@@ -5843,7 +5843,7 @@
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Event Sources</span>
+                <span className="text-base font-semibold text-gray-300">Event Sources</span>
                 <Icon name="radio" size={14} className="text-cyan-400" />
               </div>
               <div className="text-2xl font-semibold text-cyan-300">{mockMessaging.length}</div>
@@ -5851,7 +5851,7 @@
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Messages/Day</span>
+                <span className="text-base font-semibold text-gray-300">Messages/Day</span>
                 <Icon name="trending-up" size={14} className="text-cyan-400" />
               </div>
               <div className="text-2xl font-semibold text-cyan-300">2.4M</div>
@@ -5859,7 +5859,7 @@
             </div>
             <div className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Dead Letter Queue</span>
+                <span className="text-base font-semibold text-gray-300">Dead Letter Queue</span>
                 <Icon name="inbox" size={14} className="text-amber-400" />
               </div>
               <div className="text-2xl font-semibold text-amber-300">247</div>
@@ -6454,7 +6454,7 @@
             <div className="grid grid-cols-4 gap-4 mb-6">
               <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-400">Monthly Spend</span>
+                  <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
                   <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.rosie.trend}</span>
                 </div>
                 <div className="text-2xl font-semibold text-emerald-300">${platformCosts.rosie.total.toLocaleString()}</div>
@@ -6462,7 +6462,7 @@
               </div>
               <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-400">Total Jobs</span>
+                  <span className="text-base font-semibold text-gray-300">Total Jobs</span>
                   <Icon name="git-branch" size={14} className="text-cyan-400" />
                 </div>
                 <div className="text-2xl font-semibold text-cyan-300">{visibleJobs.length}</div>
@@ -6470,7 +6470,7 @@
               </div>
               <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-400">Success Rate</span>
+                  <span className="text-base font-semibold text-gray-300">Success Rate</span>
                   <Icon name="trending-up" size={14} className="text-cyan-400" />
                 </div>
                 <div className="text-2xl font-semibold text-cyan-300">{rosieStats.successRate}%</div>
@@ -6478,7 +6478,7 @@
               </div>
               <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-400">Failed (24h)</span>
+                  <span className="text-base font-semibold text-gray-300">Failed (24h)</span>
                   <Icon name="alert-triangle" size={14} className="text-red-400" />
                 </div>
                 <div className="text-2xl font-semibold text-red-300">{rosieStats.failed24h}</div>
