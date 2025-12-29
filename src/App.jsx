@@ -1145,9 +1145,7 @@ import React, { useState } from 'react';
                 <div className="flex items-center gap-2 text-gray-400 mb-2"><Icon name="dollar-sign" size={18} /><span className="text-sm font-medium">Total Monthly Platform Spend</span></div>
                 <div className="flex items-baseline gap-3">
                   <span className="text-3xl font-bold text-emerald-400">${platformTotal.toLocaleString()}</span>
-                  <span className="text-sm text-gray-500">vs ${platformCosts.legacyCost.toLocaleString()}/mo Control-M</span>
                 </div>
-                <div className="flex items-center gap-2 mt-2"><Icon name="trending-down" size={14} className="text-emerald-400" /><span className="text-sm text-emerald-400 font-medium">{platformSavings}% savings</span><span className="text-sm text-gray-400">from legacy migration</span></div>
               </div>
               <div className="flex gap-1">
                 {[
