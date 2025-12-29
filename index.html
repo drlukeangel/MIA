@@ -2263,9 +2263,9 @@
               { id: 'Peering', count: mockNetworkResources.filter(r => r.type === 'peering').length },
               { id: 'PrivateLink', count: mockNetworkResources.filter(r => r.type === 'privatelink').length }
             ].map(cat => (
-              <button key={cat.id} onClick={() => setBroFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${broFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+              <button key={cat.id} onClick={() => setBroFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${broFilter === cat.id ? 'bg-teal-600/30 text-teal-300 border border-teal-500/40' : 'text-gray-400 hover:bg-gray-800'}`}>
                 {cat.id}
-                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${broFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${broFilter === cat.id ? 'bg-teal-500/40 text-teal-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
               </button>
             ))}
           </div>
@@ -2286,7 +2286,7 @@
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.type === 'vpc' ? 'bg-cyan-500/20 text-cyan-400' : r.type === 'tgw' ? 'bg-purple-500/20 text-purple-400' : r.type === 'vpn' ? 'bg-amber-500/20 text-amber-400' : r.type === 'directconnect' ? 'bg-emerald-500/20 text-emerald-400' : r.type === 'route53' ? 'bg-blue-500/20 text-blue-400' : r.type === 'privatelink' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
                         <Icon name={r.type === 'vpc' ? 'grid' : r.type === 'tgw' ? 'share-2' : r.type === 'vpn' ? 'lock' : r.type === 'directconnect' ? 'zap' : r.type === 'route53' ? 'globe' : r.type === 'privatelink' ? 'key' : 'link'} size={16} />
                       </div>
-                      <div><div className="font-medium">{r.name}</div><div className="text-sm text-gray-400">{r.owner}</div></div>
+                      <div><div className="text-base font-semibold text-gray-200">{r.name}</div><div className="text-sm text-gray-400">{r.owner}</div></div>
                     </div></td>
                     <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{r.type === 'directconnect' ? 'Direct Connect' : r.type === 'route53' ? 'Route 53' : r.type === 'privatelink' ? 'PrivateLink' : r.type.toUpperCase()}</span><div className="text-sm text-gray-400">{r.cidr || r.connection || r.zoneType || r.tunnels || r.endpointType || (r.requester && r.accepter ? `${r.requester} ↔ ${r.accepter}` : '')}</div></div></td>
                     <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{r.service ? r.service.split('.').pop() : r.subnets && r.type === 'vpc' ? `${r.subnets} subnets` : r.attachments ? `${r.attachments} attachments` : r.vifs ? `${r.vifs} VIFs` : r.records ? `${r.records} records` : r.region}</code></td>
