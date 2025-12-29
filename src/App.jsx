@@ -6578,7 +6578,6 @@ import React, { useState } from 'react';
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})} className="p-2 rounded-lg transition-colors hover:bg-gray-700/50 text-gray-400 hover:text-gray-200" title={featureFlags.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}><Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={18} /></button>
                 <button onClick={() => setActiveNav('settings')} className={`p-2 rounded-lg transition-colors hover:bg-gray-700/50 ${activeNav === 'settings' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:text-gray-200'}`} title="Settings"><Icon name="settings" size={18} /></button>
               </div>
             </header>
