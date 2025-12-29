@@ -1112,7 +1112,7 @@ import { useState } from 'react';
       };
 
       const navItems = [
-        { id: 'home', icon: 'home', label: 'Home', color: 'violet' },
+        { id: 'home', icon: 'home', label: 'HOME', subtitle: 'Dashboard', color: 'violet' },
         ...(featureFlags.mom ? [{ id: 'mom', icon: 'box', label: 'M.O.M.', subtitle: 'Infrastructure', color: 'violet' }] : []),
         ...(featureFlags.uncle ? [{ id: 'uncle', icon: 'database', label: 'U.N.C.L.E.', subtitle: 'Data Storage', color: 'blue' }] : []),
         ...(featureFlags.dad ? [{ id: 'dad', icon: 'shield', label: 'D.A.D.', subtitle: 'Service Mesh', color: 'amber' }] : []),
