@@ -177,3 +177,33 @@ Light mode implemented with pixel-extracted colors from M.O.M./Infrastructure sc
 ```bash
 node verify_parse.js  # Should output: SUCCESS - index.html parses correctly
 ```
+
+---
+
+## Edit Modal Patterns (December 2024)
+
+### A.U.N.T.I.E. Edit Modal
+When editing messaging resources, the modal shows all fields EXCEPT Type:
+- Resource Name (text input)
+- Owner (text input)
+- Retention & Encryption (side by side)
+- Zone (button selector: Local/Central)
+- Description (textarea)
+
+Type selector and type-specific configuration are hidden when `editingMessaging` is truthy.
+
+### Input Field Styling
+All input fields in edit modals must include `text-white` class:
+```jsx
+className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+```
+
+### D.A.D. Sidebar Navigation Colors
+Dynamic Tailwind classes don't work with CDN. Use inline styles:
+```jsx
+style={activeNav === item.id ? {
+  backgroundColor: item.color === 'amber' ? 'rgba(251,191,36,0.2)' : ...,
+  border: item.color === 'amber' ? '1px solid #fbbf24' : ...
+} : {}}
+```
+- D.A.D. uses amber: `#fbbf24`, `rgba(251,191,36,0.2)`

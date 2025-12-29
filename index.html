@@ -1446,7 +1446,7 @@
       const [auntieFilter, setAuntieFilter] = useState('All');
       const [showNewMessaging, setShowNewMessaging] = useState(false);
       const [editingMessaging, setEditingMessaging] = useState(null);
-      const [newMessagingData, setNewMessagingData] = useState({ name: '', type: 'sqs', zone: 'local', description: '' });
+      const [newMessagingData, setNewMessagingData] = useState({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' });
       const [newMessagingTab, setNewMessagingTab] = useState('blueprints');
       const [selectedBlueprint, setSelectedBlueprint] = useState(null);
       const [showNewDatastore, setShowNewDatastore] = useState(false);
@@ -5964,7 +5964,7 @@
                     <div><div className="font-semibold">{selectedMessaging.name}</div><div className="text-sm text-gray-400">{selectedMessaging.owner}</div></div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => { setEditingMessaging(selectedMessaging); setNewMessagingData({ name: selectedMessaging.name, type: selectedMessaging.type, zone: selectedMessaging.zone, description: selectedMessaging.description }); setShowNewMessaging(true); }} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
+                    <button onClick={() => { setEditingMessaging(selectedMessaging); setNewMessagingData({ name: selectedMessaging.name, type: selectedMessaging.type, zone: selectedMessaging.zone, description: selectedMessaging.description, owner: selectedMessaging.owner || '', retention: selectedMessaging.retention || '', encryption: selectedMessaging.encryption || 'AWS KMS' }); setShowNewMessaging(true); }} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
                     <button onClick={() => setViewMessagesResource(selectedMessaging)} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="View Messages"><Icon name="eye" size={16} /></button>
                     <button onClick={() => { showNotification(`Resource "${selectedMessaging.name}" deleted`, 'warning'); setSelectedMessaging(null); }} className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg" title="Delete"><Icon name="trash2" size={16} /></button>
                   </div>
@@ -6368,9 +6368,27 @@
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Resource Name</label>
-                        <input type="text" value={newMessagingData.name} onChange={(e) => setNewMessagingData({ ...newMessagingData, name: e.target.value })} placeholder="e.g., order-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-cyan-500" />
+                        <input type="text" value={newMessagingData.name} onChange={(e) => setNewMessagingData({ ...newMessagingData, name: e.target.value })} placeholder="e.g., order-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
                       </div>
                       <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Owner</label>
+                        <input type="text" value={newMessagingData.owner} onChange={(e) => setNewMessagingData({ ...newMessagingData, owner: e.target.value })} placeholder="e.g., orders-team" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Retention</label>
+                          <input type="text" value={newMessagingData.retention} onChange={(e) => setNewMessagingData({ ...newMessagingData, retention: e.target.value })} placeholder="e.g., 14 days" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Encryption</label>
+                          <select value={newMessagingData.encryption} onChange={(e) => setNewMessagingData({ ...newMessagingData, encryption: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option value="AWS KMS">AWS KMS</option>
+                            <option value="TLS 1.3">TLS 1.3</option>
+                            <option value="None">None</option>
+                          </select>
+                        </div>
+                      </div>
+                      {!editingMessaging && <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Type</label>
                         <div className="grid grid-cols-4 gap-2">
                           <button onClick={() => setNewMessagingData({ ...newMessagingData, type: 'sns' })} className={`p-3 rounded-lg border text-center ${newMessagingData.type === 'sns' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
@@ -6390,9 +6408,9 @@
                             <div className={`text-xs ${newMessagingData.type === 'kafka' ? 'text-amber-300' : 'text-gray-400'}`}>Kafka</div>
                           </button>
                         </div>
-                      </div>
-                      {/* Type-specific Configuration */}
-                      {newMessagingData.type === 'sns' && (
+                      </div>}
+                      {/* Type-specific Configuration - only show when creating new */}
+                      {!editingMessaging && newMessagingData.type === 'sns' && (
                         <div className="space-y-3 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-lg">
                           <div className="text-sm font-medium text-cyan-400 mb-2">SNS Configuration</div>
                           <div className="grid grid-cols-2 gap-3">
@@ -6402,7 +6420,7 @@
                           <div><label className="block text-sm text-gray-400 mb-1">Display Name</label><input type="text" placeholder="e.g., Order Notifications" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
                         </div>
                       )}
-                      {newMessagingData.type === 'sqs' && (
+                      {!editingMessaging && newMessagingData.type === 'sqs' && (
                         <div className="space-y-3 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-lg">
                           <div className="text-sm font-medium text-cyan-400 mb-2">SQS Configuration</div>
                           <div className="grid grid-cols-2 gap-3">
@@ -6415,7 +6433,7 @@
                           </div>
                         </div>
                       )}
-                      {newMessagingData.type === 'eventbridge' && (
+                      {!editingMessaging && newMessagingData.type === 'eventbridge' && (
                         <div className="space-y-3 p-4 bg-violet-500/5 border border-violet-500/20 rounded-lg">
                           <div className="text-sm font-medium text-violet-400 mb-2">EventBridge Configuration</div>
                           <div><label className="block text-sm text-gray-400 mb-1">Event Bus Name</label><input type="text" placeholder="e.g., custom-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
@@ -6425,7 +6443,7 @@
                           </div>
                         </div>
                       )}
-                      {newMessagingData.type === 'kafka' && (
+                      {!editingMessaging && newMessagingData.type === 'kafka' && (
                         <div className="space-y-3 p-4 bg-amber-500/5 border border-amber-500/20 rounded-lg">
                           <div className="text-sm font-medium text-amber-400 mb-2">Kafka Configuration</div>
                           <div className="grid grid-cols-2 gap-3">
@@ -6440,8 +6458,19 @@
                         </div>
                       )}
                       <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">Zone</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, zone: 'local' })} className={`p-3 rounded-lg border text-center ${newMessagingData.zone === 'local' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <div className={`text-sm font-medium ${newMessagingData.zone === 'local' ? 'text-cyan-300' : 'text-gray-400'}`}>Zone 1 (Local)</div>
+                          </button>
+                          <button onClick={() => setNewMessagingData({ ...newMessagingData, zone: 'central' })} className={`p-3 rounded-lg border text-center ${newMessagingData.zone === 'central' ? 'bg-indigo-500/20 border-indigo-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
+                            <div className={`text-sm font-medium ${newMessagingData.zone === 'central' ? 'text-indigo-300' : 'text-gray-400'}`}>Zone 2 (Central)</div>
+                          </button>
+                        </div>
+                      </div>
+                      <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
-                        <textarea value={newMessagingData.description} onChange={(e) => setNewMessagingData({ ...newMessagingData, description: e.target.value })} placeholder="Describe this resource..." rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-cyan-500 resize-none" />
+                        <textarea value={newMessagingData.description} onChange={(e) => setNewMessagingData({ ...newMessagingData, description: e.target.value })} placeholder="Describe this resource..." rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none" />
                       </div>
                     </div>
                   )}
@@ -7075,10 +7104,10 @@
             </div>
             <nav className="flex-1 p-3 space-y-1">
               {navItems.map(item => (
-                <button key={item.id} onClick={() => { setActiveNav(item.id); setShowNewJob(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all themed-sidebar-item ${activeNav === item.id ? `bg-${item.color}-500/20 text-${item.color}-300 border border-${item.color}-500/30` : 'hover:bg-opacity-50'}`} style={activeNav !== item.id ? {color: 'var(--text-sidebar-muted)'} : {}}>
-                  <Icon name={item.icon} size={18} />
-                  <div className="flex-1"><div className="text-sm font-medium">{item.label}</div>{item.subtitle && <div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>{item.subtitle}</div>}</div>
-                  {activeNav === item.id && <Icon name="chevron-right" size={16} className={`text-${item.color}-400`} />}
+                <button key={item.id} onClick={() => { setActiveNav(item.id); setShowNewJob(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all themed-sidebar-item hover:bg-white/5" style={activeNav === item.id ? {backgroundColor: item.color === 'amber' ? 'rgba(251,191,36,0.2)' : item.color === 'violet' ? 'rgba(139,92,246,0.2)' : item.color === 'blue' ? 'rgba(59,130,246,0.2)' : item.color === 'emerald' ? 'rgba(16,185,129,0.2)' : 'rgba(6,182,212,0.2)', border: item.color === 'amber' ? '1px solid #fbbf24' : item.color === 'violet' ? '1px solid rgba(139,92,246,0.3)' : item.color === 'blue' ? '1px solid rgba(59,130,246,0.3)' : item.color === 'emerald' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(6,182,212,0.3)'} : {color: 'var(--text-sidebar-muted)'}}>
+                  <Icon name={item.icon} size={18} style={activeNav === item.id ? {color: item.color === 'amber' ? '#fbbf24' : item.color === 'violet' ? '#a78bfa' : item.color === 'blue' ? '#60a5fa' : item.color === 'emerald' ? '#34d399' : '#22d3ee'} : {}} />
+                  <div className="flex-1"><div className="text-sm font-medium" style={activeNav === item.id ? {color: '#ffffff'} : {}}>{item.label}</div>{item.subtitle && <div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>{item.subtitle}</div>}</div>
+                  {activeNav === item.id && <Icon name="chevron-right" size={16} style={{color: item.color === 'amber' ? '#fbbf24' : item.color === 'violet' ? '#a78bfa' : item.color === 'blue' ? '#60a5fa' : item.color === 'emerald' ? '#34d399' : '#22d3ee'}} />}
                 </button>
               ))}
             </nav>
@@ -7110,7 +7139,7 @@
                       else if (dadActiveTab === 'wasm') showNotification('Creating new WASM Plugin...');
                       else if (dadActiveTab === 'lua') showNotification('Creating new Lua Filter...');
                     }
-                    else if (activeNav === 'auntie') { setEditingMessaging(null); setNewMessagingData({ name: '', type: 'sqs', zone: 'local', description: '' }); setShowNewMessaging(true); }
+                    else if (activeNav === 'auntie') { setEditingMessaging(null); setNewMessagingData({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' }); setShowNewMessaging(true); }
                     else if (activeNav === 'rosie') { setJobEditorResource({ id: Date.now(), name: 'New Job', isNew: true }); setJobEditorNodes([]); setJobEditorConfig({ name: '', description: '', schedule: '0 2 * * *', scheduleType: 'cron', tags: [] }); setJobEditorSelectedNode(null); setEditingBranch(null); setShowJobEditor(true); }
                     else if (activeNav === 'bro') { setNewNetworkData({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' }); setShowNewNetworkResource(true); }
                   }} className={`flex items-center gap-1.5 bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-600 hover:bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-500 px-3 py-1.5 rounded-lg text-sm font-medium`}><Icon name="plus" size={16} />New</button>
