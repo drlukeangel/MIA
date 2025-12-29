@@ -620,7 +620,7 @@
     const { useState } = React;
 
     // Simple SVG Icon Component
-    const Icon = ({ name, size = 18, className = '' }) => {
+    const Icon = ({ name, size = 18, className = '', style = {} }) => {
       const icons = {
         home: <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>,
         clock: <><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></>,
@@ -691,6 +691,7 @@
         sliders: <><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></>,
         target: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>,
         'pause-circle': <><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></>,
+        'play-circle': <><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></>,
         settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
         wrench: <><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></>,
         monitor: <><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>,
@@ -707,7 +708,7 @@
         repeat: <><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></>,
       };
       return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
           {icons[name] || null}
         </svg>
       );
@@ -1328,11 +1329,11 @@
     };
 
     const mockMessaging = [
-      { id: 1, name: 'order-events', type: 'sns', namespace: 'eot-messaging', subscribers: 4, messagesDay: '45.2K', status: 'active', zone: 'local', owner: 'orders-team', created: '2024-05-12', monthlyCost: '$125', retention: 'N/A', encryption: 'AWS KMS', deliveryRate: '99.98%', description: 'Order lifecycle events topic. Publishes order created, updated, shipped, and delivered events.' },
-      { id: 2, name: 'payment-queue', type: 'sqs', namespace: 'eot-messaging', depth: 23, messagesDay: '12.8K', status: 'active', zone: 'local', owner: 'payments-team', created: '2024-06-01', monthlyCost: '$85', retention: '14 days', encryption: 'AWS KMS', avgProcessTime: '245ms', description: 'Payment processing queue. Handles async payment authorization and capture requests.' },
-      { id: 3, name: 'enterprise-bus', type: 'eventbridge', namespace: 'eot-messaging', rules: 47, messagesDay: '892K', status: 'active', zone: 'central', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$450', retention: 'Archive enabled', encryption: 'AWS KMS', targets: 23, description: 'Central event bus for cross-domain integration. Routes events between business domains using content-based filtering.' },
-      { id: 4, name: 'data-stream', type: 'kafka', namespace: 'eot-messaging', partitions: 12, messagesDay: '2.4M', status: 'active', zone: 'central', owner: 'data-platform', created: '2024-03-20', monthlyCost: '$680', retention: '7 days', encryption: 'TLS 1.3', consumerGroups: 8, description: 'High-throughput data stream for analytics and real-time processing. Powers dashboards and ML pipelines.' },
-      { id: 5, name: 'shipping-dlq', type: 'sqs', namespace: 'eot-messaging', depth: 156, messagesDay: '0.3K', status: 'warning', zone: 'local', owner: 'logistics-team', created: '2024-07-10', monthlyCost: '$12', retention: '14 days', encryption: 'AWS KMS', avgAge: '6 hours', description: 'Dead letter queue for failed shipping notifications. Messages require manual investigation and replay.' },
+      { id: 1, name: 'order-events', type: 'sns', namespace: 'eot-messaging', subscribers: 4, producers: 2, messagesDay: '45.2K', status: 'active', zone: 'local', region: 'us-east-1', owner: 'orders-team', created: '2024-05-12', monthlyCost: '$125', retention: '14 days', encryption: 'AWS KMS', targets: 6, description: 'Order lifecycle events topic. Publishes order created, updated, shipped, and delivered events.' },
+      { id: 2, name: 'payment-queue', type: 'sqs', namespace: 'eot-messaging', subscribers: 3, producers: 2, messagesDay: '12.8K', status: 'active', zone: 'local', region: 'us-east-1', owner: 'payments-team', created: '2024-06-01', monthlyCost: '$85', retention: '14 days', encryption: 'AWS KMS', targets: 4, description: 'Payment processing queue. Handles async payment authorization and capture requests.' },
+      { id: 3, name: 'enterprise-bus', type: 'eventbridge', namespace: 'eot-messaging', rules: 47, messagesDay: '892K', status: 'active', zone: 'central', region: 'us-east-2', owner: 'platform-ops', created: '2024-01-15', monthlyCost: '$450', retention: 'Archive enabled', encryption: 'AWS KMS', targets: 23, description: 'Central event bus for cross-domain integration. Routes events between business domains using content-based filtering.' },
+      { id: 4, name: 'data-stream', type: 'kafka', namespace: 'eot-messaging', subscribers: 8, producers: 5, messagesDay: '2.4M', status: 'active', zone: 'central', region: 'us-east-2', owner: 'data-platform', created: '2024-03-20', monthlyCost: '$680', retention: '7 days', encryption: 'TLS 1.3', targets: 12, description: 'High-throughput data stream for analytics and real-time processing. Powers dashboards and ML pipelines.' },
+      { id: 5, name: 'shipping-dlq', type: 'sqs', namespace: 'eot-messaging', subscribers: 1, producers: 3, messagesDay: '0.3K', status: 'warning', zone: 'local', region: 'us-east-1', owner: 'logistics-team', created: '2024-07-10', monthlyCost: '$12', retention: '14 days', encryption: 'AWS KMS', targets: 2, description: 'Dead letter queue for failed shipping notifications. Messages require manual investigation and replay.' },
     ];
 
     // Feature Flags
@@ -1446,6 +1447,7 @@
       const [auntieFilter, setAuntieFilter] = useState('All');
       const [showNewMessaging, setShowNewMessaging] = useState(false);
       const [editingMessaging, setEditingMessaging] = useState(null);
+      const [messagingResources, setMessagingResources] = useState([...mockMessaging]);
       const [newMessagingData, setNewMessagingData] = useState({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' });
       const [newMessagingTab, setNewMessagingTab] = useState('blueprints');
       const [selectedBlueprint, setSelectedBlueprint] = useState(null);
@@ -5859,8 +5861,8 @@
                 <span className="text-base font-semibold text-gray-300">Event Sources</span>
                 <Icon name="radio" size={14} className="text-cyan-400" />
               </div>
-              <div className="text-2xl font-semibold text-cyan-300">{mockMessaging.length}</div>
-              <div className="text-sm text-gray-400 mt-1">{mockMessaging.filter(m => m.type === 'sns').length} SNS, {mockMessaging.filter(m => m.type === 'sqs').length} SQS, {mockMessaging.filter(m => m.type === 'kafka').length} Kafka</div>
+              <div className="text-2xl font-semibold text-cyan-300">{messagingResources.length}</div>
+              <div className="text-sm text-gray-400 mt-1">{messagingResources.filter(m => m.type === 'sns').length} SNS, {messagingResources.filter(m => m.type === 'sqs').length} SQS, {messagingResources.filter(m => m.type === 'kafka').length} Kafka</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
@@ -5882,11 +5884,11 @@
           {/* Filter Tabs with Counts */}
           <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
             {[
-              { id: 'All', count: mockMessaging.length },
-              { id: 'SNS', count: mockMessaging.filter(m => m.type === 'sns').length },
-              { id: 'SQS', count: mockMessaging.filter(m => m.type === 'sqs').length },
-              { id: 'EventBridge', count: mockMessaging.filter(m => m.type === 'eventbridge').length },
-              { id: 'Kafka', count: mockMessaging.filter(m => m.type === 'kafka').length }
+              { id: 'All', count: messagingResources.length },
+              { id: 'SNS', count: messagingResources.filter(m => m.type === 'sns').length },
+              { id: 'SQS', count: messagingResources.filter(m => m.type === 'sqs').length },
+              { id: 'EventBridge', count: messagingResources.filter(m => m.type === 'eventbridge').length },
+              { id: 'Kafka', count: messagingResources.filter(m => m.type === 'kafka').length }
             ].map(cat => (
               <button key={cat.id} onClick={() => setAuntieFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${auntieFilter === cat.id ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
                 {cat.id}
@@ -5895,8 +5897,8 @@
             ))}
             <div className="border-l border-gray-600 mx-2" />
             {[
-              { id: 'Local', count: mockMessaging.filter(m => m.zone === 'local').length, activeClass: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30', countClass: 'bg-cyan-500/30 text-cyan-200' },
-              { id: 'Enterprise', count: mockMessaging.filter(m => m.zone === 'central').length, activeClass: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30', countClass: 'bg-indigo-500/30 text-indigo-200' }
+              { id: 'Local', count: messagingResources.filter(m => m.zone === 'local').length, activeClass: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30', countClass: 'bg-cyan-500/30 text-cyan-200' },
+              { id: 'Enterprise', count: messagingResources.filter(m => m.zone === 'central').length, activeClass: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30', countClass: 'bg-indigo-500/30 text-indigo-200' }
             ].map(cat => (
               <button key={cat.id} onClick={() => setAuntieFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${auntieFilter === cat.id ? cat.activeClass : 'text-gray-400 hover:bg-gray-800'}`}>
                 {cat.id}
@@ -5916,7 +5918,7 @@
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
               </tr></thead>
               <tbody>
-                {mockMessaging.filter(m => {
+                {messagingResources.filter(m => {
                   if (auntieFilter === 'All') return true;
                   if (auntieFilter === 'Local') return m.zone === 'local';
                   if (auntieFilter === 'Enterprise') return m.zone === 'central';
@@ -5940,8 +5942,9 @@
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         <button onClick={() => setMetricsResource(m)} className="p-1.5 hover:bg-blue-500/20 rounded-lg text-gray-400 hover:text-blue-400" title="View Metrics"><Icon name="activity" size={14} /></button>
-                        <button onClick={() => { setSelectedMessaging(m); showNotification(`Editing ${m.name}...`); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
-                        <button onClick={() => showNotification(`Resource "${m.name}" deleted`, 'warning')} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
+                        <button onClick={() => { setEditingMessaging(m); setNewMessagingData({ name: m.name, type: m.type, zone: m.zone, description: m.description || '', owner: m.owner || '', retention: m.retention || '', encryption: m.encryption || 'AWS KMS', namespace: m.namespace || '', status: m.status || 'active', monthlyCost: m.monthlyCost || '', region: m.region || 'us-east-1', subscribers: m.subscribers || 0, producers: m.producers || 0, targets: m.targets || 0, rules: m.rules || 0 }); setShowNewMessaging(true); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => { const newStatus = m.status === 'active' ? 'warning' : 'active'; setMessagingResources(prev => prev.map(r => r.id === m.id ? {...r, status: newStatus} : r)); showNotification(`${m.name} ${newStatus === 'active' ? 'activated' : 'paused'}`); }} className="p-1.5 hover:bg-amber-500/20 rounded-lg text-gray-400 hover:text-amber-400" title={m.status === 'active' ? 'Pause' : 'Activate'}><Icon name={m.status === 'active' ? 'pause-circle' : 'play-circle'} size={14} /></button>
+                        <button onClick={() => { setMessagingResources(prev => prev.filter(r => r.id !== m.id)); showNotification(`Resource "${m.name}" deleted`, 'warning'); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
                       </div>
                     </td>
                   </tr>
@@ -5964,9 +5967,9 @@
                     <div><div className="font-semibold">{selectedMessaging.name}</div><div className="text-sm text-gray-400">{selectedMessaging.owner}</div></div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => { setEditingMessaging(selectedMessaging); setNewMessagingData({ name: selectedMessaging.name, type: selectedMessaging.type, zone: selectedMessaging.zone, description: selectedMessaging.description, owner: selectedMessaging.owner || '', retention: selectedMessaging.retention || '', encryption: selectedMessaging.encryption || 'AWS KMS' }); setShowNewMessaging(true); }} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
+                    <button onClick={() => { setEditingMessaging(selectedMessaging); setNewMessagingData({ name: selectedMessaging.name, type: selectedMessaging.type, zone: selectedMessaging.zone, description: selectedMessaging.description || '', owner: selectedMessaging.owner || '', retention: selectedMessaging.retention || '', encryption: selectedMessaging.encryption || 'AWS KMS', namespace: selectedMessaging.namespace || '', status: selectedMessaging.status || 'active', monthlyCost: selectedMessaging.monthlyCost || '', region: selectedMessaging.region || 'us-east-1', subscribers: selectedMessaging.subscribers || 0, producers: selectedMessaging.producers || 0, targets: selectedMessaging.targets || 0, rules: selectedMessaging.rules || 0 }); setShowNewMessaging(true); }} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="Edit"><Icon name="edit" size={16} /></button>
                     <button onClick={() => setViewMessagesResource(selectedMessaging)} className="p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg" title="View Messages"><Icon name="eye" size={16} /></button>
-                    <button onClick={() => { showNotification(`Resource "${selectedMessaging.name}" deleted`, 'warning'); setSelectedMessaging(null); }} className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg" title="Delete"><Icon name="trash2" size={16} /></button>
+                    <button onClick={() => { setMessagingResources(prev => prev.filter(m => m.id !== selectedMessaging.id)); showNotification(`Resource "${selectedMessaging.name}" deleted`, 'warning'); setSelectedMessaging(null); }} className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg" title="Delete"><Icon name="trash2" size={16} /></button>
                   </div>
                 </div>
                 <div className="p-6 space-y-6">
@@ -6370,10 +6373,10 @@
                         <label className="block text-sm font-medium text-gray-400 mb-2">Resource Name</label>
                         <input type="text" value={newMessagingData.name} onChange={(e) => setNewMessagingData({ ...newMessagingData, name: e.target.value })} placeholder="e.g., order-events" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
                       </div>
-                      <div>
+                      {!editingMessaging && <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Owner</label>
                         <input type="text" value={newMessagingData.owner} onChange={(e) => setNewMessagingData({ ...newMessagingData, owner: e.target.value })} placeholder="e.g., orders-team" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
-                      </div>
+                      </div>}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-2">Retention</label>
@@ -6388,6 +6391,46 @@
                           </select>
                         </div>
                       </div>
+                      {/* Region - shown when editing */}
+                      {editingMessaging && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Region</label>
+                          <select value={newMessagingData.region} onChange={(e) => setNewMessagingData({ ...newMessagingData, region: e.target.value })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
+                            <option value="us-east-1">us-east-1</option>
+                            <option value="us-east-2">us-east-2</option>
+                            <option value="us-west-1">us-west-1</option>
+                            <option value="us-west-2">us-west-2</option>
+                            <option value="eu-west-1">eu-west-1</option>
+                          </select>
+                        </div>
+                      )}
+                      {/* Subscribers & Producers - for SNS, SQS, Kafka when editing */}
+                      {editingMessaging && (newMessagingData.type === 'sns' || newMessagingData.type === 'sqs' || newMessagingData.type === 'kafka') && (
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Subscribers</label>
+                            <input type="number" value={newMessagingData.subscribers || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, subscribers: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Producers</label>
+                            <input type="number" value={newMessagingData.producers || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, producers: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                          </div>
+                        </div>
+                      )}
+                      {/* Rules - for EventBridge when editing */}
+                      {editingMessaging && newMessagingData.type === 'eventbridge' && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Rules</label>
+                          <input type="number" value={newMessagingData.rules || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, rules: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      )}
+                      {/* Targets - for all types when editing */}
+                      {editingMessaging && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-400 mb-2">Targets</label>
+                          <input type="number" value={newMessagingData.targets || 0} onChange={(e) => setNewMessagingData({ ...newMessagingData, targets: parseInt(e.target.value) || 0 })} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" />
+                        </div>
+                      )}
                       {!editingMessaging && <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Type</label>
                         <div className="grid grid-cols-4 gap-2">
@@ -6457,7 +6500,7 @@
                           <div><label className="block text-sm text-gray-400 mb-1">Retention (hours)</label><input type="number" defaultValue="168" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm" /></div>
                         </div>
                       )}
-                      <div>
+                      {!editingMessaging && <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Zone</label>
                         <div className="grid grid-cols-2 gap-2">
                           <button onClick={() => setNewMessagingData({ ...newMessagingData, zone: 'local' })} className={`p-3 rounded-lg border text-center ${newMessagingData.zone === 'local' ? 'bg-cyan-500/20 border-cyan-500/50' : 'bg-gray-800 border-gray-700 hover:border-gray-600'}`}>
@@ -6467,7 +6510,7 @@
                             <div className={`text-sm font-medium ${newMessagingData.zone === 'central' ? 'text-indigo-300' : 'text-gray-400'}`}>Zone 2 (Central)</div>
                           </button>
                         </div>
-                      </div>
+                      </div>}
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
                         <textarea value={newMessagingData.description} onChange={(e) => setNewMessagingData({ ...newMessagingData, description: e.target.value })} placeholder="Describe this resource..." rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none" />
@@ -6483,7 +6526,17 @@
                   <div className="flex items-center gap-3">
                     <button onClick={() => { setShowNewMessaging(false); setSelectedBlueprint(null); }} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
                     {(newMessagingTab === 'custom' || editingMessaging) && (
-                      <button onClick={() => { showNotification(editingMessaging ? `Resource "${newMessagingData.name}" updated successfully` : `Resource "${newMessagingData.name}" created successfully`, 'success'); setShowNewMessaging(false); setSelectedMessaging(null); setSelectedBlueprint(null); }} className="px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-500 rounded-lg font-medium">{editingMessaging ? 'Save Changes' : 'Create Resource'}</button>
+                      <button onClick={() => {
+                        if (editingMessaging) {
+                          setMessagingResources(prev => prev.map(m => m.id === editingMessaging.id ? { ...m, ...newMessagingData } : m));
+                          showNotification(`Resource "${newMessagingData.name}" updated successfully`, 'success');
+                        } else {
+                          const newResource = { ...newMessagingData, id: Date.now(), messagesDay: '0', status: 'active', created: new Date().toISOString().split('T')[0], monthlyCost: '$0' };
+                          setMessagingResources(prev => [...prev, newResource]);
+                          showNotification(`Resource "${newMessagingData.name}" created successfully`, 'success');
+                        }
+                        setShowNewMessaging(false); setSelectedMessaging(null); setSelectedBlueprint(null); setEditingMessaging(null);
+                      }} className="px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-500 rounded-lg font-medium">{editingMessaging ? 'Save Changes' : 'Create Resource'}</button>
                     )}
                                       </div>
                 </div>
@@ -6643,7 +6696,7 @@
                   <p className="text-gray-400 mb-4">Run <strong className="text-gray-200">{jobToAction.name}</strong> immediately?</p>
                   <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 mb-4">
                     <div className="text-sm text-gray-400 mb-1">Execution Date</div>
-                    <div className="text-sm">Now (manual trigger)</div>
+                    <div className="text-sm text-white">Now (manual trigger)</div>
                   </div>
                   <div className="flex justify-end gap-2">
                     <button onClick={() => setShowTriggerModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>

@@ -71,6 +71,8 @@ Uses React useState hooks. Key state includes:
 - `selectedFilterNode` - Currently selected filter for editing
 - `serviceFilterCategory` - Filter palette category filter
 - `networkResources` - Editable B.R.O. network resources (initialized from mockNetworkResources)
+- `messagingResources` - Editable A.U.N.T.I.E. messaging resources (initialized from mockMessaging)
+- `jobs` - Editable R.O.S.I.E. jobs (initialized from mockJobs)
 
 ---
 
@@ -183,14 +185,22 @@ node verify_parse.js  # Should output: SUCCESS - index.html parses correctly
 ## Edit Modal Patterns (December 2024)
 
 ### A.U.N.T.I.E. Edit Modal
-When editing messaging resources, the modal shows all fields EXCEPT Type:
+When editing messaging resources, the modal shows these fields (Type hidden):
 - Resource Name (text input)
-- Owner (text input)
 - Retention & Encryption (side by side)
-- Zone (button selector: Local/Central)
+- Region (dropdown: us-east-1, us-east-2, us-west-1, us-west-2, eu-west-1)
+- Subscribers & Producers (for SNS, SQS, Kafka)
+- Rules (for EventBridge only)
+- Targets (all types)
 - Description (textarea)
 
-Type selector and type-specific configuration are hidden when `editingMessaging` is truthy.
+Owner and Zone are hidden when editing (`editingMessaging` is truthy).
+Type selector and type-specific configuration are also hidden when editing.
+
+### A.U.N.T.I.E. Mock Data Fields
+All messaging types have: `id`, `name`, `type`, `namespace`, `messagesDay`, `status`, `zone`, `region`, `owner`, `created`, `monthlyCost`, `retention`, `encryption`, `targets`, `description`
+- **SNS/SQS/Kafka**: `subscribers`, `producers`
+- **EventBridge**: `rules`
 
 ### Input Field Styling
 All input fields in edit modals must include `text-white` class:
@@ -207,3 +217,10 @@ style={activeNav === item.id ? {
 } : {}}
 ```
 - D.A.D. uses amber: `#fbbf24`, `rgba(251,191,36,0.2)`
+
+### Icon Component
+The Icon component accepts `style` prop for inline color styling:
+```jsx
+<Icon name="zap" size={16} style={{color: '#ff9900'}} />
+```
+Required icons for pause/play functionality: `pause-circle`, `play-circle`
