@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 // Simple SVG Icon Component
     const Icon = ({ name, size = 18, className = '', style = {} }) => {
