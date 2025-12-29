@@ -70,6 +70,55 @@ Uses React useState hooks. Key state includes:
 - `savedServiceFilters` - Persisted filter configurations per resource
 - `selectedFilterNode` - Currently selected filter for editing
 - `serviceFilterCategory` - Filter palette category filter
+- `networkResources` - Editable B.R.O. network resources (initialized from mockNetworkResources)
+
+---
+
+## UI Styling Patterns (December 2024)
+
+### Stat Card Titles
+All dashboard stat card titles use consistent styling:
+```jsx
+<span className="text-base font-semibold text-gray-300">Title</span>
+```
+**NOT** `text-sm text-gray-400` (too small/faint)
+
+### Filter Tabs
+Filter tabs with counts use bold styling:
+```jsx
+<button className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${
+  isActive ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:bg-gray-800'
+}`}>
+```
+
+### Table Headers
+All table headers use consistent styling:
+```jsx
+<th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Column</th>
+```
+
+### Region Column
+Region columns should not wrap:
+```jsx
+<code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded whitespace-nowrap">{r.region}</code>
+```
+
+---
+
+## History & QA Workflow
+
+### Screenshot History
+The `history/` folder contains dated screenshots for UI verification:
+- Format: `YYYY-MM-DD_HH-MM-SS.png`
+- Contains annotated screenshots showing required UI changes
+- Reference `history/history.txt` for context from previous sessions
+
+### QA Process
+1. Review screenshot chronologically (earliest first)
+2. Compare with current UI in browser
+3. Make required changes based on annotations
+4. Take verification screenshot
+5. Move to next image
 
 ---
 

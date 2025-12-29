@@ -214,6 +214,44 @@
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
 
+    /* Dark theme table styling */
+    .theme-dark thead tr {
+      background-color: rgba(17, 24, 39, 0.5) !important;
+    }
+    .theme-dark tbody tr:nth-child(odd) {
+      background-color: rgba(31, 41, 55, 0.4) !important;
+    }
+    .theme-dark tbody tr:nth-child(even) {
+      background-color: transparent !important;
+    }
+    .theme-dark tbody tr:hover {
+      background-color: rgba(55, 65, 81, 0.5) !important;
+    }
+
+    /* Dark theme stat card titles - bigger and bolder */
+    .theme-dark .stat-card-title {
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      color: #9CA3AF !important;
+    }
+
+    /* Dark theme stat card icons - bigger */
+    .theme-dark .stat-card-icon svg {
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    /* B.R.O. table specific styling */
+    .bro-table tbody tr:nth-child(odd) {
+      background-color: rgba(17, 24, 39, 0.3) !important;
+    }
+    .bro-table tbody tr:nth-child(even) {
+      background-color: transparent !important;
+    }
+    .bro-table tbody tr:hover {
+      background-color: rgba(55, 65, 81, 0.5) !important;
+    }
+
     /* Apply theme variables to base elements */
     .theme-light, .theme-dark {
       background-color: var(--bg-base);
@@ -907,7 +945,7 @@
       const sizeClasses = size === 'sm' ? 'text-xs px-1.5 py-0.5' : 'text-sm px-2 py-1';
       return (
         <span className={`inline-flex items-center gap-1.5 ${sizeClasses} rounded-full font-medium bg-${config.color}-500/20 text-${config.color}-300 border border-${config.color}-500/30`}>
-          <Icon name={config.icon} size={size === 'sm' ? 10 : 12} className={config.animate ? 'animate-spin' : ''} />
+          <Icon name={config.icon} size={size === 'sm' ? 10 : 12} className={`text-white ${config.animate ? 'animate-spin' : ''}`} />
           {config.label}
         </span>
       );
@@ -1373,8 +1411,10 @@
       const [uncleEditData, setUncleEditData] = useState({});
       const [momFilter, setMomFilter] = useState('All');
       const [infraResources, setInfraResources] = useState([...mockInfraResources]);
+      const [networkResources, setNetworkResources] = useState([...mockNetworkResources]);
       const [broFilter, setBroFilter] = useState('All');
       const [selectedNetworkResource, setSelectedNetworkResource] = useState(null);
+      const [editingDetailResource, setEditingDetailResource] = useState(null);
       const [showNewNetworkResource, setShowNewNetworkResource] = useState(false);
       const [newNetworkData, setNewNetworkData] = useState({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' });
       const [uncleFilter, setUncleFilter] = useState('All');
@@ -1865,8 +1905,8 @@
                       </div>
                       <div><div className="font-medium">{r.name}</div><div className="text-sm text-gray-400">{r.owner}</div></div>
                     </div></td>
-                    <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{r.type === 'apigateway' ? 'API GW' : r.type}</span><div className="text-sm text-gray-400">{r.apiType || r.source || r.instanceType || r.engine || r.runtime || r.image || r.version}</div></div></td>
-                    <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{r.region}</code></td>
+                    <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{r.type === 'apigateway' ? 'API GW' : r.type}</span>{r.type !== 'ecs' && <div className="text-sm text-gray-400">{r.apiType || r.source || r.instanceType || r.engine || r.runtime || r.image || r.version}</div>}</div></td>
+                    <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded whitespace-nowrap">{r.region}</code></td>
                     <td className="px-4 py-3"><StatusBadge status={['available', 'active', 'running', 'waiting'].includes(r.status) ? 'healthy' : 'warning'} size="sm" /></td>
                     <td className="px-4 py-3 text-sm text-emerald-400">{r.monthlyCost}</td>
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
@@ -2180,7 +2220,7 @@
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Monthly Spend</span>
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
                 <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.bro.trend}%</span>
               </div>
               <div className="text-2xl font-semibold text-emerald-300">${platformCosts.bro.total.toLocaleString()}</div>
@@ -2188,7 +2228,7 @@
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Total Resources</span>
+                <span className="text-base font-semibold text-gray-300">Total Resources</span>
                 <Icon name="wifi" size={14} className="text-cyan-400" />
               </div>
               <div className="text-2xl font-semibold text-cyan-300">{mockNetworkResources.length}</div>
@@ -2196,7 +2236,7 @@
             </div>
             <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Connectivity</span>
+                <span className="text-base font-semibold text-gray-300">Connectivity</span>
                 <Icon name="activity" size={14} className="text-blue-400" />
               </div>
               <div className="text-2xl font-semibold text-blue-300">{Math.round((mockNetworkResources.filter(r => ['available', 'active', 'up'].includes(r.status)).length / mockNetworkResources.length) * 100)}%</div>
@@ -2204,7 +2244,7 @@
             </div>
             <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Active Alerts</span>
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
                 <Icon name="alert-triangle" size={14} className="text-red-400" />
               </div>
               <div className="text-2xl font-semibold text-red-300">{mockNetworkResources.filter(r => r.status === 'down').length}</div>
@@ -2212,7 +2252,7 @@
             </div>
           </div>
           {/* Filter Tabs with Counts */}
-          <div className="flex gap-2 mb-4 p-2 bg-gray-800/30 border border-gray-700 rounded-lg">
+          <div className="flex gap-2 mb-4 p-2 bg-gray-900/80 border border-gray-700/50 rounded-lg">
             {[
               { id: 'All', count: mockNetworkResources.length },
               { id: 'VPC', count: mockNetworkResources.filter(r => r.type === 'vpc').length },
@@ -2223,25 +2263,25 @@
               { id: 'Peering', count: mockNetworkResources.filter(r => r.type === 'peering').length },
               { id: 'PrivateLink', count: mockNetworkResources.filter(r => r.type === 'privatelink').length }
             ].map(cat => (
-              <button key={cat.id} onClick={() => setBroFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${broFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+              <button key={cat.id} onClick={() => setBroFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${broFilter === cat.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
                 {cat.id}
-                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${broFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${broFilter === cat.id ? 'bg-cyan-500/30 text-cyan-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
               </button>
             ))}
           </div>
-          <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead><tr className="border-b border-gray-700">
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Resource</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Configuration</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Cost</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+          <div className="bg-gray-900/50 border border-gray-700/50 rounded-xl overflow-hidden">
+            <table className="w-full bro-table">
+              <thead><tr className="bg-gray-900/80 border-b border-gray-700/50">
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Resource</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Configuration</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
+                <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
               </tr></thead>
               <tbody>
-                {mockNetworkResources.filter(r => broFilter === 'All' || r.type.toLowerCase() === broFilter.toLowerCase() || (broFilter === 'Direct Connect' && r.type === 'directconnect') || (broFilter === 'Route 53' && r.type === 'route53') || (broFilter === 'TGW' && r.type === 'tgw') || (broFilter === 'VPC' && r.type === 'vpc') || (broFilter === 'VPN' && r.type === 'vpn') || (broFilter === 'Peering' && r.type === 'peering') || (broFilter === 'PrivateLink' && r.type === 'privatelink')).map(r => (
-                  <tr key={r.id} onClick={() => setSelectedNetworkResource(r)} className="border-b border-gray-700/50 hover:bg-gray-800/30 cursor-pointer">
+                {networkResources.filter(r => broFilter === 'All' || r.type.toLowerCase() === broFilter.toLowerCase() || (broFilter === 'Direct Connect' && r.type === 'directconnect') || (broFilter === 'Route 53' && r.type === 'route53') || (broFilter === 'TGW' && r.type === 'tgw') || (broFilter === 'VPC' && r.type === 'vpc') || (broFilter === 'VPN' && r.type === 'vpn') || (broFilter === 'Peering' && r.type === 'peering') || (broFilter === 'PrivateLink' && r.type === 'privatelink')).map(r => (
+                  <tr key={r.id} onClick={() => { setSelectedNetworkResource(r); setEditingDetailResource({...r}); }} className="border-b border-gray-700/30 cursor-pointer">
                     <td className="px-4 py-3"><div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.type === 'vpc' ? 'bg-cyan-500/20 text-cyan-400' : r.type === 'tgw' ? 'bg-purple-500/20 text-purple-400' : r.type === 'vpn' ? 'bg-amber-500/20 text-amber-400' : r.type === 'directconnect' ? 'bg-emerald-500/20 text-emerald-400' : r.type === 'route53' ? 'bg-blue-500/20 text-blue-400' : r.type === 'privatelink' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
                         <Icon name={r.type === 'vpc' ? 'grid' : r.type === 'tgw' ? 'share-2' : r.type === 'vpn' ? 'lock' : r.type === 'directconnect' ? 'zap' : r.type === 'route53' ? 'globe' : r.type === 'privatelink' ? 'key' : 'link'} size={16} />
@@ -2254,7 +2294,7 @@
                     <td className="px-4 py-3 text-sm text-emerald-400">{r.monthlyCost}</td>
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => { setSelectedNetworkResource(r); showNotification(`Editing ${r.name}...`); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
+                        <button onClick={() => { setSelectedNetworkResource(r); setEditingDetailResource({...r}); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
                         <button onClick={() => showNotification(`Resource "${r.name}" deleted`, 'warning')} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
                       </div>
                     </td>
@@ -2264,78 +2304,90 @@
             </table>
           </div>
 
-          {/* Network Resource Detail Panel */}
-          {selectedNetworkResource && (
+          {/* Network Resource Detail Panel - Editable */}
+          {selectedNetworkResource && editingDetailResource && (
             <div className="fixed inset-0 z-50 flex justify-end">
-              <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedNetworkResource(null)} />
+              <div className="absolute inset-0 bg-black/50" onClick={() => { setSelectedNetworkResource(null); setEditingDetailResource(null); }} />
               <div className="relative w-[600px] bg-gray-900 border-l border-gray-700 overflow-auto">
                 <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <button onClick={() => setSelectedNetworkResource(null)} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
+                    <button onClick={() => { setSelectedNetworkResource(null); setEditingDetailResource(null); }} className="p-1 hover:bg-gray-800 rounded"><Icon name="chevron-left" size={20} /></button>
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedNetworkResource.type === 'vpc' ? 'bg-cyan-500/20 text-cyan-400' : selectedNetworkResource.type === 'tgw' ? 'bg-purple-500/20 text-purple-400' : selectedNetworkResource.type === 'vpn' ? 'bg-amber-500/20 text-amber-400' : selectedNetworkResource.type === 'directconnect' ? 'bg-emerald-500/20 text-emerald-400' : selectedNetworkResource.type === 'route53' ? 'bg-blue-500/20 text-blue-400' : selectedNetworkResource.type === 'privatelink' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-cyan-500/20 text-cyan-400'}`}>
                       <Icon name={selectedNetworkResource.type === 'vpc' ? 'grid' : selectedNetworkResource.type === 'tgw' ? 'share-2' : selectedNetworkResource.type === 'vpn' ? 'lock' : selectedNetworkResource.type === 'directconnect' ? 'zap' : selectedNetworkResource.type === 'route53' ? 'globe' : selectedNetworkResource.type === 'privatelink' ? 'key' : 'link'} size={20} />
                     </div>
-                    <div><div className="font-semibold">{selectedNetworkResource.name}</div><div className="text-sm text-gray-400">{selectedNetworkResource.owner}</div></div>
+                    <div>
+                      <input type="text" value={editingDetailResource.name} onChange={e => setEditingDetailResource({...editingDetailResource, name: e.target.value})} className="bg-transparent border-b border-gray-600 focus:border-cyan-500 outline-none font-semibold text-lg" />
+                      <div className="text-sm text-gray-400">{selectedNetworkResource.owner}</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => showNotification(`Cloning ${selectedNetworkResource.name}...`)} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Clone"><Icon name="copy" size={16} /></button>
-                    <button onClick={() => showNotification(`Editing ${selectedNetworkResource.name}...`)} className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg"><Icon name="edit" size={14} className="inline mr-1.5" />Edit</button>
-                    <button onClick={() => { showNotification(`Resource "${selectedNetworkResource.name}" deleted`, 'warning'); setSelectedNetworkResource(null); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
+                    <button onClick={() => { setNetworkResources(networkResources.map(r => r.id === editingDetailResource.id ? editingDetailResource : r)); setSelectedNetworkResource(editingDetailResource); showNotification(`"${editingDetailResource.name}" saved`, 'success'); setSelectedNetworkResource(null); setEditingDetailResource(null); }} className="px-3 py-1.5 text-sm bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg"><Icon name="check" size={14} className="inline mr-1.5" />Save</button>
+                    <button onClick={() => setEditingDetailResource({...selectedNetworkResource})} className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg">Reset</button>
+                    <button onClick={() => { if(confirm(`Delete "${selectedNetworkResource.name}"? This cannot be undone.`)) { setNetworkResources(networkResources.filter(x => x.id !== selectedNetworkResource.id)); showNotification(`Resource "${selectedNetworkResource.name}" deleted`, 'warning'); setSelectedNetworkResource(null); setEditingDetailResource(null); }}} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
                   </div>
                 </div>
                 <div className="p-6 space-y-6">
                   {/* Status Overview */}
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Status</div><StatusBadge status={['available', 'active', 'up'].includes(selectedNetworkResource.status) ? 'healthy' : selectedNetworkResource.status === 'down' ? 'error' : 'warning'} /></div>
-                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Monthly Cost</div><div className="text-lg font-semibold text-emerald-400">{selectedNetworkResource.monthlyCost}</div></div>
-                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3"><div className="text-sm text-gray-400 mb-1">Region</div><div className="text-sm text-gray-300">{selectedNetworkResource.region}</div></div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Status</div>
+                      <select value={editingDetailResource.status} onChange={e => setEditingDetailResource({...editingDetailResource, status: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full">
+                        <option value="available">Available</option>
+                        <option value="active">Active</option>
+                        <option value="up">Up</option>
+                        <option value="down">Down</option>
+                        <option value="pending">Pending</option>
+                      </select>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Monthly Cost</div>
+                      <div className="text-emerald-400 font-semibold">{selectedNetworkResource.monthlyCost}</div>
+                    </div>
+                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3">
+                      <div className="text-sm text-gray-400 mb-1">Region</div>
+                      <select value={editingDetailResource.region} onChange={e => setEditingDetailResource({...editingDetailResource, region: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full">
+                        <option value="us-east-1">us-east-1</option>
+                        <option value="us-west-2">us-west-2</option>
+                        <option value="eu-west-1">eu-west-1</option>
+                        <option value="ap-southeast-1">ap-southeast-1</option>
+                      </select>
+                    </div>
                   </div>
 
                   {/* Resource Info */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                     <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="settings" size={14} className="text-gray-400" />Configuration</h3>
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div><div className="text-sm text-gray-400 mb-1">Type</div><div className="text-gray-300 uppercase">{selectedNetworkResource.type === 'directconnect' ? 'Direct Connect' : selectedNetworkResource.type === 'route53' ? 'Route 53' : selectedNetworkResource.type}</div></div>
-                      {selectedNetworkResource.cidr && <div><div className="text-sm text-gray-400 mb-1">CIDR Block</div><code className="text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{selectedNetworkResource.cidr}</code></div>}
-                      {selectedNetworkResource.subnets && <div><div className="text-sm text-gray-400 mb-1">Subnets</div><div className="text-gray-300">{selectedNetworkResource.subnets}</div></div>}
-                      {selectedNetworkResource.routeTables && <div><div className="text-sm text-gray-400 mb-1">Route Tables</div><div className="text-gray-300">{selectedNetworkResource.routeTables}</div></div>}
-                      {selectedNetworkResource.attachments && <div><div className="text-sm text-gray-400 mb-1">Attachments</div><div className="text-gray-300">{selectedNetworkResource.attachments}</div></div>}
-                      {selectedNetworkResource.bandwidth && <div><div className="text-sm text-gray-400 mb-1">Bandwidth</div><div className="text-cyan-400">{selectedNetworkResource.bandwidth}</div></div>}
-                      {selectedNetworkResource.tunnels && <div><div className="text-sm text-gray-400 mb-1">Tunnels</div><div className="text-gray-300">{selectedNetworkResource.tunnels}</div></div>}
-                      {selectedNetworkResource.encryption && <div><div className="text-sm text-gray-400 mb-1">Encryption</div><div className="text-emerald-400">{selectedNetworkResource.encryption}</div></div>}
-                      {selectedNetworkResource.connection && <div><div className="text-sm text-gray-400 mb-1">Connection Speed</div><div className="text-cyan-400">{selectedNetworkResource.connection}</div></div>}
-                      {selectedNetworkResource.location && <div><div className="text-sm text-gray-400 mb-1">Location</div><div className="text-gray-300">{selectedNetworkResource.location}</div></div>}
-                      {selectedNetworkResource.vifs && <div><div className="text-sm text-gray-400 mb-1">Virtual Interfaces</div><div className="text-gray-300">{selectedNetworkResource.vifs}</div></div>}
-                      {selectedNetworkResource.zoneType && <div><div className="text-sm text-gray-400 mb-1">Zone Type</div><div className="text-gray-300 capitalize">{selectedNetworkResource.zoneType}</div></div>}
-                      {selectedNetworkResource.records && <div><div className="text-sm text-gray-400 mb-1">DNS Records</div><div className="text-gray-300">{selectedNetworkResource.records}</div></div>}
-                      {selectedNetworkResource.queries && <div><div className="text-sm text-gray-400 mb-1">Queries</div><div className="text-cyan-400">{selectedNetworkResource.queries}</div></div>}
-                      {selectedNetworkResource.healthChecks && <div><div className="text-sm text-gray-400 mb-1">Health Checks</div><div className="text-gray-300">{selectedNetworkResource.healthChecks}</div></div>}
-                      {selectedNetworkResource.requester && <div><div className="text-sm text-gray-400 mb-1">Requester VPC</div><div className="text-gray-300">{selectedNetworkResource.requester}</div></div>}
-                      {selectedNetworkResource.accepter && <div><div className="text-sm text-gray-400 mb-1">Accepter VPC</div><div className="text-gray-300">{selectedNetworkResource.accepter}</div></div>}
-                      {selectedNetworkResource.service && <div><div className="text-sm text-gray-400 mb-1">Service</div><code className="text-indigo-400 bg-gray-700/50 px-2 py-0.5 rounded text-sm">{selectedNetworkResource.service}</code></div>}
-                      {selectedNetworkResource.endpointType && <div><div className="text-sm text-gray-400 mb-1">Endpoint Type</div><div className="text-indigo-400">{selectedNetworkResource.endpointType}</div></div>}
-                      {selectedNetworkResource.vpc && <div><div className="text-sm text-gray-400 mb-1">VPC</div><div className="text-gray-300">{selectedNetworkResource.vpc}</div></div>}
-                      {selectedNetworkResource.eniCount && <div><div className="text-sm text-gray-400 mb-1">ENI Count</div><div className="text-gray-300">{selectedNetworkResource.eniCount}</div></div>}
-                      {selectedNetworkResource.securityGroups !== undefined && selectedNetworkResource.type === 'privatelink' && <div><div className="text-sm text-gray-400 mb-1">Security Groups</div><div className="text-gray-300">{selectedNetworkResource.securityGroups}</div></div>}
-                      {selectedNetworkResource.privateDns !== undefined && <div><div className="text-sm text-gray-400 mb-1">Private DNS</div><div className={selectedNetworkResource.privateDns ? 'text-emerald-400' : 'text-gray-500'}>{selectedNetworkResource.privateDns ? 'Enabled' : 'Disabled'}</div></div>}
-                      <div><div className="text-sm text-gray-400 mb-1">Created</div><div className="text-gray-300">{selectedNetworkResource.created}</div></div>
+                      {/* Type - Read Only */}
+                      <div><div className="text-sm text-gray-400 mb-1">Type</div><div className="text-gray-300 uppercase bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.type === 'directconnect' ? 'Direct Connect' : selectedNetworkResource.type === 'route53' ? 'Route 53' : selectedNetworkResource.type}</div></div>
+                      {/* Owner - Read Only */}
+                      <div><div className="text-sm text-gray-400 mb-1">Owner</div><div className="text-gray-300 bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.owner}</div></div>
+                      {editingDetailResource.cidr !== undefined && <div><div className="text-sm text-gray-400 mb-1">CIDR Block</div><input type="text" value={editingDetailResource.cidr || ''} onChange={e => setEditingDetailResource({...editingDetailResource, cidr: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.subnets !== undefined && <div><div className="text-sm text-gray-400 mb-1">Subnets</div><input type="number" value={editingDetailResource.subnets || ''} onChange={e => setEditingDetailResource({...editingDetailResource, subnets: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.routeTables !== undefined && <div><div className="text-sm text-gray-400 mb-1">Route Tables</div><input type="number" value={editingDetailResource.routeTables || ''} onChange={e => setEditingDetailResource({...editingDetailResource, routeTables: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.attachments !== undefined && <div><div className="text-sm text-gray-400 mb-1">Attachments</div><input type="number" value={editingDetailResource.attachments || ''} onChange={e => setEditingDetailResource({...editingDetailResource, attachments: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.connection !== undefined && <div><div className="text-sm text-gray-400 mb-1">Connection Speed</div><input type="text" value={editingDetailResource.connection || ''} onChange={e => setEditingDetailResource({...editingDetailResource, connection: e.target.value})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.tunnels !== undefined && <div><div className="text-sm text-gray-400 mb-1">Tunnels</div><input type="number" value={editingDetailResource.tunnels || ''} onChange={e => setEditingDetailResource({...editingDetailResource, tunnels: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      {editingDetailResource.records !== undefined && <div><div className="text-sm text-gray-400 mb-1">DNS Records</div><input type="number" value={editingDetailResource.records || ''} onChange={e => setEditingDetailResource({...editingDetailResource, records: parseInt(e.target.value)})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full" /></div>}
+                      <div><div className="text-sm text-gray-400 mb-1">Created</div><div className="text-gray-300 bg-gray-800/50 px-2 py-1 rounded">{selectedNetworkResource.created}</div></div>
                     </div>
                   </div>
 
-                  {/* Additional Details */}
-                  {(selectedNetworkResource.flowLogs !== undefined || selectedNetworkResource.macSec !== undefined || selectedNetworkResource.jumboFrames !== undefined) && (
+                  {/* Security & Features */}
+                  {(editingDetailResource.flowLogs !== undefined || editingDetailResource.macSec !== undefined || editingDetailResource.jumboFrames !== undefined || editingDetailResource.privateDns !== undefined) && (
                     <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                       <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="shield" size={14} className="text-gray-400" />Security & Features</h3>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        {selectedNetworkResource.flowLogs !== undefined && <div><div className="text-sm text-gray-400 mb-1">Flow Logs</div><div className={selectedNetworkResource.flowLogs ? 'text-emerald-400' : 'text-gray-500'}>{selectedNetworkResource.flowLogs ? 'Enabled' : 'Disabled'}</div></div>}
-                        {selectedNetworkResource.macSec !== undefined && <div><div className="text-sm text-gray-400 mb-1">MACsec</div><div className={selectedNetworkResource.macSec ? 'text-emerald-400' : 'text-gray-500'}>{selectedNetworkResource.macSec ? 'Enabled' : 'Disabled'}</div></div>}
-                        {selectedNetworkResource.jumboFrames !== undefined && <div><div className="text-sm text-gray-400 mb-1">Jumbo Frames</div><div className={selectedNetworkResource.jumboFrames ? 'text-emerald-400' : 'text-gray-500'}>{selectedNetworkResource.jumboFrames ? 'Enabled' : 'Disabled'}</div></div>}
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        {editingDetailResource.flowLogs !== undefined && <div><div className="text-sm text-gray-400 mb-1">Flow Logs</div><select value={editingDetailResource.flowLogs ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, flowLogs: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.macSec !== undefined && <div><div className="text-sm text-gray-400 mb-1">MACsec</div><select value={editingDetailResource.macSec ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, macSec: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.jumboFrames !== undefined && <div><div className="text-sm text-gray-400 mb-1">Jumbo Frames</div><select value={editingDetailResource.jumboFrames ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, jumboFrames: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
+                        {editingDetailResource.privateDns !== undefined && <div><div className="text-sm text-gray-400 mb-1">Private DNS</div><select value={editingDetailResource.privateDns ? 'true' : 'false'} onChange={e => setEditingDetailResource({...editingDetailResource, privateDns: e.target.value === 'true'})} className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-full"><option value="true">Enabled</option><option value="false">Disabled</option></select></div>}
                       </div>
                     </div>
                   )}
 
                   {/* Description */}
-                  <div><h3 className="text-sm font-medium mb-2">Description</h3><p className="text-sm text-gray-400">{selectedNetworkResource.description}</p></div>
+                  <div><h3 className="text-sm font-medium mb-2">Description</h3><textarea value={editingDetailResource.description || ''} onChange={e => setEditingDetailResource({...editingDetailResource, description: e.target.value})} className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm text-gray-300 resize-none" rows={3} /></div>
                 </div>
               </div>
             </div>
@@ -2586,7 +2638,7 @@
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Monthly Spend</span>
+                <span className="text-base font-semibold text-gray-300">Monthly Spend</span>
                 <span className="text-xs text-emerald-400 flex items-center gap-1"><Icon name="trending-down" size={12} />{platformCosts.uncle.trend}</span>
               </div>
               <div className="text-2xl font-semibold text-emerald-300">${platformCosts.uncle.total.toLocaleString()}</div>
@@ -2594,7 +2646,7 @@
             </div>
             <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Total Datastores</span>
+                <span className="text-base font-semibold text-gray-300">Total Datastores</span>
                 <Icon name="database" size={14} className="text-blue-400" />
               </div>
               <div className="text-2xl font-semibold text-blue-300">{mockDatastores.length}</div>
@@ -2602,7 +2654,7 @@
             </div>
             <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Availability</span>
+                <span className="text-base font-semibold text-gray-300">Availability</span>
                 <Icon name="activity" size={14} className="text-violet-400" />
               </div>
               <div className="text-2xl font-semibold text-violet-300">{Math.round((mockDatastores.filter(d => ['available', 'active'].includes(d.status)).length / mockDatastores.length) * 100)}%</div>
@@ -2610,7 +2662,7 @@
             </div>
             <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-400">Active Alerts</span>
+                <span className="text-base font-semibold text-gray-300">Active Alerts</span>
                 <Icon name="alert-triangle" size={14} className="text-red-400" />
               </div>
               <div className="text-2xl font-semibold text-red-300">0</div>
@@ -2627,21 +2679,21 @@
               { id: 'DynamoDB', count: mockDatastores.filter(d => d.type === 'dynamodb').length },
               { id: 'DSQL', count: mockDatastores.filter(d => d.type === 'dsql').length }
             ].map(cat => (
-              <button key={cat.id} onClick={() => setUncleFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${uncleFilter === cat.id ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
+              <button key={cat.id} onClick={() => setUncleFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${uncleFilter === cat.id ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'text-gray-400 hover:bg-gray-800'}`}>
                 {cat.id}
-                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${uncleFilter === cat.id ? 'bg-blue-500/30 text-blue-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
+                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-base font-semibold ${uncleFilter === cat.id ? 'bg-blue-500/30 text-blue-200' : 'bg-gray-700 text-gray-300'}`}>{cat.count}</span>
               </button>
             ))}
           </div>
           <div className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
             <table className="w-full">
               <thead><tr className="border-b border-gray-700">
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Datastore</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Type</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Size</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left px-4 py-3 text-sm font-medium text-gray-400">Cost</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-400">Actions</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Datastore</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Size</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
+                <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
               </tr></thead>
               <tbody>
                 {mockDatastores.filter(d => uncleFilter === 'All' || d.type.toLowerCase() === uncleFilter.toLowerCase()).map(d => (
@@ -3096,7 +3148,7 @@
         return (
         <div className="p-6">
           {/* Tab Navigation */}
-          <div className="flex gap-1 mb-6 border-b border-gray-700">
+          <div className="flex gap-1 mb-6 border-b border-gray-700/50">
             {[
               { id: 'services', label: 'Services', icon: 'server' },
               { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
@@ -3309,12 +3361,12 @@
           {/* Sub-tabs: Traffic Config | External Services */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex bg-gray-800/50 border border-gray-700 rounded-lg p-1">
-              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'traffic' ? {backgroundColor: 'rgba(8,145,178,0.15)', color: '#22d3ee', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
-                <Icon name="git-branch" size={14} />Traffic Config
+              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'traffic' ? {backgroundColor: featureFlags.darkMode ? 'rgba(8,145,178,0.15)' : 'rgba(8,145,178,0.2)', color: featureFlags.darkMode ? '#22d3ee' : '#0E7490', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
+                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? (featureFlags.darkMode ? 'text-cyan-400' : 'text-cyan-700') : ''} />Traffic Config
                 <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
               </button>
-              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'external' ? {backgroundColor: 'rgba(8,145,178,0.15)', color: '#22d3ee', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
-                <Icon name="external-link" size={14} />External Services
+              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'external' ? {backgroundColor: featureFlags.darkMode ? 'rgba(8,145,178,0.15)' : 'rgba(8,145,178,0.2)', color: featureFlags.darkMode ? '#22d3ee' : '#0E7490', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
+                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? (featureFlags.darkMode ? 'text-cyan-400' : 'text-cyan-700') : ''} />External Services
                 <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.serviceEntries}</span>
               </button>
             </div>
@@ -3334,8 +3386,8 @@
                 <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
               ) : (
                 <div key={cat.id} className="flex items-center gap-1">
-                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 ${dadFilter === cat.id ? 'border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`} style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.2)', color: '#fcd34d'} : {}}>
-                    <Icon name={cat.icon} size={14} />
+                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`} style={dadFilter === cat.id ? {backgroundColor: featureFlags.darkMode ? 'rgba(245,158,11,0.2)' : 'rgba(245,158,11,0.25)', color: featureFlags.darkMode ? '#fcd34d' : '#92400E'} : {}}>
+                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? (featureFlags.darkMode ? 'text-amber-300' : 'text-amber-700') : ''} />
                     <div className="flex flex-col items-center">
                       <span>{cat.id}</span>
                       {cat.sublabel && <span className="text-sm text-gray-400">{cat.sublabel}</span>}
@@ -3376,79 +3428,79 @@
                   <div onClick={() => setExpandedTrafficId(isExpanded ? null : r.id)} className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-800/50">
                     <div className="flex items-center gap-4">
                       <button className="p-1 hover:bg-gray-700 rounded"><Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={16} className="text-gray-400" /></button>
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${r.status === 'healthy' ? 'bg-emerald-500/20 text-emerald-400' : r.status === 'warning' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}><Icon name={typeConfig.icon} size={16} /></div>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${typeConfig.color}-500/20 text-${typeConfig.color}-400`}><Icon name={typeConfig.icon} size={16} /></div>
                       <div>
-                        <div className="font-medium">{r.name}</div>
+                        <div className="text-base font-semibold">{r.name}</div>
                         <div className="text-sm text-gray-400">{r.namespace}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className={`px-2 py-1 rounded text-sm bg-${typeConfig.color}-500/10 text-${typeConfig.color}-400 border border-${typeConfig.color}-500/20`}>{typeConfig.label}</span>
-                      <span className="text-sm text-gray-400">{getDetails()}</span>
-                      {r.gateway && <span className="text-sm text-gray-400">via {r.gateway}</span>}
+                      <span className={`px-2.5 py-1 rounded text-sm font-medium bg-${typeConfig.color}-500/10 text-${typeConfig.color}-400 border border-${typeConfig.color}-500/20`}>{typeConfig.label}</span>
+                      <span className="text-sm text-gray-300">{getDetails()}</span>
+                      {r.gateway && <span className="text-sm text-gray-300 whitespace-nowrap">via {r.gateway}</span>}
                       {relatedDR && <span className="px-2 py-1 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded text-sm flex items-center gap-1"><Icon name="sliders" size={12} />DR</span>}
                       <StatusBadge status={r.status} size="sm" />
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/20">
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-700/50 bg-gray-800/40">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Resource Details Column */}
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name={typeConfig.icon} size={12} className={`text-${typeConfig.color}-400`} />Details</div>
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name={typeConfig.icon} size={14} className={`text-${typeConfig.color}-400`} />Details</div>
                           {r.type === 'virtualservice' && (
-                            <div className="space-y-2 text-xs">
-                              <div><span className="text-gray-500">Host:</span> <span className="text-gray-300">{r.host}</span></div>
-                              <div><span className="text-gray-500">Routes:</span> <span className="text-gray-300">{r.routes}</span></div>
-                              <div><span className="text-gray-500">Gateway:</span> <span className="text-gray-300">{r.gateway || 'mesh'}</span></div>
+                            <div className="space-y-2 text-sm">
+                              <div><span className="text-gray-500 font-semibold">Host:</span> <span className="text-gray-300">{r.host}</span></div>
+                              <div><span className="text-gray-500 font-semibold">Routes:</span> <span className="text-gray-300">{r.routes}</span></div>
+                              <div><span className="text-gray-500 font-semibold">Gateway:</span> <span className="text-gray-300">{r.gateway || 'mesh'}</span></div>
                             </div>
                           )}
                           {['ingress', 'egress', 'eastwest'].includes(r.type) && (
-                            <div className="space-y-2 text-xs">
-                              <div><span className="text-gray-500">Hosts:</span></div>
+                            <div className="space-y-2 text-sm">
+                              <div><span className="text-gray-500 font-semibold">Hosts:</span></div>
                               {r.hosts?.map((h, i) => <div key={i} className="text-gray-300 bg-gray-700/30 px-2 py-1 rounded">{h}</div>)}
-                              <div><span className="text-gray-500">TLS:</span> <span className="text-gray-300">{r.tls}</span></div>
-                              <div><span className="text-gray-500">Port:</span> <span className="text-gray-300">{r.port}</span></div>
+                              <div><span className="text-gray-500 font-semibold">TLS:</span> <span className="text-gray-300">{r.tls}</span></div>
+                              <div><span className="text-gray-500 font-semibold">Port:</span> <span className="text-gray-300">{r.port}</span></div>
                             </div>
                           )}
                         </div>
                         {/* Destination Rule Column */}
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule</div>
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={14} className="text-violet-400" />Destination Rule</div>
                           {relatedDR ? (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-300">{relatedDR.name}</span>
-                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={12} /></button>
+                                <span className="text-sm text-gray-300">{relatedDR.name}</span>
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={14} /></button>
                               </div>
-                              <div className="text-xs text-gray-500 space-y-1">
-                                <div>LB: <span className="text-gray-400">{relatedDR.trafficPolicy}</span></div>
-                                <div>mTLS: <span className="text-gray-400">{relatedDR.mtls}</span></div>
-                                {relatedDR.circuitBreaker && <div className="text-amber-400">Circuit Breaker Enabled</div>}
-                                {relatedDR.subsets && <div>Subsets: <span className="text-amber-400">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
+                              <div className="text-sm text-gray-500 space-y-1">
+                                <div><span className="font-semibold">LB:</span> <span className="text-gray-400">{relatedDR.trafficPolicy}</span></div>
+                                <div><span className="font-semibold">mTLS:</span> <span className="text-gray-400">{relatedDR.mtls}</span></div>
+                                {relatedDR.circuitBreaker && <div className="text-amber-400 font-semibold">Circuit Breaker Enabled</div>}
+                                {relatedDR.subsets && <div><span className="font-semibold">Subsets:</span> <span className="text-amber-400">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
                               </div>
                             </div>
                           ) : (
                             <div className="text-center py-2">
-                              <span className="text-xs text-gray-600">No destination rule</span>
-                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-xs text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={12} className="inline mr-1" />DR</button>
+                              <span className="text-sm text-gray-600">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-sm text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={14} className="inline mr-1" />Add DR</button>
                             </div>
                           )}
                         </div>
                         {/* Metadata Column */}
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="info" size={12} className="text-gray-400" />Metadata</div>
-                          <div className="space-y-2 text-xs">
-                            <div><span className="text-gray-500">Owner:</span> <span className="text-gray-300">{r.owner}</span></div>
-                            <div><span className="text-gray-500">BU:</span> <span className="text-gray-300">{r.bu}</span></div>
-                            <div><span className="text-gray-500">Created:</span> <span className="text-gray-300">{r.created}</span></div>
+                        <div className="bg-gray-800/70 rounded-lg p-3">
+                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="info" size={14} className="text-gray-400" />Metadata</div>
+                          <div className="space-y-2 text-sm">
+                            <div><span className="text-gray-500 font-semibold">Owner:</span> <span className="text-gray-300">{r.owner}</span></div>
+                            <div><span className="text-gray-500 font-semibold">BU:</span> <span className="text-gray-300">{r.bu}</span></div>
+                            <div><span className="text-gray-500 font-semibold">Created:</span> <span className="text-gray-300">{r.created}</span></div>
                           </div>
                         </div>
                       </div>
                       {/* Actions Row */}
-                      <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
-                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(r); setShowServiceEditor(true); }} className="text-sm text-gray-400 hover:text-cyan-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="edit" size={12} />Edit</button>
-                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm text-gray-400 hover:text-violet-400 flex items-center gap-1 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={12} />DR</button>}
+                      <div className="mt-3 pt-3 flex items-center gap-3">
+                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(r); setShowServiceEditor(true); }} className="text-base font-semibold text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit</button>
+                        {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm font-semibold text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />DR</button>}
                       </div>
                     </div>
                   )}
@@ -3923,7 +3975,7 @@
                         <Icon name="chevron-right" size={12} className="text-gray-400 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2" />
                       </div>
                       <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="cloud" size={20} className="text-emerald-400" /></div>
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="globe" size={20} className="text-emerald-400" /></div>
                         <span className="text-sm text-gray-400">External</span>
                       </div>
                     </div>
@@ -4183,7 +4235,7 @@
               }).map(mod => {
                 const isExpanded = expandedWasmModules.includes(mod.module);
                 const activeCount = mod.plugins.filter(p => p.enabled).length;
-                const gateways = [...new Set(mod.plugins.map(p => p.targetGateway))];
+                const gateways = [...new Set(mod.plugins.map(p => p.targetGateway || p.targetService).filter(Boolean))];
                 return (
                   <div key={mod.module} className="bg-gray-800/30 border border-gray-700 rounded-xl overflow-hidden">
                     {/* Module Header Row */}
@@ -4261,7 +4313,7 @@
                                 <td className="px-4 py-2.5">
                                   <div className="flex items-center gap-1.5">
                                     <Icon name="log-in" size={10} className="text-teal-400" />
-                                    <span className="text-xs text-gray-300">{p.targetGateway}</span>
+                                    <span className="text-xs text-gray-300">{p.targetGateway || p.targetService}</span>
                                   </div>
                                 </td>
                                 <td className="px-4 py-2.5">
@@ -4986,7 +5038,7 @@
                             <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-sm font-medium">{p.module}</span>
                             <span className="text-gray-500">•</span>
                             <span className="text-gray-400">Target:</span>
-                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-sm font-medium">{p.targetGateway}</span>
+                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-sm font-medium">{p.targetGateway || p.targetService}</span>
                           </div>
                         </div>
                       </div>
@@ -5002,7 +5054,7 @@
                     <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
                         <Icon name="git-branch" size={16} className="text-violet-400" />
-                        <span>Filter Chain Position for {p.targetGateway}</span>
+                        <span>Filter Chain Position for {p.targetGateway || p.targetService}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         {filterChain.map((f, i) => (
@@ -6998,7 +7050,7 @@
           )}
 
           <div className="w-64 themed-sidebar border-r flex flex-col">
-            <div className="p-4 border-b" style={{borderColor: 'var(--border-sidebar)'}}>
+            <div className="p-4">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${featureFlags.darkMode ? 'bg-gradient-to-br from-cyan-500 to-indigo-500' : 'bg-gradient-to-br from-blue-500 to-cyan-500'}`}>M</div>
                 <div><div className="font-semibold" style={{color: 'var(--text-sidebar)'}}>MIA</div><div className="text-xs" style={{color: 'var(--text-sidebar-muted)'}}>Make Infrastructure Awesome</div></div>
@@ -7048,10 +7100,6 @@
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="text" placeholder="Search..." className="themed-input rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
-                </div>
                 <button onClick={() => setFeatureFlags({...featureFlags, darkMode: !featureFlags.darkMode})} className="p-2 rounded-lg transition-colors hover:bg-gray-700/50 text-gray-400 hover:text-gray-200" title={featureFlags.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}><Icon name={featureFlags.darkMode ? 'moon' : 'sun'} size={18} /></button>
                 <button onClick={() => setActiveNav('settings')} className={`p-2 rounded-lg transition-colors hover:bg-gray-700/50 ${activeNav === 'settings' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:text-gray-200'}`} title="Settings"><Icon name="settings" size={18} /></button>
               </div>
