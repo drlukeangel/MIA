@@ -2,6 +2,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
-    "browser-sync": "^3.0.4"
+    "browser-sync": "^3.0.4",
+    "sharp": "^0.34.5"
   }
 }

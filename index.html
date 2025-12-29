@@ -3148,7 +3148,7 @@
         return (
         <div className="p-6">
           {/* Tab Navigation */}
-          <div className="flex gap-1 mb-6 border-b border-gray-700/50">
+          <div className="flex gap-1 mb-6 border-b-2 border-gray-600">
             {[
               { id: 'services', label: 'Services', icon: 'server' },
               { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
@@ -3158,8 +3158,8 @@
               { id: 'wasm', label: 'WASM Filters', icon: 'cpu' },
               ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua', icon: 'code' }] : []),
             ].map(tab => (
-              <button key={tab.id} onClick={() => setDadActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${dadActiveTab === tab.id ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>
-                <Icon name={tab.icon} size={16} />{tab.label}
+              <button key={tab.id} onClick={() => setDadActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2.5 text-base font-semibold border-b-2 -mb-px transition-colors ${dadActiveTab === tab.id ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>
+                <Icon name={tab.icon} size={18} />{tab.label}
               </button>
             ))}
           </div>
@@ -3361,13 +3361,13 @@
           {/* Sub-tabs: Traffic Config | External Services */}
           <div className="flex items-center gap-4 mb-4">
             <div className="flex bg-gray-800/50 border border-gray-700 rounded-lg p-1">
-              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'traffic' ? {backgroundColor: featureFlags.darkMode ? 'rgba(8,145,178,0.15)' : 'rgba(8,145,178,0.2)', color: featureFlags.darkMode ? '#22d3ee' : '#0E7490', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
-                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? (featureFlags.darkMode ? 'text-cyan-400' : 'text-cyan-700') : ''} />Traffic Config
-                <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
+              <button onClick={() => { setMeshConfigSubTab('traffic'); setDadFilter('Virtual Services'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'traffic' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'traffic' ? {backgroundColor: '#10B981', color: '#FFFFFF', border: '1px solid #059669'} : {}}>
+                <Icon name="git-branch" size={16} className={meshConfigSubTab === 'traffic' ? 'text-white' : ''} />Traffic Config
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'traffic' ? 'bg-white/25 text-white' : 'bg-gray-700 text-gray-300'}`}>{meshStats.virtualServices + meshStats.ingress + meshStats.egress + meshStats.eastwest}</span>
               </button>
-              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'external' ? {backgroundColor: featureFlags.darkMode ? 'rgba(8,145,178,0.15)' : 'rgba(8,145,178,0.2)', color: featureFlags.darkMode ? '#22d3ee' : '#0E7490', border: '1px solid rgba(8,145,178,0.4)'} : {}}>
-                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? (featureFlags.darkMode ? 'text-cyan-400' : 'text-cyan-700') : ''} />External Services
-                <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-700 text-gray-300">{meshStats.serviceEntries}</span>
+              <button onClick={() => { setMeshConfigSubTab('external'); setDadFilter('Svc Entries'); }} className={`px-4 py-2 rounded-lg text-base font-semibold flex items-center gap-2 transition-colors ${meshConfigSubTab === 'external' ? '' : 'text-gray-400 hover:text-gray-300'}`} style={meshConfigSubTab === 'external' ? {backgroundColor: '#10B981', color: '#FFFFFF', border: '1px solid #059669'} : {}}>
+                <Icon name="external-link" size={16} className={meshConfigSubTab === 'external' ? 'text-white' : ''} />External Services
+                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${meshConfigSubTab === 'external' ? 'bg-white/25 text-white' : 'bg-gray-700 text-gray-300'}`}>{meshStats.serviceEntries}</span>
               </button>
             </div>
           </div>
@@ -3386,13 +3386,13 @@
                 <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
               ) : (
                 <div key={cat.id} className="flex items-center gap-1">
-                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'border border-amber-500/30' : 'text-gray-400 hover:bg-gray-800'}`} style={dadFilter === cat.id ? {backgroundColor: featureFlags.darkMode ? 'rgba(245,158,11,0.2)' : 'rgba(245,158,11,0.25)', color: featureFlags.darkMode ? '#fcd34d' : '#92400E'} : {}}>
-                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? (featureFlags.darkMode ? 'text-amber-300' : 'text-amber-700') : ''} />
+                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'border border-amber-500/50' : 'text-gray-400 hover:bg-gray-800'}`} style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.25)', color: '#FFFFFF'} : {}}>
+                    <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? 'text-white' : ''} />
                     <div className="flex flex-col items-center">
                       <span>{cat.id}</span>
-                      {cat.sublabel && <span className="text-sm text-gray-400">{cat.sublabel}</span>}
+                      {cat.sublabel && <span className={`text-sm ${dadFilter === cat.id ? 'text-white/70' : 'text-gray-400'}`}>{cat.sublabel}</span>}
                     </div>
-                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium" style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.3)', color: '#fde68a'} : {backgroundColor: 'rgb(55,65,81)', color: '#d1d5db'}}>{cat.count}</span>
+                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium" style={dadFilter === cat.id ? {backgroundColor: 'rgba(245,158,11,0.4)', color: '#FFFFFF'} : {backgroundColor: 'rgb(55,65,81)', color: '#d1d5db'}}>{cat.count}</span>
                   </button>
                   <button className="p-1 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'resource', id: cat.id, name: cat.id + (cat.sublabel ? ' ' + cat.sublabel : ''), desc: resourceTypeInfo[cat.id].desc, example: resourceTypeInfo[cat.id].example })}><Icon name="help-circle" size={14} /></button>
                 </div>
@@ -3447,53 +3447,53 @@
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Resource Details Column */}
                         <div className="bg-gray-800/70 rounded-lg p-3">
-                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name={typeConfig.icon} size={14} className={`text-${typeConfig.color}-400`} />Details</div>
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name={typeConfig.icon} size={16} className={`text-${typeConfig.color}-400`} />Details</div>
                           {r.type === 'virtualservice' && (
-                            <div className="space-y-2 text-sm">
-                              <div><span className="text-gray-500 font-semibold">Host:</span> <span className="text-gray-300">{r.host}</span></div>
-                              <div><span className="text-gray-500 font-semibold">Routes:</span> <span className="text-gray-300">{r.routes}</span></div>
-                              <div><span className="text-gray-500 font-semibold">Gateway:</span> <span className="text-gray-300">{r.gateway || 'mesh'}</span></div>
+                            <div className="space-y-2 text-base">
+                              <div><span className="text-gray-400 font-semibold">Host:</span> <span className="text-gray-200">{r.host}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Routes:</span> <span className="text-gray-200">{r.routes}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Gateway:</span> <span className="text-gray-200">{r.gateway || 'mesh'}</span></div>
                             </div>
                           )}
                           {['ingress', 'egress', 'eastwest'].includes(r.type) && (
-                            <div className="space-y-2 text-sm">
-                              <div><span className="text-gray-500 font-semibold">Hosts:</span></div>
-                              {r.hosts?.map((h, i) => <div key={i} className="text-gray-300 bg-gray-700/30 px-2 py-1 rounded">{h}</div>)}
-                              <div><span className="text-gray-500 font-semibold">TLS:</span> <span className="text-gray-300">{r.tls}</span></div>
-                              <div><span className="text-gray-500 font-semibold">Port:</span> <span className="text-gray-300">{r.port}</span></div>
+                            <div className="space-y-2 text-base">
+                              <div><span className="text-gray-400 font-semibold">Hosts:</span></div>
+                              {r.hosts?.map((h, i) => <div key={i} className="text-gray-200 bg-gray-700/30 px-2 py-1 rounded">{h}</div>)}
+                              <div><span className="text-gray-400 font-semibold">TLS:</span> <span className="text-gray-200">{r.tls}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Port:</span> <span className="text-gray-200">{r.port}</span></div>
                             </div>
                           )}
                         </div>
                         {/* Destination Rule Column */}
                         <div className="bg-gray-800/70 rounded-lg p-3">
-                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={14} className="text-violet-400" />Destination Rule</div>
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={16} className="text-violet-400" />Destination Rule</div>
                           {relatedDR ? (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-300">{relatedDR.name}</span>
+                                <span className="text-base text-gray-200">{relatedDR.name}</span>
                                 <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="p-1 hover:bg-violet-500/20 rounded text-gray-500 hover:text-violet-400"><Icon name="edit" size={14} /></button>
                               </div>
-                              <div className="text-sm text-gray-500 space-y-1">
-                                <div><span className="font-semibold">LB:</span> <span className="text-gray-400">{relatedDR.trafficPolicy}</span></div>
-                                <div><span className="font-semibold">mTLS:</span> <span className="text-gray-400">{relatedDR.mtls}</span></div>
+                              <div className="text-base text-gray-400 space-y-1">
+                                <div><span className="font-semibold">LB:</span> <span className="text-gray-200">{relatedDR.trafficPolicy}</span></div>
+                                <div><span className="font-semibold">mTLS:</span> <span className="text-gray-200">{relatedDR.mtls}</span></div>
                                 {relatedDR.circuitBreaker && <div className="text-amber-400 font-semibold">Circuit Breaker Enabled</div>}
-                                {relatedDR.subsets && <div><span className="font-semibold">Subsets:</span> <span className="text-amber-400">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
+                                {relatedDR.subsets && <div><span className="font-semibold">Subsets:</span> <span className="text-amber-300">{relatedDR.subsets.map(s => s.name).join(', ')}</span></div>}
                               </div>
                             </div>
                           ) : (
                             <div className="text-center py-2">
-                              <span className="text-sm text-gray-600">No destination rule</span>
-                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-sm text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={14} className="inline mr-1" />Add DR</button>
+                              <span className="text-base text-gray-600">No destination rule</span>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="block mt-2 text-base text-violet-400 hover:text-violet-300 mx-auto"><Icon name="plus" size={14} className="inline mr-1" />Add DR</button>
                             </div>
                           )}
                         </div>
                         {/* Metadata Column */}
                         <div className="bg-gray-800/70 rounded-lg p-3">
-                          <div className="text-sm text-gray-300 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="info" size={14} className="text-gray-400" />Metadata</div>
-                          <div className="space-y-2 text-sm">
-                            <div><span className="text-gray-500 font-semibold">Owner:</span> <span className="text-gray-300">{r.owner}</span></div>
-                            <div><span className="text-gray-500 font-semibold">BU:</span> <span className="text-gray-300">{r.bu}</span></div>
-                            <div><span className="text-gray-500 font-semibold">Created:</span> <span className="text-gray-300">{r.created}</span></div>
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="info" size={16} className="text-gray-400" />Metadata</div>
+                          <div className="space-y-2 text-base">
+                            <div><span className="text-gray-400 font-semibold">Owner:</span> <span className="text-gray-200">{r.owner}</span></div>
+                            <div><span className="text-gray-400 font-semibold">BU:</span> <span className="text-gray-200">{r.bu}</span></div>
+                            <div><span className="text-gray-400 font-semibold">Created:</span> <span className="text-gray-200">{r.created}</span></div>
                           </div>
                         </div>
                       </div>
