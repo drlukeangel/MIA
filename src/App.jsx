@@ -499,10 +499,29 @@ import React, { useState } from 'react';
       { id: 42, name: 'claims-processor', type: 'service', namespace: 'mf-claims', status: 'healthy', host: 'claims-processor.mf-claims.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-02-15' },
       { id: 43, name: 'mf-loan-service', type: 'service', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service.mf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-20' },
       // Virtual Services (traffic routing) - host is external, targetService is internal service
-      { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'sf-loans', status: 'healthy', host: 'api.sf-loans.fm.com', targetService: 'loan-service', gateway: 'sf-loans-gw-ingress', routes: 12, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-16' },
-      { id: 7, name: 'user-api-vs', type: 'virtualservice', namespace: 'eot-platform', status: 'healthy', host: 'api.platform.fm.com', targetService: 'user-service', gateway: 'platform-gw-ingress', routes: 8, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-21' },
-      { id: 8, name: 'payment-vs', type: 'virtualservice', namespace: 'eot-integrations', status: 'healthy', host: 'api.payments.fm.com', targetService: 'payment-gateway', gateway: 'integrations-gw-ingress', routes: 15, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-11' },
-      { id: 9, name: 'public-api-vs', type: 'virtualservice', namespace: 'istio-system', status: 'healthy', host: 'api.freddiemac.com', targetService: 'loan-service', gateway: 'public-gw-ingress', routes: 45, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
+      { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'sf-loans', status: 'healthy', host: 'api.sf-loans.fm.com', targetService: 'loan-service', gateway: 'sf-loans-gw-ingress', timeout: '30s', retries: { attempts: 3, perTryTimeout: '10s', retryOn: '5xx,reset' }, httpRoutes: [
+        { match: { uri: { prefix: '/api/v1/loans' } }, destination: { host: 'loan-service', port: 8080 }, rewrite: { uri: '/loans' } },
+        { match: { uri: { prefix: '/api/v1/applications' } }, destination: { host: 'loan-service', port: 8080 }, rewrite: { uri: '/applications' } },
+        { match: { uri: { prefix: '/api/v1/documents' } }, destination: { host: 'document-service', port: 8080 } },
+        { match: { uri: { prefix: '/health' } }, destination: { host: 'loan-service', port: 8080 } }
+      ], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-16' },
+      { id: 7, name: 'user-api-vs', type: 'virtualservice', namespace: 'eot-platform', status: 'healthy', host: 'api.platform.fm.com', targetService: 'user-service', gateway: 'platform-gw-ingress', timeout: '15s', retries: { attempts: 2, perTryTimeout: '5s', retryOn: '5xx' }, httpRoutes: [
+        { match: { uri: { prefix: '/api/users' } }, destination: { host: 'user-service', port: 8080 } },
+        { match: { uri: { prefix: '/api/auth' } }, destination: { host: 'auth-service', port: 8080 } },
+        { match: { uri: { prefix: '/api/roles' } }, destination: { host: 'user-service', port: 8080 } }
+      ], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-21' },
+      { id: 8, name: 'payment-vs', type: 'virtualservice', namespace: 'eot-integrations', status: 'healthy', host: 'api.payments.fm.com', targetService: 'payment-gateway', gateway: 'integrations-gw-ingress', timeout: '60s', httpRoutes: [
+        { match: { uri: { prefix: '/v1/payments' } }, destination: { host: 'payment-gateway', port: 8080 } },
+        { match: { uri: { prefix: '/v1/transactions' } }, destination: { host: 'payment-gateway', port: 8080 } },
+        { match: { uri: { prefix: '/v1/refunds' } }, destination: { host: 'payment-gateway', port: 8080 } },
+        { match: { uri: { prefix: '/webhooks' } }, destination: { host: 'webhook-handler', port: 8080 } }
+      ], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-11' },
+      { id: 9, name: 'public-api-vs', type: 'virtualservice', namespace: 'istio-system', status: 'healthy', host: 'api.freddiemac.com', targetService: 'api-gateway', gateway: 'public-gw-ingress', timeout: '30s', retries: { attempts: 3, perTryTimeout: '10s', retryOn: '5xx,reset,connect-failure' }, httpRoutes: [
+        { match: { uri: { prefix: '/v1/loans' } }, destination: { host: 'loan-service', port: 8080 } },
+        { match: { uri: { prefix: '/v1/rates' } }, destination: { host: 'rates-service', port: 8080 } },
+        { match: { uri: { prefix: '/v1/eligibility' } }, destination: { host: 'eligibility-service', port: 8080 } },
+        { match: { uri: { prefix: '/v2' } }, destination: { host: 'api-gateway-v2', port: 8080 }, rewrite: { uri: '/api' } }
+      ], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
       // Ingress Gateways (external traffic entry)
       { id: 10, name: 'public-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.freddiemac.com', 'portal.freddiemac.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-05' },
       { id: 11, name: 'sf-loans-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.sf-loans.fm.com'], tls: 'SIMPLE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-10' },
@@ -2843,10 +2862,21 @@ import React, { useState } from 'react';
                         <div className="bg-gray-800/70 rounded-lg p-3">
                           <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name={typeConfig.icon} size={16} className={`text-${typeConfig.color}-400`} />Details</div>
                           {r.type === 'virtualservice' && (
-                            <div className="space-y-2 text-base">
-                              <div><span className="text-gray-400 font-semibold">Host:</span> <span className="text-gray-200">{r.host}</span></div>
-                              <div><span className="text-gray-400 font-semibold">Routes:</span> <span className="text-gray-200">{r.routes}</span></div>
-                              <div><span className="text-gray-400 font-semibold">Gateway:</span> <span className="text-gray-200">{r.gateway || 'mesh'}</span></div>
+                            <div className="space-y-2 text-sm">
+                              <div><span className="text-gray-400 font-semibold">Host:</span> <code className="text-cyan-300 ml-1">{r.host}</code></div>
+                              <div><span className="text-gray-400 font-semibold">Target:</span> <span className="text-gray-200 ml-1">{r.targetService}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Gateway:</span> <span className="text-emerald-300 ml-1">{r.gateway || 'mesh'}</span></div>
+                              <div><span className="text-gray-400 font-semibold">Routes:</span> <span className="text-amber-300 ml-1">{r.httpRoutes?.length || r.routes || 0}</span></div>
+                              {r.timeout && <div><span className="text-gray-400 font-semibold">Timeout:</span> <span className="text-gray-200 ml-1">{r.timeout}</span></div>}
+                              {r.retries && <div><span className="text-gray-400 font-semibold">Retries:</span> <span className="text-gray-200 ml-1">{r.retries.attempts}x</span></div>}
+                              {(r.httpRoutes || []).slice(0, 3).map((route, i) => (
+                                <div key={i} className="flex items-center gap-1 text-xs bg-gray-700/30 px-2 py-1 rounded">
+                                  <code className="text-cyan-400">{route.match?.uri?.prefix || route.match?.uri?.exact || '/'}</code>
+                                  <Icon name="arrow-right" size={10} className="text-gray-500" />
+                                  <span className="text-gray-300">{route.destination?.host}</span>
+                                  {route.rewrite && <span className="text-amber-400 ml-1">→ {route.rewrite.uri}</span>}
+                                </div>
+                              ))}
                             </div>
                           )}
                           {['ingress', 'egress', 'eastwest'].includes(r.type) && (
@@ -2893,7 +2923,7 @@ import React, { useState } from 'react';
                       </div>
                       {/* Actions Row */}
                       <div className="mt-3 pt-3 flex items-center gap-3">
-                        <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(r); setShowServiceEditor(true); }} className="text-base font-semibold text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit</button>
+                        <button onClick={(e) => { e.stopPropagation(); if (r.type === 'virtualservice') { setEditingVirtualService({...r, routes: r.routes || []}); } else { setServiceEditorResource(r); setShowServiceEditor(true); } }} className="text-base font-semibold text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit</button>
                         {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm font-semibold text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />DR</button>}
                       </div>
                     </div>
@@ -4549,35 +4579,17 @@ import React, { useState } from 'react';
           {/* Edit Virtual Service Modal */}
           {editingVirtualService && (() => {
             const vs = editingVirtualService;
-            const luaFilters = [
-              { name: 'custom-cors', label: 'CORS', color: 'amber', position: 1 },
-              { name: 'path-rewriter', label: 'Rewrite', color: 'amber', position: 2 },
-              { name: 'tenant-router', label: 'Router', color: 'amber', position: 4 }
+            const mockRoutes = vs.httpRoutes || [
+              { id: 1, match: { uri: { prefix: '/api/v1' } }, rewrite: { uri: '/v1' }, destination: { host: vs.targetService || 'backend-service', port: 8080, weight: 100 }, timeout: '30s', retries: { attempts: 3, perTryTimeout: '10s', retryOn: '5xx,reset' } },
+              { id: 2, match: { uri: { prefix: '/auth' }, headers: { 'x-api-key': { exact: '*' } } }, destination: { host: 'auth-service', port: 8080, weight: 100 }, timeout: '10s' },
+              { id: 3, match: { uri: { prefix: '/' } }, destination: { host: 'frontend', port: 80, weight: 100 } }
             ];
-            const wasmFilters = [
-              { name: 'jwt-validator', label: 'AuthN', color: 'emerald', position: 1 },
-              { name: 'header-augmenter', label: 'Headers', color: 'violet', position: 2 },
-              { name: 'rate-limiter', label: 'Rate Limit', color: 'cyan', position: 3 },
-              { name: 'header-repairer', label: 'Repair', color: 'amber', position: 4 },
-              { name: 'canary-router', label: 'Canary', color: 'teal', position: 5 },
-              { name: 'audit-logger', label: 'Audit', color: 'cyan', position: 6 }
-            ];
-            const unifiedChain = [
-              { name: 'jwt-validator', label: 'AuthN', type: 'wasm', color: 'emerald' },
-              { name: 'header-augmenter', label: 'Headers', type: 'wasm', color: 'violet' },
-              { name: 'rate-limiter', label: 'Rate Limit', type: 'wasm', color: 'cyan' },
-              { name: 'header-repairer', label: 'Repair', type: 'wasm', color: 'amber' },
-              { name: 'custom-cors', label: 'CORS', type: 'lua', color: 'amber' },
-              { name: 'path-rewriter', label: 'Rewrite', type: 'lua', color: 'amber' },
-              { name: 'canary-router', label: 'Canary', type: 'wasm', color: 'teal' },
-              { name: 'tenant-router', label: 'Router', type: 'lua', color: 'amber' },
-              { name: 'audit-logger', label: 'Audit', type: 'wasm', color: 'cyan' },
-              { name: 'router', label: 'Terminal', type: 'envoy', color: 'gray' }
-            ];
+            const [selectedRoute, setSelectedRouteLocal] = React.useState(null);
+            const [localRoutes, setLocalRoutes] = React.useState(mockRoutes);
             return (
               <div className="fixed inset-0 z-50 flex items-center justify-center">
                 <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setEditingVirtualService(null)} />
-                <div className="relative w-[800px] max-h-[90vh] bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                <div className="relative w-[950px] max-h-[90vh] bg-gray-900 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
                   {/* Header */}
                   <div className="bg-violet-500/10 border-b border-violet-500/30 p-5">
                     <div className="flex items-center justify-between">
@@ -4586,7 +4598,7 @@ import React, { useState } from 'react';
                           <Icon name="git-branch" size={24} />
                         </div>
                         <div>
-                          <h2 className="text-xl font-semibold text-violet-300">Filter Chain: {vs.name}</h2>
+                          <h2 className="text-xl font-semibold text-violet-300">VirtualService: {vs.name}</h2>
                           <div className="flex items-center gap-2 mt-1 text-sm">
                             <span className="text-gray-400">Host:</span>
                             <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 rounded text-sm font-medium">{vs.host}</span>
@@ -4602,301 +4614,214 @@ import React, { useState } from 'react';
                     </div>
                   </div>
 
-                  {/* Tabs */}
-                  <div className="flex border-b border-gray-700">
-                    {[
-                      { id: 'details', label: 'Details', icon: 'settings' },
-                      { id: 'unified', label: 'Unified Chain', icon: 'layers', count: unifiedChain.length - 1 },
-                      { id: 'lua', label: 'Lua Filters', icon: 'code', count: luaFilters.length },
-                      { id: 'wasm', label: 'WASM Plugins', icon: 'cpu', count: wasmFilters.length }
-                    ].map(tab => (
-                      <button key={tab.id} onClick={() => setVsFilterTab(tab.id)} className={`flex-1 px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 ${vsFilterTab === tab.id ? 'text-violet-400 border-b-2 border-violet-400 bg-violet-500/5' : 'text-gray-400 hover:text-gray-200'}`}>
-                        <Icon name={tab.icon} size={16} />
-                        {tab.label}
-                        {tab.count !== undefined && <span className={`px-1.5 py-0.5 rounded text-sm ${vsFilterTab === tab.id ? 'bg-violet-500/20 text-violet-300' : 'bg-gray-700 text-gray-400'}`}>{tab.count}</span>}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 overflow-auto p-6 space-y-6">
-                    {/* Details Tab */}
-                    {vsFilterTab === 'details' && (
-                      <div className="space-y-6">
-                        {/* Basic Info */}
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Icon name="info" size={16} className="text-violet-400" />
-                            <span className="text-sm font-medium text-gray-300">Basic Information</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm text-gray-400 mb-1 block">Name</label>
-                              <input type="text" defaultValue={vs.name} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
-                            </div>
-                            <div>
-                              <label className="text-sm text-gray-400 mb-1 block">Namespace</label>
-                              <select defaultValue={vs.namespace} onChange={e => setEditingVirtualService({...vs, namespace: e.target.value})} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none">
-                                {namespaces.map(ns => <option key={ns.id} value={ns.name}>{ns.name}</option>)}
-                              </select>
-                            </div>
-                            <div>
-                              <label className="text-sm text-gray-400 mb-1 block">Host</label>
-                              <input type="text" defaultValue={vs.host} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
-                            </div>
-                            <div>
-                              <label className="text-sm text-gray-400 mb-1 block">Gateway</label>
-                              <input type="text" defaultValue={vs.gateway} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-violet-500 focus:outline-none" />
-                            </div>
-                          </div>
+                  {/* Content - Two Column Layout */}
+                  <div className="flex-1 flex overflow-hidden">
+                    {/* Left Column - Routes List */}
+                    <div className="w-80 border-r border-gray-700 flex flex-col">
+                      <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Icon name="git-branch" size={16} className="text-cyan-400" />
+                          <span className="text-sm font-medium text-gray-300">HTTP Routes</span>
+                          <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-xs">{localRoutes.length}</span>
                         </div>
-
-                        {/* Routing */}
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                              <Icon name="git-branch" size={16} className="text-cyan-400" />
-                              <span className="text-sm font-medium text-gray-300">Routes</span>
-                              <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-sm">{vs.routes || 3}</span>
-                            </div>
-                            <button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
-                              <Icon name="plus" size={12} />Add Route
-                            </button>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
-                              <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono text-gray-500">1</span>
-                                <code className="text-sm text-cyan-300">/api/*</code>
-                                <Icon name="arrow-right" size={14} className="text-gray-600" />
-                                <span className="text-sm text-gray-300">api-service:8080</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
-                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
-                              <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono text-gray-500">2</span>
-                                <code className="text-sm text-cyan-300">/auth/*</code>
-                                <Icon name="arrow-right" size={14} className="text-gray-600" />
-                                <span className="text-sm text-gray-300">auth-service:8080</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
-                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
-                              <div className="flex items-center gap-3">
-                                <span className="text-xs font-mono text-gray-500">3</span>
-                                <code className="text-sm text-cyan-300">/*</code>
-                                <Icon name="arrow-right" size={14} className="text-gray-600" />
-                                <span className="text-sm text-gray-300">frontend:80</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <button className="p-1 hover:bg-gray-700 rounded text-gray-500 hover:text-white"><Icon name="edit" size={12} /></button>
-                                <button className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Metadata */}
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Icon name="tag" size={16} className="text-amber-400" />
-                            <span className="text-sm font-medium text-gray-300">Labels & Annotations</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="text-sm text-gray-400 mb-2 block">Labels</label>
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <input type="text" defaultValue="app" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
-                                  <span className="text-gray-600">=</span>
-                                  <input type="text" defaultValue={vs.name} className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
-                                  <button className="p-1 text-gray-500 hover:text-red-400"><Icon name="x" size={14} /></button>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <input type="text" defaultValue="version" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
-                                  <span className="text-gray-600">=</span>
-                                  <input type="text" defaultValue="v1" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-sm text-gray-300 focus:border-violet-500 focus:outline-none" />
-                                  <button className="p-1 text-gray-500 hover:text-red-400"><Icon name="x" size={14} /></button>
-                                </div>
-                                <button className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 mt-1">
-                                  <Icon name="plus" size={12} />Add Label
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <button onClick={() => { const newRoute = { id: Date.now(), match: { uri: { prefix: '/new' } }, destination: { host: 'service', port: 8080, weight: 100 } }; setLocalRoutes([...localRoutes, newRoute]); setSelectedRouteLocal(newRoute); }} className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 px-2 py-1 hover:bg-cyan-500/10 rounded">
+                          <Icon name="plus" size={12} />Add
+                        </button>
                       </div>
-                    )}
-
-                    {/* Unified Tab */}
-                    {vsFilterTab === 'unified' && (
-                      <>
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
-                            <Icon name="git-branch" size={16} className="text-violet-400" />
-                            <span>Complete Filter Chain for {vs.host}</span>
+                      <div className="flex-1 overflow-auto p-2 space-y-1">
+                        {localRoutes.map((route, i) => (
+                          <div key={route.id} onClick={() => setSelectedRouteLocal(route)} className={`p-3 rounded-lg cursor-pointer border ${selectedRoute?.id === route.id ? 'bg-violet-500/20 border-violet-500/50' : 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-800'}`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-mono text-gray-500">Route {i + 1}</span>
+                              <button onClick={(e) => { e.stopPropagation(); setLocalRoutes(localRoutes.filter(r => r.id !== route.id)); if (selectedRoute?.id === route.id) setSelectedRouteLocal(null); }} className="p-1 hover:bg-red-500/20 rounded text-gray-500 hover:text-red-400"><Icon name="trash-2" size={12} /></button>
+                            </div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <code className="text-sm text-cyan-300">{route.match?.uri?.prefix || route.match?.uri?.exact || '/*'}</code>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-gray-400">
+                              <Icon name="arrow-right" size={10} />
+                              <span>{route.destination?.host}:{route.destination?.port}</span>
+                              {route.destination?.weight < 100 && <span className="text-amber-400 ml-1">{route.destination.weight}%</span>}
+                            </div>
+                            {(route.rewrite || route.timeout || route.retries) && (
+                              <div className="flex gap-1 mt-2">
+                                {route.rewrite && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded text-xs">Rewrite</span>}
+                                {route.timeout && <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded text-xs">Timeout</span>}
+                                {route.retries && <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs">Retry</span>}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                            {unifiedChain.map((f, i) => (
-                              <React.Fragment key={i}>
-                                <div className={`px-3 py-2 rounded-lg border-2 text-center min-w-[90px] flex-shrink-0 ${f.type === 'envoy' ? 'bg-gray-800 border-gray-600 text-gray-400' : `bg-${f.color}-500/20 border-${f.color}-500/50 text-${f.color}-300`}`}>
-                                  <div className="font-mono text-xs">{f.name}</div>
-                                  <div className="text-xs mt-1 opacity-70 flex items-center justify-center gap-1">
-                                    {f.type === 'lua' && <Icon name="code" size={10} />}
-                                    {f.type === 'wasm' && <Icon name="cpu" size={10} />}
-                                    {f.label}
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Right Column - Route Details */}
+                    <div className="flex-1 overflow-auto p-6">
+                      {!selectedRoute ? (
+                        <div className="h-full flex items-center justify-center text-gray-500">
+                          <div className="text-center">
+                            <Icon name="git-branch" size={48} className="mx-auto mb-3 opacity-30" />
+                            <div className="text-sm">Select a route to configure</div>
+                            <div className="text-xs text-gray-600 mt-1">Or add a new route</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-5">
+                          {/* Match Conditions */}
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Icon name="filter" size={16} className="text-cyan-400" />
+                              <span className="text-sm font-medium text-gray-300">Match Conditions</span>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">URI Match</label>
+                                <div className="flex gap-2">
+                                  <select defaultValue={selectedRoute.match?.uri?.prefix ? 'prefix' : selectedRoute.match?.uri?.exact ? 'exact' : 'regex'} className="w-24 px-2 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none">
+                                    <option value="prefix">Prefix</option>
+                                    <option value="exact">Exact</option>
+                                    <option value="regex">Regex</option>
+                                  </select>
+                                  <input type="text" defaultValue={selectedRoute.match?.uri?.prefix || selectedRoute.match?.uri?.exact || ''} placeholder="/api/v1" className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Header Match (optional)</label>
+                                <div className="flex gap-2">
+                                  <input type="text" placeholder="x-api-key" className="w-32 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                                  <select className="w-20 px-2 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none">
+                                    <option value="exact">exact</option>
+                                    <option value="prefix">prefix</option>
+                                    <option value="regex">regex</option>
+                                  </select>
+                                  <input type="text" placeholder="value" className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Destination */}
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Icon name="server" size={16} className="text-emerald-400" />
+                              <span className="text-sm font-medium text-gray-300">Destination</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="col-span-2">
+                                <label className="text-xs text-gray-400 mb-1 block">Host</label>
+                                <input type="text" defaultValue={selectedRoute.destination?.host} placeholder="backend-service" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Port</label>
+                                <input type="number" defaultValue={selectedRoute.destination?.port || 8080} className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Weight %</label>
+                                <input type="number" defaultValue={selectedRoute.destination?.weight || 100} min="0" max="100" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none" />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="text-xs text-gray-400 mb-1 block">Subset (optional)</label>
+                                <input type="text" placeholder="stable, canary" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Rewrite Rules */}
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Icon name="edit-3" size={16} className="text-amber-400" />
+                              <span className="text-sm font-medium text-gray-300">Rewrite Rules</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">URI Rewrite</label>
+                                <input type="text" defaultValue={selectedRoute.rewrite?.uri || ''} placeholder="/v1 (rewrites matched prefix)" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Authority (Host header)</label>
+                                <input type="text" defaultValue={selectedRoute.rewrite?.authority || ''} placeholder="internal.svc.local" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Headers */}
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-2">
+                                <Icon name="list" size={16} className="text-violet-400" />
+                                <span className="text-sm font-medium text-gray-300">Header Manipulation</span>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-xs text-gray-400 mb-2 block">Request Headers</label>
+                                <div className="space-y-2">
+                                  <div className="flex gap-2 items-center">
+                                    <span className="text-xs text-emerald-400 w-8">Add</span>
+                                    <input type="text" placeholder="X-Custom" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
+                                    <input type="text" placeholder="value" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
+                                  </div>
+                                  <div className="flex gap-2 items-center">
+                                    <span className="text-xs text-red-400 w-8">Del</span>
+                                    <input type="text" placeholder="X-Remove" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
                                   </div>
                                 </div>
-                                {i < unifiedChain.length - 1 && (
-                                  <Icon name="chevron-right" size={16} className="text-gray-600 flex-shrink-0" />
-                                )}
-                              </React.Fragment>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-3"><Icon name="code" size={16} />Lua Filters ({luaFilters.length})</div>
-                            {luaFilters.map((f, i) => (
-                              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0">
-                                <span className="text-sm text-gray-300">{f.name}</span>
-                                <span className="text-sm text-gray-400">Position {f.position}</span>
                               </div>
-                            ))}
-                          </div>
-                          <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-cyan-400 text-sm font-medium mb-3"><Icon name="cpu" size={16} />WASM Plugins ({wasmFilters.length})</div>
-                            {wasmFilters.map((f, i) => (
-                              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-700/50 last:border-0">
-                                <span className="text-sm text-gray-300">{f.name}</span>
-                                <span className="text-sm text-gray-400">Position {f.position}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Lua Tab */}
-                    {vsFilterTab === 'lua' && (
-                      <>
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
-                            <Icon name="code" size={16} className="text-amber-400" />
-                            <span>Lua Filter Chain</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {luaFilters.map((f, i) => (
-                              <React.Fragment key={i}>
-                                <div className="px-4 py-3 rounded-lg border-2 bg-amber-500/20 border-amber-500/50 text-amber-300 text-center min-w-[100px]">
-                                  <div className="font-mono text-sm">{f.name}</div>
-                                  <div className="text-xs mt-1 opacity-70">{f.label}</div>
-                                </div>
-                                {i < luaFilters.length - 1 && <Icon name="chevron-right" size={20} className="text-gray-600" />}
-                              </React.Fragment>
-                            ))}
-                            <Icon name="chevron-right" size={20} className="text-gray-600" />
-                            <div className="px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-600 text-gray-400 text-center min-w-[100px]">
-                              <div className="font-mono text-sm">router</div>
-                              <div className="text-xs mt-1 opacity-70">Terminal</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          {luaFilters.map((f, i) => (
-                            <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/20 text-amber-400"><Icon name="code" size={16} /></div>
-                                  <div>
-                                    <div className="font-medium text-amber-300">{f.name}</div>
-                                    <div className="text-sm text-gray-400">Position {f.position} • Lua Script</div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-2 block">Response Headers</label>
+                                <div className="space-y-2">
+                                  <div className="flex gap-2 items-center">
+                                    <span className="text-xs text-emerald-400 w-8">Add</span>
+                                    <input type="text" placeholder="X-Response" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
+                                    <input type="text" placeholder="value" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
+                                  </div>
+                                  <div className="flex gap-2 items-center">
+                                    <span className="text-xs text-red-400 w-8">Del</span>
+                                    <input type="text" placeholder="X-Remove" className="flex-1 px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs text-white font-mono" />
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <button className="p-1.5 hover:bg-amber-500/20 rounded text-gray-400 hover:text-amber-400"><Icon name="edit" size={14} /></button>
-                                  <button className="p-1.5 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash-2" size={14} /></button>
-                                </div>
-                              </div>
-                              <div className="bg-gray-900 rounded p-3 font-mono text-sm text-gray-400 max-h-20 overflow-auto">
-                                function envoy_on_request(handle)<br/>  -- {f.label} logic<br/>end
                               </div>
                             </div>
-                          ))}
-                          <button className="w-full p-3 border-2 border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-amber-400 hover:border-amber-500/50 flex items-center justify-center gap-2">
-                            <Icon name="plus" size={16} />Add Lua Filter
-                          </button>
-                        </div>
-                      </>
-                    )}
+                          </div>
 
-                    {/* WASM Tab */}
-                    {vsFilterTab === 'wasm' && (
-                      <>
-                        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
-                          <div className="flex items-center gap-2 mb-4 text-sm text-gray-400">
-                            <Icon name="cpu" size={16} className="text-cyan-400" />
-                            <span>WASM Plugin Chain</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {wasmFilters.map((f, i) => (
-                              <React.Fragment key={i}>
-                                <div className={`px-4 py-3 rounded-lg border-2 bg-${f.color}-500/20 border-${f.color}-500/50 text-${f.color}-300 text-center min-w-[100px]`}>
-                                  <div className="font-mono text-sm">{f.name}</div>
-                                  <div className="text-xs mt-1 opacity-70">{f.label}</div>
-                                </div>
-                                {i < wasmFilters.length - 1 && <Icon name="chevron-right" size={20} className="text-gray-600" />}
-                              </React.Fragment>
-                            ))}
-                            <Icon name="chevron-right" size={20} className="text-gray-600" />
-                            <div className="px-4 py-3 rounded-lg border-2 bg-gray-800 border-gray-600 text-gray-400 text-center min-w-[100px]">
-                              <div className="font-mono text-sm">router</div>
-                              <div className="text-xs mt-1 opacity-70">Terminal</div>
+                          {/* Timeout & Retries */}
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Icon name="clock" size={16} className="text-blue-400" />
+                              <span className="text-sm font-medium text-gray-300">Timeout & Retries</span>
                             </div>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          {wasmFilters.map((f, i) => (
-                            <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${f.color}-500/20 text-${f.color}-400`}><Icon name="cpu" size={16} /></div>
-                                  <div>
-                                    <div className={`font-medium text-${f.color}-300`}>{f.name}</div>
-                                    <div className="text-sm text-gray-400">Position {f.position} • OCI Image</div>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className={`px-2 py-1 rounded text-sm bg-${f.color}-500/20 text-${f.color}-300`}>{f.label}</span>
-                                  <button className="p-1.5 hover:bg-cyan-500/20 rounded text-gray-400 hover:text-cyan-400"><Icon name="edit" size={14} /></button>
-                                  <button className="p-1.5 hover:bg-red-500/20 rounded text-gray-400 hover:text-red-400"><Icon name="trash-2" size={14} /></button>
-                                </div>
+                            <div className="grid grid-cols-4 gap-3">
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Timeout</label>
+                                <input type="text" defaultValue={selectedRoute.timeout || ''} placeholder="30s" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Retry Attempts</label>
+                                <input type="number" defaultValue={selectedRoute.retries?.attempts || ''} placeholder="3" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Per Try Timeout</label>
+                                <input type="text" defaultValue={selectedRoute.retries?.perTryTimeout || ''} placeholder="10s" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-400 mb-1 block">Retry On</label>
+                                <input type="text" defaultValue={selectedRoute.retries?.retryOn || ''} placeholder="5xx,reset" className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white focus:border-violet-500 focus:outline-none font-mono" />
                               </div>
                             </div>
-                          ))}
-                          <button className="w-full p-3 border-2 border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-cyan-400 hover:border-cyan-500/50 flex items-center justify-center gap-2">
-                            <Icon name="plus" size={16} />Add WASM Plugin
-                          </button>
+                          </div>
                         </div>
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
 
                   {/* Footer */}
                   <div className="border-t border-gray-700 p-4 bg-gray-800/50 flex items-center justify-between">
                     <button onClick={() => setEditingVirtualService(null)} className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg">Cancel</button>
                     <div className="flex gap-2">
-                      <button onClick={() => showNotification(`Validating filter chain...`)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center gap-2">
-                        <Icon name="check-circle" size={16} />Validate Chain
+                      <button onClick={() => showNotification(`Validating VirtualService...`)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center gap-2">
+                        <Icon name="check-circle" size={16} />Validate
                       </button>
-                      <button onClick={() => { showNotification(`Filter chain for ${vs.name} updated successfully!`, 'success'); setEditingVirtualService(null); }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg flex items-center gap-2 font-medium">
+                      <button onClick={() => { showNotification(`VirtualService ${vs.name} updated successfully!`, 'success'); setEditingVirtualService(null); }} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg flex items-center gap-2 font-medium">
                         <Icon name="save" size={16} />Save Changes
                       </button>
                     </div>
