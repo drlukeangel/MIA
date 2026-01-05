@@ -8311,11 +8311,55 @@ import React, { useState } from 'react';
                         {selectedFilterNode.name === 'Retry' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Max Retries</label><input type="number" defaultValue="3" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Retry On</label><input type="text" defaultValue="5xx" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
                         {selectedFilterNode.name === 'CORS' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Allowed Origins</label><input type="text" defaultValue="*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Methods</label><input type="text" defaultValue="GET,POST,PUT" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
                         {selectedFilterNode.name === 'Compression' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Algorithm</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>gzip</option><option>br</option></select></div>)}
-                        {selectedFilterNode.name === 'Path Rewrite' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Match Prefix</label><input type="text" defaultValue="/api/v1" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Rewrite To</label><input type="text" defaultValue="/v1" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Path Rewrite' && (<>
+                          <div className="flex items-center justify-between mb-2"><label className="text-sm font-medium text-gray-300">Rewrite Rules</label><button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"><Icon name="plus" size={12} />Add Rule</button></div>
+                          <div className="space-y-3">
+                            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 space-y-2">
+                              <div className="flex items-center justify-between"><span className="text-xs text-gray-500">Rule 1</span><button className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={12} /></button></div>
+                              <div className="grid grid-cols-2 gap-2"><div><label className="text-xs text-gray-400 mb-1 block">Match</label><input type="text" defaultValue="/api/v1/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div><div><label className="text-xs text-gray-400 mb-1 block">Rewrite To</label><input type="text" defaultValue="/v1/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div></div>
+                            </div>
+                            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 space-y-2">
+                              <div className="flex items-center justify-between"><span className="text-xs text-gray-500">Rule 2</span><button className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={12} /></button></div>
+                              <div className="grid grid-cols-2 gap-2"><div><label className="text-xs text-gray-400 mb-1 block">Match</label><input type="text" defaultValue="/legacy/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div><div><label className="text-xs text-gray-400 mb-1 block">Rewrite To</label><input type="text" defaultValue="/api/v2/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div></div>
+                            </div>
+                          </div>
+                        </>)}
                         {selectedFilterNode.name === 'Access Log' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Format</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>JSON</option><option>TEXT</option></select></div>)}
                         {selectedFilterNode.name === 'mTLS' && (<div><label className="text-sm font-medium text-gray-300 block mb-2">Mode</label><select className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"><option>STRICT</option><option>PERMISSIVE</option></select></div>)}
                         {selectedFilterNode.name === 'OAuth2' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Token Endpoint</label><input type="text" defaultValue="https://auth.example.com/token" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Client ID</label><input type="text" defaultValue="my-client" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
-                        {selectedFilterNode.name === 'Headers' && (<><div><label className="text-sm font-medium text-gray-300 block mb-2">Add Header</label><input type="text" defaultValue="X-Custom: value" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Remove Header</label><input type="text" defaultValue="X-Remove" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>)}
+                        {selectedFilterNode.name === 'Headers' && (<>
+                          <div>
+                            <div className="flex items-center justify-between mb-2"><label className="text-sm font-medium text-gray-300">Add Headers</label><button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"><Icon name="plus" size={12} />Add</button></div>
+                            <div className="space-y-2">
+                              <div className="flex gap-2"><input type="text" defaultValue="X-Request-ID" placeholder="Header name" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /><input type="text" defaultValue="%REQ(x-request-id)%" placeholder="Value" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /><button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={14} /></button></div>
+                              <div className="flex gap-2"><input type="text" defaultValue="X-Forwarded-Proto" placeholder="Header name" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /><input type="text" defaultValue="https" placeholder="Value" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /><button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={14} /></button></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex items-center justify-between mb-2"><label className="text-sm font-medium text-gray-300">Remove Headers</label><button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1"><Icon name="plus" size={12} />Add</button></div>
+                            <div className="space-y-2">
+                              <div className="flex gap-2"><input type="text" defaultValue="X-Powered-By" placeholder="Header name" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /><button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={14} /></button></div>
+                              <div className="flex gap-2"><input type="text" defaultValue="Server" placeholder="Header name" className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /><button className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded"><Icon name="minus" size={14} /></button></div>
+                            </div>
+                          </div>
+                        </>)}
+                        {/* Custom/WASM/Lua filters - generic configuration */}
+                        {!['JWT Auth', 'RBAC', 'Rate Limit', 'Spike Arrest', 'Circuit Breaker', 'Tracing', 'Timeout', 'Retry', 'CORS', 'Compression', 'Path Rewrite', 'Access Log', 'mTLS', 'OAuth2', 'Headers'].includes(selectedFilterNode.name) && (
+                          <>
+                            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mb-3">
+                              <div className="flex items-center gap-2 text-amber-400 text-sm"><Icon name="code" size={14} />Custom Filter</div>
+                            </div>
+                            <div><label className="text-sm font-medium text-gray-300 block mb-2">Filter Name</label><input type="text" defaultValue={selectedFilterNode.name} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div>
+                            <div><label className="text-sm font-medium text-gray-300 block mb-2">Priority</label><input type="number" defaultValue="100" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div>
+                            <div><label className="text-sm font-medium text-gray-300 block mb-2">Config (JSON)</label><textarea defaultValue={'{\n  "enabled": true\n}'} rows={4} className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div>
+                            {selectedFilterNode.name.toLowerCase().includes('cors') && (
+                              <><div><label className="text-sm font-medium text-gray-300 block mb-2">Allowed Origins</label><input type="text" defaultValue="*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Allowed Methods</label><input type="text" defaultValue="GET, POST, PUT, DELETE" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm" /></div></>
+                            )}
+                            {(selectedFilterNode.name.toLowerCase().includes('rewrite') || selectedFilterNode.name.toLowerCase().includes('path')) && (
+                              <><div><label className="text-sm font-medium text-gray-300 block mb-2">Match Pattern</label><input type="text" defaultValue="/api/v1/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div><div><label className="text-sm font-medium text-gray-300 block mb-2">Rewrite To</label><input type="text" defaultValue="/v1/*" className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono" /></div></>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>)}
                   </div>
