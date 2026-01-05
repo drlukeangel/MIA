@@ -1174,7 +1174,7 @@ import React, { useState } from 'react';
                   { id: 'auntie', label: 'A.U.N.T.I.E.', cost: platformCosts.auntie.total, color: 'emerald' },
                   { id: 'rosie', label: 'R.O.S.I.E.', cost: platformCosts.rosie.total, color: 'cyan' },
                   { id: 'bro', label: 'B.R.O.', cost: platformCosts.bro.total, color: 'cyan' },
-                ].map((item, i) => (
+                ].filter(item => featureFlags[item.id]).map((item, i) => (
                   <button key={i} onClick={() => setActiveNav(item.id)} className="text-center px-3 py-2 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors">
                     <div className="text-sm text-gray-400">{item.label}</div>
                     <div className={`text-sm font-semibold text-${item.color}-400`}>${(item.cost/1000).toFixed(1)}K</div>
@@ -1193,7 +1193,7 @@ import React, { useState } from 'react';
               { id: 'auntie', label: 'A.U.N.T.I.E.', persona: 'The Connector', domain: 'Messaging', icon: 'message-square', darkBg: 'rgba(16, 185, 129, 0.2)', lightBg: 'rgba(16, 185, 129, 0.15)', textColor: '#34d399', cost: platformCosts.auntie.total, stats: { topics: 156, queues: 89, events: '2.4M/day' } },
               { id: 'rosie', label: 'R.O.S.I.E.', persona: 'The Housekeeper', domain: 'Scheduling', icon: 'clock', darkBg: 'rgba(6, 182, 212, 0.2)', lightBg: 'rgba(6, 182, 212, 0.15)', textColor: '#22d3ee', cost: platformCosts.rosie.total, stats: { jobs: 234, active: 198, success: '99.2%' } },
               { id: 'bro', label: 'B.R.O.', persona: 'The Roadbuilder', domain: 'Networking', icon: 'wifi', darkBg: 'rgba(6, 182, 212, 0.2)', lightBg: 'rgba(6, 182, 212, 0.15)', textColor: '#22d3ee', cost: platformCosts.bro.total, stats: { vpcs: 4, tgw: 3, vpn: 4 } },
-            ].map(family => (
+            ].filter(family => featureFlags[family.id]).map(family => (
               <button key={family.id} onClick={() => setActiveNav(family.id)} className="bg-gray-800/50 border border-gray-700 rounded-lg p-5 text-left hover:border-gray-600 transition-all group">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
