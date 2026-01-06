@@ -939,6 +939,29 @@ import React, { useState } from 'react';
       const [patternWizardStep, setPatternWizardStep] = useState(0);
       const [patternWizardType, setPatternWizardType] = useState(null);
       const [patternWizardData, setPatternWizardData] = useState({});
+      // Setup Wizard state
+      const [showSetupWizard, setShowSetupWizard] = useState(false);
+      const [setupWizardStep, setSetupWizardStep] = useState(0);
+      const [setupWizardType, setSetupWizardType] = useState(null); // 'internal' | 'ingress' | 'egress' | 'eastwest'
+      const [setupWizardData, setSetupWizardData] = useState({
+        service: null,
+        hostname: '',
+        tlsMode: 'SIMPLE',
+        externalHost: '',
+        port: 443,
+        protocol: 'HTTPS',
+        mtls: true,
+        authPolicy: true,
+        jwtAuth: false,
+        rateLimit: false,
+        circuitBreaker: true,
+        retries: true,
+        retryAttempts: 3,
+        timeout: false,
+        timeoutSeconds: 30,
+        loadBalancer: 'ROUND_ROBIN',
+        remoteNamespace: ''
+      });
       const [featureFlags, setFeatureFlags] = useState({
         mom: true,
         uncle: true,
@@ -2711,7 +2734,7 @@ import React, { useState } from 'react';
         return (
         <div className="p-6">
           {/* Tab Navigation */}
-          <div className="flex gap-1 mb-6 border-b-2 border-gray-600">
+          <div className="flex items-center gap-1 mb-6 border-b-2 border-gray-600">
             {[
               { id: 'services', label: 'Services', icon: 'server' },
               { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
@@ -7369,6 +7392,9 @@ import React, { useState } from 'react';
                     else if (activeNav === 'bro') { setNewNetworkData({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' }); setShowNewNetworkResource(true); }
                   }} className={`flex items-center gap-1.5 bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-600 hover:bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-500 px-3 py-1.5 rounded-lg text-sm font-medium`}><Icon name="plus" size={16} />New</button>
                 )}
+                {activeNav === 'dad' && (
+                  <button onClick={() => { setShowSetupWizard(true); setSetupWizardStep(0); setSetupWizardType(null); setSetupWizardData({ service: null, hostname: '', tlsMode: 'SIMPLE', externalHost: '', port: 443, protocol: 'HTTPS', mtls: true, authPolicy: true, jwtAuth: false, rateLimit: false, circuitBreaker: true, retries: true, retryAttempts: 3, timeout: false, timeoutSeconds: 30, loadBalancer: 'ROUND_ROBIN', remoteNamespace: '' }); }} className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg text-sm font-medium"><Icon name="zap" size={16} />Setup Wizard</button>
+                )}
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => setActiveNav('settings')} className={`p-2 rounded-lg transition-colors hover:bg-gray-700/50 ${activeNav === 'settings' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400 hover:text-gray-200'}`} title="Settings"><Icon name="settings" size={18} /></button>
@@ -7999,6 +8025,282 @@ spec:
               </div>
             </div>
           )}
+
+          {/* Setup Wizard Modal */}
+          {showSetupWizard && (() => {
+            const services = meshResources.filter(r => r.type === 'service');
+            const resetWizard = () => { setShowSetupWizard(false); setSetupWizardStep(0); setSetupWizardType(null); setSetupWizardData({ service: null, hostname: '', tlsMode: 'SIMPLE', externalHost: '', port: 443, protocol: 'HTTPS', mtls: true, authPolicy: true, jwtAuth: false, rateLimit: false, circuitBreaker: true, retries: true, retryAttempts: 3, timeout: false, timeoutSeconds: 30, loadBalancer: 'ROUND_ROBIN', remoteNamespace: '' }); };
+
+            const typeOptions = [
+              { id: 'internal', label: 'Secure internal service', desc: 'Add mTLS and authorization for service-to-service traffic', icon: 'shield', color: 'emerald' },
+              { id: 'ingress', label: 'Expose service externally', desc: 'Accept traffic from outside the mesh via ingress gateway', icon: 'log-in', color: 'cyan' },
+              { id: 'egress', label: 'Connect to external API', desc: 'Call external services securely through egress gateway', icon: 'log-out', color: 'orange' },
+              { id: 'eastwest', label: 'Cross-cluster communication', desc: 'Enable communication between clusters via east-west gateway', icon: 'repeat', color: 'teal' },
+            ];
+
+            const getStepCount = () => {
+              if (!setupWizardType) return 5;
+              if (setupWizardType === 'internal') return 4; // type, service, security, review
+              return 5; // type, service, config, security/traffic, review
+            };
+
+            const generateResources = () => {
+              const resources = [];
+              const svc = setupWizardData.service;
+              const prefix = svc?.name || 'new';
+              const ns = svc?.namespace || 'default';
+              const nextId = Math.max(...meshResources.map(r => r.id)) + 1;
+
+              if (setupWizardType === 'ingress') {
+                resources.push({ id: nextId, name: `${prefix}-gw-ingress`, type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: [setupWizardData.hostname || `${prefix}.example.com`], tls: setupWizardData.tlsMode, port: 443, owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+                resources.push({ id: nextId + 1, name: `${prefix}-vs`, type: 'virtualservice', namespace: ns, status: 'active', host: setupWizardData.hostname || `${prefix}.example.com`, gateway: `${prefix}-gw-ingress`, targetService: prefix, httpRoutes: [{ match: { uri: { prefix: '/' } }, destination: { host: prefix, port: svc?.port || 8080 } }], owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+              }
+
+              if (setupWizardType === 'egress') {
+                resources.push({ id: nextId, name: `${prefix}-egress-se`, type: 'serviceentry', namespace: ns, status: 'active', hosts: [setupWizardData.externalHost], location: 'MESH_EXTERNAL', port: setupWizardData.port, protocol: setupWizardData.protocol, resolution: 'DNS', owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+                resources.push({ id: nextId + 1, name: `${prefix}-gw-egress`, type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: [setupWizardData.externalHost], tls: 'ORIGINATE', port: setupWizardData.port, owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+              }
+
+              if (setupWizardType === 'eastwest') {
+                resources.push({ id: nextId, name: `${prefix}-gw-eastwest`, type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: [`*.${ns}.svc.cluster.local`, setupWizardData.remoteNamespace ? `*.${setupWizardData.remoteNamespace}.svc.cluster.local` : '*.remote.svc.cluster.local'], tls: 'AUTO_PASSTHROUGH', port: 15443, owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+              }
+
+              if (setupWizardData.mtls || setupWizardData.circuitBreaker || setupWizardType === 'egress') {
+                const drHost = setupWizardType === 'egress' ? setupWizardData.externalHost : prefix;
+                resources.push({ id: nextId + 2, name: `${prefix}-dr`, type: 'destinationrule', namespace: ns, status: 'healthy', host: drHost, trafficPolicy: setupWizardData.loadBalancer, mtls: setupWizardData.mtls ? 'STRICT' : 'DISABLE', circuitBreaker: setupWizardData.circuitBreaker, owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+              }
+
+              if (setupWizardData.authPolicy) {
+                resources.push({ id: nextId + 3, name: `${prefix}-authz`, type: 'authpolicy', namespace: ns, status: 'active', action: 'ALLOW', selector: prefix, rules: [{ from: [{ source: { principals: ['cluster.local/ns/*/sa/*'] } }], to: [{ operation: { methods: ['GET', 'POST'], paths: ['/*'] } }] }], owner: 'setup-wizard', bu: svc?.bu || 'Enterprise', created: new Date().toISOString().split('T')[0] });
+              }
+
+              return resources;
+            };
+
+            const previewResources = setupWizardStep === getStepCount() - 1 ? generateResources() : [];
+
+            return (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={resetWizard}>
+                <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                        <Icon name="zap" size={20} className="text-emerald-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold">Setup Wizard</h2>
+                        <p className="text-sm text-gray-400">Step {setupWizardStep + 1} of {getStepCount()}</p>
+                      </div>
+                    </div>
+                    <button onClick={resetWizard} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 overflow-y-auto flex-1">
+                    {/* Step 0: Type Selection */}
+                    {setupWizardStep === 0 && (
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium mb-4">What would you like to configure?</h3>
+                        {typeOptions.map(opt => (
+                          <button key={opt.id} onClick={() => { setSetupWizardType(opt.id); setSetupWizardStep(1); }} className={`w-full text-left p-4 rounded-xl border border-gray-700 hover:border-${opt.color}-500/50 hover:bg-${opt.color}-500/5 transition-all`} style={{ borderColor: setupWizardType === opt.id ? `var(--${opt.color}-500)` : undefined }}>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center`} style={{ backgroundColor: opt.color === 'emerald' ? 'rgba(16,185,129,0.2)' : opt.color === 'cyan' ? 'rgba(6,182,212,0.2)' : opt.color === 'orange' ? 'rgba(249,115,22,0.2)' : 'rgba(20,184,166,0.2)' }}>
+                                <Icon name={opt.icon} size={20} style={{ color: opt.color === 'emerald' ? '#10b981' : opt.color === 'cyan' ? '#06b6d4' : opt.color === 'orange' ? '#f97316' : '#14b8a6' }} />
+                              </div>
+                              <div>
+                                <div className="font-medium">{opt.label}</div>
+                                <div className="text-sm text-gray-400">{opt.desc}</div>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Step 1: Service Selection */}
+                    {setupWizardStep === 1 && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">Select a service</h3>
+                        <select value={setupWizardData.service?.name || ''} onChange={e => setSetupWizardData({...setupWizardData, service: services.find(s => s.name === e.target.value)})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
+                          <option value="">Choose a service...</option>
+                          {services.map(svc => (
+                            <option key={svc.id} value={svc.name}>{svc.name} ({svc.namespace})</option>
+                          ))}
+                        </select>
+                        {setupWizardData.service && (
+                          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mt-4">
+                            <div className="flex items-center gap-3">
+                              <Icon name="server" size={20} className="text-emerald-400" />
+                              <div>
+                                <div className="font-medium">{setupWizardData.service.name}</div>
+                                <div className="text-sm text-gray-400">{setupWizardData.service.namespace} • {setupWizardData.service.protocol} port {setupWizardData.service.port}</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Step 2: Type-specific Configuration */}
+                    {setupWizardStep === 2 && setupWizardType === 'ingress' && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">External Access Configuration</h3>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">External Hostname</label>
+                          <input type="text" value={setupWizardData.hostname} onChange={e => setSetupWizardData({...setupWizardData, hostname: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" placeholder="api.example.com" />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">TLS Mode</label>
+                          <select value={setupWizardData.tlsMode} onChange={e => setSetupWizardData({...setupWizardData, tlsMode: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="SIMPLE">SIMPLE (TLS termination)</option>
+                            <option value="PASSTHROUGH">PASSTHROUGH (end-to-end TLS)</option>
+                            <option value="MUTUAL">MUTUAL (client cert required)</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {setupWizardStep === 2 && setupWizardType === 'egress' && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">External API Configuration</h3>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">External Host</label>
+                          <input type="text" value={setupWizardData.externalHost} onChange={e => setSetupWizardData({...setupWizardData, externalHost: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" placeholder="api.stripe.com" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Port</label>
+                            <input type="number" value={setupWizardData.port} onChange={e => setSetupWizardData({...setupWizardData, port: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-400 mb-1">Protocol</label>
+                            <select value={setupWizardData.protocol} onChange={e => setSetupWizardData({...setupWizardData, protocol: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                              <option value="HTTPS">HTTPS</option>
+                              <option value="HTTP">HTTP</option>
+                              <option value="TLS">TLS</option>
+                              <option value="TCP">TCP</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {setupWizardStep === 2 && setupWizardType === 'eastwest' && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">Cross-Cluster Configuration</h3>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Remote Namespace Pattern</label>
+                          <input type="text" value={setupWizardData.remoteNamespace} onChange={e => setSetupWizardData({...setupWizardData, remoteNamespace: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500" placeholder="e.g., remote-cluster-ns" />
+                          <p className="text-sm text-gray-500 mt-1">Namespace in the remote cluster to connect with</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 2 for internal (security step) or Step 3 for others */}
+                    {((setupWizardStep === 2 && setupWizardType === 'internal') || (setupWizardStep === 3 && setupWizardType !== 'internal')) && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">Security & Traffic Settings</h3>
+                        <div className="space-y-3">
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-800">
+                            <input type="checkbox" checked={setupWizardData.mtls} onChange={e => setSetupWizardData({...setupWizardData, mtls: e.target.checked})} className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                              <div className="font-medium">Require mTLS</div>
+                              <div className="text-sm text-gray-400">Enforce mutual TLS for encrypted communication</div>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-800">
+                            <input type="checkbox" checked={setupWizardData.authPolicy} onChange={e => setSetupWizardData({...setupWizardData, authPolicy: e.target.checked})} className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                              <div className="font-medium">Add Authorization Policy</div>
+                              <div className="text-sm text-gray-400">Control who can access this service</div>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-800">
+                            <input type="checkbox" checked={setupWizardData.circuitBreaker} onChange={e => setSetupWizardData({...setupWizardData, circuitBreaker: e.target.checked})} className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                              <div className="font-medium">Enable Circuit Breaker</div>
+                              <div className="text-sm text-gray-400">Prevent cascade failures with automatic circuit breaking</div>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg cursor-pointer hover:bg-gray-800">
+                            <input type="checkbox" checked={setupWizardData.retries} onChange={e => setSetupWizardData({...setupWizardData, retries: e.target.checked})} className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                              <div className="font-medium">Enable Retries</div>
+                              <div className="text-sm text-gray-400">Automatically retry failed requests</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Load Balancer</label>
+                          <select value={setupWizardData.loadBalancer} onChange={e => setSetupWizardData({...setupWizardData, loadBalancer: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="ROUND_ROBIN">Round Robin</option>
+                            <option value="LEAST_CONN">Least Connections</option>
+                            <option value="RANDOM">Random</option>
+                            <option value="PASSTHROUGH">Passthrough</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Final Step: Review */}
+                    {setupWizardStep === getStepCount() - 1 && (
+                      <div className="space-y-4">
+                        <h3 className="text-base font-medium mb-4">Review & Create</h3>
+                        <p className="text-sm text-gray-400 mb-4">The following resources will be created:</p>
+                        <div className="space-y-2">
+                          {previewResources.map((r, i) => (
+                            <div key={i} className="flex items-center gap-3 p-3 bg-gray-800/50 border border-gray-700 rounded-lg">
+                              <Icon name="check-circle" size={18} className="text-emerald-400" />
+                              <div>
+                                <div className="font-medium">{r.name}</div>
+                                <div className="text-sm text-gray-400">{r.type} • {r.namespace}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {previewResources.length === 0 && (
+                          <div className="text-center text-gray-500 py-8">No resources to create. Please complete the previous steps.</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between p-4 border-t border-gray-700">
+                    <button onClick={() => { if (setupWizardStep === 0) resetWizard(); else setSetupWizardStep(setupWizardStep - 1); }} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">
+                      {setupWizardStep === 0 ? 'Cancel' : '← Back'}
+                    </button>
+                    <button onClick={() => {
+                      if (setupWizardStep === getStepCount() - 1) {
+                        // Create resources
+                        const newResources = generateResources();
+                        setMeshResources([...newResources, ...meshResources]);
+                        showNotification(`Created ${newResources.length} resources for ${setupWizardData.service?.name}`, 'success');
+                        resetWizard();
+                      } else {
+                        setSetupWizardStep(setupWizardStep + 1);
+                      }
+                    }} disabled={
+                      (setupWizardStep === 0) ||
+                      (setupWizardStep === 1 && !setupWizardData.service) ||
+                      (setupWizardStep === 2 && setupWizardType === 'ingress' && !setupWizardData.hostname) ||
+                      (setupWizardStep === 2 && setupWizardType === 'egress' && !setupWizardData.externalHost)
+                    } className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                      (setupWizardStep === 0) ||
+                      (setupWizardStep === 1 && !setupWizardData.service) ||
+                      (setupWizardStep === 2 && setupWizardType === 'ingress' && !setupWizardData.hostname) ||
+                      (setupWizardStep === 2 && setupWizardType === 'egress' && !setupWizardData.externalHost)
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-emerald-600 hover:bg-emerald-500'
+                    }`}>
+                      {setupWizardStep === getStepCount() - 1 ? 'Create All Resources' : 'Next →'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* New MOM Resource Modal */}
           {showNewMomResource && (
