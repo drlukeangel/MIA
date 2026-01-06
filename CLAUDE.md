@@ -54,6 +54,41 @@ Filters are organized by Envoy filter chain phases:
 - `STATS` - Telemetry/metrics phase
 - `UNSPECIFIED` - Default phase (near end of chain)
 
+## D.A.D. Trace View (January 2025)
+Visualizes the full request path through the Istio service mesh.
+
+### Traffic Directions
+- **Inbound**: External → Ingress Gateway → VirtualService → AuthPolicy → Filters → DestinationRule → Service
+- **Egress**: Service → DestinationRule → ServiceEntry → Egress Gateway → External API
+- **East-West**: Service → East-West Gateway → Remote Cluster (or Exposed to Remote)
+
+### Key Functions
+- `getAvailablePaths(service, direction)` - Returns available paths for a service (e.g., multiple egress APIs)
+- `buildRequestTrace(service, direction, selectedPath)` - Builds the trace step array
+- `getServicesForDirection(direction)` - Filters services that have config for the direction
+
+### State Variables
+- `traceService` - Currently selected service to trace
+- `traceDirection` - Selected direction: 'inbound', 'egress', 'eastwest'
+- `tracePath` - Selected path when multiple paths exist (e.g., which egress API)
+
+### Step Types
+| Type | Icon | Description |
+|------|------|-------------|
+| gateway | log-in/log-out/repeat | Ingress, Egress, or East-West Gateway |
+| virtualservice | git-branch | VirtualService routing rules |
+| authpolicy | shield | Authorization policies |
+| filters | filter | WASM/Lua filters |
+| destinationrule | sliders | Traffic policy and load balancing |
+| service | server | Target service (inbound only) |
+| serviceentry | external-link | External service registration |
+| external | cloud | External API endpoint |
+| remote | globe | Remote cluster services (E/W outbound) |
+| exposed | radio | Services exposed to remote clusters (E/W inbound) |
+
+### Edit Modal Pattern
+Gateway edit modals hide the Type selector when editing existing gateways (`editingGateway.isNew` is falsy).
+
 ## Key Files
 - `index.html` - Main application (single-file React app)
 - `verify_parse.js` - Babel syntax verification script
