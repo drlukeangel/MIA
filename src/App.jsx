@@ -2842,30 +2842,30 @@ import React, { useState } from 'react';
                 ]
               },
               'Ingress': {
-                summary: 'Ingress Gateways handle external traffic entering the mesh from outside the cluster.',
+                summary: 'Ingress Gateways define how external traffic enters the mesh. Configure hosts, ports, and TLS settings.',
                 useCases: [
-                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Termination', desc: 'Decrypt HTTPS traffic at the edge before routing internally', code: ['SIMPLE', 'MUTUAL'] },
-                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Host-Based Routing', desc: 'Route requests to different services based on hostname', code: ['api.example.com', '*.example.com'] },
-                  { icon: 'shield', color: 'bg-rose-500/20', iconColor: 'text-rose-400', title: 'Edge Security', desc: 'Apply security policies at the entry point to your mesh', code: ['JWT validation', 'Rate limiting'] },
-                  { icon: 'zap', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Load Balancing', desc: 'Distribute incoming traffic across multiple backend pods', code: ['Port 443', 'Port 80'] }
+                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Mode', desc: 'Configure how TLS is handled at the gateway edge', code: ['SIMPLE', 'MUTUAL', 'PASSTHROUGH'] },
+                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Host Matching', desc: 'Specify which hostnames this gateway accepts', code: ['api.example.com', '*.example.com'] },
+                  { icon: 'server', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Port Configuration', desc: 'Define listening ports and protocols', code: ['443/HTTPS', '80/HTTP', '8080'] },
+                  { icon: 'key', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'TLS Credentials', desc: 'Reference Kubernetes secrets for certificates', code: ['credentialName', 'serverCertificate'] }
                 ]
               },
               'Egress': {
-                summary: 'Egress Gateways control traffic leaving the mesh to external services.',
+                summary: 'Egress Gateways define how traffic exits the mesh to external services. Configure allowed hosts and TLS.',
                 useCases: [
-                  { icon: 'eye', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Traffic Monitoring', desc: 'Monitor and log all outbound calls to external APIs', code: ['api.stripe.com', 'api.twilio.com'] },
-                  { icon: 'shield', color: 'bg-rose-500/20', iconColor: 'text-rose-400', title: 'Security Policies', desc: 'Enforce that external calls go through approved exit points', code: ['PASSTHROUGH', 'MUTUAL'] },
-                  { icon: 'activity', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Compliance Auditing', desc: 'Ensure all external traffic is logged for compliance', code: ['Access logs', 'Audit trail'] },
-                  { icon: 'lock', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'mTLS to External', desc: 'Originate TLS connections to external services', code: ['TLS origination', 'Client certs'] }
+                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Allowed Hosts', desc: 'Specify which external hosts traffic can reach', code: ['api.stripe.com', '*.googleapis.com'] },
+                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Origination', desc: 'Originate TLS connections to external services', code: ['SIMPLE', 'MUTUAL', 'ISTIO_MUTUAL'] },
+                  { icon: 'server', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Port Configuration', desc: 'Define egress ports and protocols', code: ['443/TLS', '80/HTTP'] },
+                  { icon: 'shield', color: 'bg-rose-500/20', iconColor: 'text-rose-400', title: 'Traffic Policy', desc: 'Apply connection pool and outlier detection settings', code: ['maxConnections', 'outlierDetection'] }
                 ]
               },
               'East-West': {
-                summary: 'East-West Gateways enable cross-cluster service mesh communication.',
+                summary: 'East-West Gateways enable cross-cluster communication. Configure TLS passthrough and cluster routing.',
                 useCases: [
-                  { icon: 'share-2', color: 'bg-teal-500/20', iconColor: 'text-teal-400', title: 'Multi-Cluster Routing', desc: 'Route traffic between services in different clusters', code: ['Cluster A → B', '*.local'] },
-                  { icon: 'shield', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Cross-Cluster mTLS', desc: 'Secure communication between clusters with mutual TLS', code: ['AUTO_PASSTHROUGH', 'Port 15443'] },
-                  { icon: 'database', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'DR Failover', desc: 'Enable disaster recovery by routing to backup cluster', code: ['Primary → DR', 'Failover'] },
-                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Service Discovery', desc: 'Discover and call services across cluster boundaries', code: ['svc.cluster.local', 'Remote endpoints'] }
+                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Mode', desc: 'Configure auto-passthrough for cross-cluster mTLS', code: ['AUTO_PASSTHROUGH', 'PASSTHROUGH'] },
+                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Host Matching', desc: 'Match hosts for cross-cluster service routing', code: ['*.local', '*.global'] },
+                  { icon: 'server', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Port Configuration', desc: 'Configure the standard east-west gateway port', code: ['15443/TLS', '15012/GRPC'] },
+                  { icon: 'share-2', color: 'bg-teal-500/20', iconColor: 'text-teal-400', title: 'Cluster Selector', desc: 'Select which istio gateway handles cross-cluster traffic', code: ['istio: eastwestgateway'] }
                 ]
               },
               'Dest Rules': {
