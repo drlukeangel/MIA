@@ -87,6 +87,12 @@ import React, { useState } from 'react';
         'minimize-2': <><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></>,
         clipboard: <><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></>,
         repeat: <><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></>,
+        route: <><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></>,
+        'user-check': <><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></>,
+        shuffle: <><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></>,
+        flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></>,
+        percent: <><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></>,
+        lightbulb: <><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></>,
       };
       return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
@@ -609,6 +615,12 @@ import React, { useState } from 'react';
       { id: 29, name: 'grpc-validator-mortgage', namespace: 'lending', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/grpc-validator:v1.0.0', module: 'grpc-validator', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'mortgage-calc-service' } }, targetService: 'mortgage-calc-service', priority: 80, owner: 'loans-origination', bu: 'Single-Family', created: '2024-06-01', config: { proto_descriptor: 's3://fm-protos/mortgage-calc/v1/descriptor.pb', validate_requests: true, validate_responses: false }, metrics: { requests: '560K', valid: '558K', invalid: '2K' } },
     ];
 
+    // Auth Policies (Istio AuthorizationPolicy resources)
+    const mockAuthPolicies = [
+      { id: 1, name: 'require-jwt', namespace: 'sf-loans', selector: 'loan-service', action: 'ALLOW', rules: ['JWT required'], created: '2024-03-20' },
+      { id: 2, name: 'deny-external', namespace: 'eot-platform', selector: 'user-service', action: 'DENY', rules: ['Block external IPs'], created: '2024-02-15' },
+    ];
+
     // Lua Filters (script definitions) - the global filter objects
     const mockLuaFilterDefs = [
       { name: 'custom-cors', version: 'v1.0.0', sourceType: 'inline', script: 'function envoy_on_request(handle)\n  handle:headers():add("Access-Control-Allow-Origin", "*")\nend', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-10' },
@@ -796,6 +808,7 @@ import React, { useState } from 'react';
       const [showTriggerModal, setShowTriggerModal] = useState(false);
       const [showDeleteModal, setShowDeleteModal] = useState(false);
       const [showFilterInfo, setShowFilterInfo] = useState(null); // { type: 'filter'|'wasm', id, name, desc, example }
+      const [showYamlPreview, setShowYamlPreview] = useState(null); // { resource, type }
       const [jobToAction, setJobToAction] = useState(null);
       const [jobs, setJobs] = useState([...mockJobs]); // Session-local copy of jobs
       const [notification, setNotification] = useState(null);
@@ -2558,14 +2571,70 @@ import React, { useState } from 'react';
           if (dadFilter === 'Svc Entries') return r.type === 'serviceentry';
           return true;
         });
+        const [showTrafficFlow, setShowTrafficFlow] = useState(false);
         return (
         <div className="p-6">
+          {/* Traffic Flow Diagram - Collapsible */}
+          <div className="mb-6">
+            <button onClick={() => setShowTrafficFlow(!showTrafficFlow)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-cyan-400 mb-2">
+              <Icon name={showTrafficFlow ? 'chevron-down' : 'chevron-right'} size={16} />
+              <Icon name="help-circle" size={14} />
+              <span>How does Istio route traffic?</span>
+            </button>
+            {showTrafficFlow && (
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 mb-4">
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-gray-700 flex items-center justify-center"><Icon name="globe" size={24} className="text-gray-400" /></div>
+                    <span className="text-xs text-gray-400 mt-1">Client</span>
+                  </div>
+                  <Icon name="arrow-right" size={20} className="text-gray-600" />
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center"><Icon name="log-in" size={24} className="text-cyan-400" /></div>
+                    <span className="text-xs text-cyan-400 mt-1">Gateway</span>
+                    <span className="text-xs text-gray-500">TLS/Hosts</span>
+                  </div>
+                  <Icon name="arrow-right" size={20} className="text-gray-600" />
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-violet-500/20 border border-violet-500/40 flex items-center justify-center"><Icon name="git-branch" size={24} className="text-violet-400" /></div>
+                    <span className="text-xs text-violet-400 mt-1">VirtualService</span>
+                    <span className="text-xs text-gray-500">Routing</span>
+                  </div>
+                  <Icon name="arrow-right" size={20} className="text-gray-600" />
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center"><Icon name="sliders" size={24} className="text-amber-400" /></div>
+                    <span className="text-xs text-amber-400 mt-1">DestinationRule</span>
+                    <span className="text-xs text-gray-500">Policy</span>
+                  </div>
+                  <Icon name="arrow-right" size={20} className="text-gray-600" />
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center"><Icon name="server" size={24} className="text-blue-400" /></div>
+                    <span className="text-xs text-blue-400 mt-1">Service</span>
+                    <span className="text-xs text-gray-500">K8s</span>
+                  </div>
+                  <Icon name="arrow-right" size={20} className="text-gray-600" />
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center"><Icon name="box" size={24} className="text-emerald-400" /></div>
+                    <span className="text-xs text-emerald-400 mt-1">Pod</span>
+                    <span className="text-xs text-gray-500">Workload</span>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-700 grid grid-cols-3 gap-4 text-xs">
+                  <div><span className="text-cyan-400 font-semibold">Gateway:</span> <span className="text-gray-400">Entry point - TLS termination, host matching</span></div>
+                  <div><span className="text-violet-400 font-semibold">VirtualService:</span> <span className="text-gray-400">Routing rules - path matching, traffic split, retries</span></div>
+                  <div><span className="text-amber-400 font-semibold">DestinationRule:</span> <span className="text-gray-400">Policies - load balancing, circuit breaker, mTLS</span></div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Tab Navigation */}
           <div className="flex gap-1 mb-6 border-b-2 border-gray-600">
             {[
               { id: 'services', label: 'Services', icon: 'server' },
               { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
               { id: 'patterns', label: 'Patterns', icon: 'layers' },
+              { id: 'compare', label: 'Compare', icon: 'columns' },
               ...(featureFlags.dadSecurity ? [{ id: 'security', label: 'Security', icon: 'shield' }] : []),
               ...(featureFlags.dadCertificates ? [{ id: 'certs', label: 'Certificates', icon: 'lock' }] : []),
               { id: 'wasm', label: 'WASM Filters', icon: 'cpu' },
@@ -2763,12 +2832,60 @@ import React, { useState } from 'react';
           {/* Mesh Config Tab (formerly Resources/Traffic) */}
           {dadActiveTab === 'resources' && (() => {
             const resourceTypeInfo = {
-              'Virtual Services': { desc: 'Istio routing rules that define how requests are routed to services. Use for traffic splitting, canary deployments, header-based routing, retries, and timeouts.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: VirtualService\nmetadata:\n  name: loan-service-vs\nspec:\n  hosts:\n    - loan-service\n  http:\n    - match:\n        - headers:\n            x-canary:\n              exact: "true"\n      route:\n        - destination:\n            host: loan-service\n            subset: canary\n    - route:\n        - destination:\n            host: loan-service\n            subset: stable' },
-              'Ingress': { desc: 'Ingress Gateways handle external traffic entering the mesh. Configure TLS termination, host-based routing, and expose services to external clients securely.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: api-gateway\nspec:\n  selector:\n    istio: ingressgateway\n  servers:\n    - port:\n        number: 443\n        name: https\n        protocol: HTTPS\n      tls:\n        mode: SIMPLE\n        credentialName: api-tls-cert\n      hosts:\n        - api.example.com' },
-              'Egress': { desc: 'Egress Gateways control traffic leaving the mesh to external services. Use for security policies, traffic monitoring, and ensuring all external calls go through approved exit points.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: external-apis-egress\nspec:\n  selector:\n    istio: egressgateway\n  servers:\n    - port:\n        number: 443\n        name: https\n        protocol: HTTPS\n      hosts:\n        - api.stripe.com\n        - api.twilio.com\n      tls:\n        mode: PASSTHROUGH' },
-              'East-West': { desc: 'East-West Gateways enable cross-cluster service mesh communication. Use in multi-cluster deployments to route traffic between clusters securely.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: Gateway\nmetadata:\n  name: cross-cluster-gateway\nspec:\n  selector:\n    istio: eastwestgateway\n  servers:\n    - port:\n        number: 15443\n        name: tls\n        protocol: TLS\n      tls:\n        mode: AUTO_PASSTHROUGH\n      hosts:\n        - "*.local"' },
-              'Dest Rules': { desc: 'Destination Rules define policies applied after routing. Configure load balancing, connection pool settings, outlier detection, and TLS settings for service-to-service communication.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: DestinationRule\nmetadata:\n  name: loan-service-dr\nspec:\n  host: loan-service\n  trafficPolicy:\n    connectionPool:\n      tcp:\n        maxConnections: 100\n      http:\n        h2UpgradePolicy: UPGRADE\n    outlierDetection:\n      consecutive5xxErrors: 5\n      interval: 30s\n      baseEjectionTime: 60s\n  subsets:\n    - name: stable\n      labels:\n        version: v1\n    - name: canary\n      labels:\n        version: v2' },
-              'Svc Entries': { desc: 'Service Entries add external services to the mesh registry. Use to enable mesh features (mTLS, observability) for external APIs, databases, or legacy systems outside the cluster.', example: 'apiVersion: networking.istio.io/v1beta1\nkind: ServiceEntry\nmetadata:\n  name: stripe-api\nspec:\n  hosts:\n    - api.stripe.com\n  location: MESH_EXTERNAL\n  ports:\n    - number: 443\n      name: https\n      protocol: TLS\n  resolution: DNS\n  endpoints:\n    - address: api.stripe.com' }
+              'Virtual Services': {
+                summary: 'Istio routing rules that define how requests are routed to services within the mesh.',
+                useCases: [
+                  { icon: 'git-branch', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Canary Releases', desc: 'Route a percentage of traffic to a new version for safe rollouts', code: ['weight: 90%', 'weight: 10%'] },
+                  { icon: 'flag', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Header Routing', desc: 'Route requests based on headers like beta flags or user groups', code: ['x-canary: true', 'x-user-group'] },
+                  { icon: 'clock', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Timeouts & Retries', desc: 'Set request timeouts and automatic retry policies', code: ['timeout: 30s', 'retries: 3'] },
+                  { icon: 'edit-3', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'URL Rewriting', desc: 'Rewrite paths or hosts before forwarding to backend', code: ['/api/v1 → /v1', 'rewrite: /new'] }
+                ]
+              },
+              'Ingress': {
+                summary: 'Ingress Gateways handle external traffic entering the mesh from outside the cluster.',
+                useCases: [
+                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Termination', desc: 'Decrypt HTTPS traffic at the edge before routing internally', code: ['SIMPLE', 'MUTUAL'] },
+                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Host-Based Routing', desc: 'Route requests to different services based on hostname', code: ['api.example.com', '*.example.com'] },
+                  { icon: 'shield', color: 'bg-rose-500/20', iconColor: 'text-rose-400', title: 'Edge Security', desc: 'Apply security policies at the entry point to your mesh', code: ['JWT validation', 'Rate limiting'] },
+                  { icon: 'zap', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Load Balancing', desc: 'Distribute incoming traffic across multiple backend pods', code: ['Port 443', 'Port 80'] }
+                ]
+              },
+              'Egress': {
+                summary: 'Egress Gateways control traffic leaving the mesh to external services.',
+                useCases: [
+                  { icon: 'eye', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Traffic Monitoring', desc: 'Monitor and log all outbound calls to external APIs', code: ['api.stripe.com', 'api.twilio.com'] },
+                  { icon: 'shield', color: 'bg-rose-500/20', iconColor: 'text-rose-400', title: 'Security Policies', desc: 'Enforce that external calls go through approved exit points', code: ['PASSTHROUGH', 'MUTUAL'] },
+                  { icon: 'activity', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Compliance Auditing', desc: 'Ensure all external traffic is logged for compliance', code: ['Access logs', 'Audit trail'] },
+                  { icon: 'lock', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'mTLS to External', desc: 'Originate TLS connections to external services', code: ['TLS origination', 'Client certs'] }
+                ]
+              },
+              'East-West': {
+                summary: 'East-West Gateways enable cross-cluster service mesh communication.',
+                useCases: [
+                  { icon: 'share-2', color: 'bg-teal-500/20', iconColor: 'text-teal-400', title: 'Multi-Cluster Routing', desc: 'Route traffic between services in different clusters', code: ['Cluster A → B', '*.local'] },
+                  { icon: 'shield', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Cross-Cluster mTLS', desc: 'Secure communication between clusters with mutual TLS', code: ['AUTO_PASSTHROUGH', 'Port 15443'] },
+                  { icon: 'database', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'DR Failover', desc: 'Enable disaster recovery by routing to backup cluster', code: ['Primary → DR', 'Failover'] },
+                  { icon: 'globe', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Service Discovery', desc: 'Discover and call services across cluster boundaries', code: ['svc.cluster.local', 'Remote endpoints'] }
+                ]
+              },
+              'Dest Rules': {
+                summary: 'Destination Rules define policies applied after routing decisions are made.',
+                useCases: [
+                  { icon: 'shuffle', color: 'bg-blue-500/20', iconColor: 'text-blue-400', title: 'Load Balancing', desc: 'Configure how traffic is distributed across pods', code: ['ROUND_ROBIN', 'LEAST_CONN'] },
+                  { icon: 'zap-off', color: 'bg-red-500/20', iconColor: 'text-red-400', title: 'Circuit Breaking', desc: 'Automatically stop traffic to failing pods', code: ['consecutive5xx: 5', 'ejectionTime: 30s'] },
+                  { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'mTLS Settings', desc: 'Configure TLS mode for service-to-service calls', code: ['ISTIO_MUTUAL', 'STRICT'] },
+                  { icon: 'tag', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Version Subsets', desc: 'Define labeled subsets for traffic splitting', code: ['version: v1', 'version: v2'] }
+                ]
+              },
+              'Svc Entries': {
+                summary: 'Service Entries add external services to the mesh registry for traffic management.',
+                useCases: [
+                  { icon: 'external-link', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'External APIs', desc: 'Register external APIs like Stripe or Twilio in the mesh', code: ['api.stripe.com', 'MESH_EXTERNAL'] },
+                  { icon: 'database', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'External Databases', desc: 'Connect to databases outside the cluster with mesh features', code: ['db.example.com', 'Port 5432'] },
+                  { icon: 'activity', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Observability', desc: 'Get metrics and tracing for external service calls', code: ['Metrics', 'Distributed tracing'] },
+                  { icon: 'lock', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'mTLS for External', desc: 'Apply mesh security policies to external services', code: ['TLS', 'Client certificates'] }
+                ]
+              }
             };
             return <>
           {/* Sub-tabs: Traffic Config | External Services */}
@@ -2799,7 +2916,7 @@ import React, { useState } from 'react';
                 <div key={cat.id} className="w-px bg-gray-600 mx-1"></div>
               ) : (
                 <div key={cat.id} className="flex items-center gap-1">
-                  <button onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-800'}`}>
+                  <button type="button" onClick={() => setDadFilter(cat.id)} className={`px-3 py-1.5 rounded-lg text-base font-semibold flex items-center gap-2 ${dadFilter === cat.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-800'}`}>
                     <Icon name={cat.icon} size={16} className={dadFilter === cat.id ? 'text-cyan-400' : ''} />
                     <div className="flex flex-col items-center">
                       <span>{cat.id}</span>
@@ -2807,7 +2924,7 @@ import React, { useState } from 'react';
                     </div>
                     <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-sm font-medium ${dadFilter === cat.id ? 'bg-cyan-500/30 text-cyan-300' : 'bg-gray-600 text-gray-300'}`}>{cat.count}</span>
                   </button>
-                  <button className="p-1 text-gray-500 hover:text-cyan-400" onClick={() => setShowFilterInfo({ type: 'resource', id: cat.id, name: cat.id + (cat.sublabel ? ' ' + cat.sublabel : ''), desc: resourceTypeInfo[cat.id].desc, example: resourceTypeInfo[cat.id].example })}><Icon name="help-circle" size={14} /></button>
+                  <button type="button" className="p-1.5 text-cyan-500 hover:text-cyan-300" onClick={() => setShowFilterInfo({ type: 'resource', id: cat.id, name: cat.id + (cat.sublabel ? ' ' + cat.sublabel : ''), summary: resourceTypeInfo[cat.id].summary, useCases: resourceTypeInfo[cat.id].useCases })}><Icon name="help-circle" size={18} /></button>
                 </div>
               )
             ))}
@@ -2890,7 +3007,12 @@ import React, { useState } from 'react';
                         </div>
                         {/* Destination Rule Column */}
                         <div className="bg-gray-800/70 rounded-lg p-3">
-                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={16} className="text-violet-400" />Destination Rule</div>
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="sliders" size={16} className="text-violet-400" />Destination Rule<button type="button" className="ml-1 p-1 text-cyan-500 hover:text-cyan-300" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'destinationrule', name: 'Destination Rule', summary: 'Configures what happens to traffic after routing - load balancing, security, and resilience.', useCases: [
+                              { icon: 'shuffle', color: 'bg-blue-500/20', iconColor: 'text-blue-400', title: 'Load Balancing', desc: 'Distribute traffic across healthy pods', code: ['ROUND_ROBIN', 'LEAST_CONN'] },
+                              { icon: 'slash', color: 'bg-red-500/20', iconColor: 'text-red-400', title: 'Circuit Breaking', desc: 'Stop traffic to failing pods automatically', code: ['consecutive5xx: 5', 'ejectionTime: 30s'] },
+                              { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'mTLS Security', desc: 'Enforce encrypted pod-to-pod communication', code: ['ISTIO_MUTUAL', 'STRICT'] },
+                              { icon: 'layers', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Subsets', desc: 'Group pods by version for canary deploys', code: ['version=v1', 'version=v2'] }
+                            ] }); }}><Icon name="help-circle" size={16} /></button></div>
                           {relatedDR ? (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
@@ -2913,7 +3035,7 @@ import React, { useState } from 'react';
                         </div>
                         {/* Metadata Column */}
                         <div className="bg-gray-800/70 rounded-lg p-3">
-                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="info" size={16} className="text-gray-400" />Metadata</div>
+                          <div className="text-base text-gray-200 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="tag" size={16} className="text-gray-400" />Metadata</div>
                           <div className="space-y-2 text-base">
                             <div><span className="text-gray-400 font-semibold">Owner:</span> <span className="text-gray-200">{r.owner}</span></div>
                             <div><span className="text-gray-400 font-semibold">BU:</span> <span className="text-gray-200">{r.bu}</span></div>
@@ -2921,9 +3043,54 @@ import React, { useState } from 'react';
                           </div>
                         </div>
                       </div>
+                      {/* Related Resources Row */}
+                      {(() => {
+                        const relatedGateway = r.gateway ? meshResources.find(g => ['ingress', 'egress', 'eastwest'].includes(g.type) && (g.name === r.gateway || r.gateway.includes(g.name))) : null;
+                        const relatedVSs = r.type.includes('gateway') || ['ingress', 'egress', 'eastwest'].includes(r.type) ? meshResources.filter(vs => vs.type === 'virtualservice' && vs.gateway?.includes(r.name)) : [];
+                        const relatedAuthPolicies = mockAuthPolicies.filter(ap => ap.selector === r.targetService || ap.selector === r.name || ap.namespace === r.namespace);
+                        const hasRelations = relatedGateway || relatedVSs.length > 0 || relatedAuthPolicies.length > 0 || relatedDR;
+
+                        return hasRelations && (
+                          <div className="mt-3 pt-3 border-t border-gray-700/50">
+                            <div className="text-sm text-gray-400 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="git-branch" size={14} className="text-cyan-400" />Related Resources</div>
+                            <div className="flex flex-wrap gap-2">
+                              {relatedGateway && (
+                                <button onClick={(e) => { e.stopPropagation(); setMeshConfigSubTab('gateways'); }} className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-colors">
+                                  <Icon name="log-in" size={14} className="text-emerald-400" />
+                                  <span className="text-sm text-emerald-300">{relatedGateway.name}</span>
+                                  <span className="text-xs text-emerald-500/70">Gateway</span>
+                                </button>
+                              )}
+                              {relatedVSs.slice(0, 3).map(vs => (
+                                <button key={vs.id} onClick={(e) => { e.stopPropagation(); setMeshConfigSubTab('routing'); setExpandedId(vs.id); }} className="flex items-center gap-2 px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors">
+                                  <Icon name="route" size={14} className="text-cyan-400" />
+                                  <span className="text-sm text-cyan-300">{vs.name}</span>
+                                  <span className="text-xs text-cyan-500/70">VirtualService</span>
+                                </button>
+                              ))}
+                              {relatedVSs.length > 3 && <span className="text-xs text-gray-500 self-center">+{relatedVSs.length - 3} more</span>}
+                              {relatedDR && (
+                                <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="flex items-center gap-2 px-3 py-1.5 bg-violet-500/10 border border-violet-500/30 rounded-lg hover:bg-violet-500/20 transition-colors">
+                                  <Icon name="sliders" size={14} className="text-violet-400" />
+                                  <span className="text-sm text-violet-300">{relatedDR.name}</span>
+                                  <span className="text-xs text-violet-500/70">DestinationRule</span>
+                                </button>
+                              )}
+                              {relatedAuthPolicies.slice(0, 2).map(ap => (
+                                <button key={ap.id} onClick={(e) => { e.stopPropagation(); setDadActiveTab('security'); }} className="flex items-center gap-2 px-3 py-1.5 bg-rose-500/10 border border-rose-500/30 rounded-lg hover:bg-rose-500/20 transition-colors">
+                                  <Icon name="shield" size={14} className="text-rose-400" />
+                                  <span className="text-sm text-rose-300">{ap.name}</span>
+                                  <span className="text-xs text-rose-500/70">AuthPolicy</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                       {/* Actions Row */}
                       <div className="mt-3 pt-3 flex items-center gap-3">
                         <button onClick={(e) => { e.stopPropagation(); if (r.type === 'virtualservice') { setEditingVirtualService({...r, routes: r.routes || []}); } else { setServiceEditorResource(r); setShowServiceEditor(true); } }} className="text-base font-semibold text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit</button>
+                        <button onClick={(e) => { e.stopPropagation(); setShowYamlPreview({ resource: r, type: r.type }); }} className="text-base font-semibold text-gray-400 hover:text-amber-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="code" size={14} />YAML</button>
                         {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: r.namespace, host: r.host || r.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'ISTIO_MUTUAL', subsets: [] }); }} className="text-sm font-semibold text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-2 py-1 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />DR</button>}
                       </div>
                     </div>
@@ -3009,9 +3176,32 @@ import React, { useState } from 'react';
                           )}
                         </div>
                       </div>
+                      {/* Related Resources Row */}
+                      {(relatedDR || relatedEgress.length > 0) && (
+                        <div className="mt-3 pt-3 border-t border-gray-700/50">
+                          <div className="text-sm text-gray-400 mb-2 flex items-center gap-1.5 font-semibold"><Icon name="git-branch" size={14} className="text-cyan-400" />Related Resources</div>
+                          <div className="flex flex-wrap gap-2">
+                            {relatedDR && (
+                              <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({...relatedDR, subsets: relatedDR.subsets || []}); }} className="flex items-center gap-2 px-3 py-1.5 bg-violet-500/10 border border-violet-500/30 rounded-lg hover:bg-violet-500/20 transition-colors">
+                                <Icon name="sliders" size={14} className="text-violet-400" />
+                                <span className="text-sm text-violet-300">{relatedDR.name}</span>
+                                <span className="text-xs text-violet-500/70">DestinationRule</span>
+                              </button>
+                            )}
+                            {relatedEgress.map(gw => (
+                              <button key={gw.id} onClick={(e) => { e.stopPropagation(); setMeshConfigSubTab('gateways'); }} className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-lg hover:bg-amber-500/20 transition-colors">
+                                <Icon name="log-out" size={14} className="text-amber-400" />
+                                <span className="text-sm text-amber-300">{gw.name}</span>
+                                <span className="text-xs text-amber-500/70">Egress Gateway</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       {/* Actions Row */}
                       <div className="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-3">
                         <button onClick={(e) => { e.stopPropagation(); setServiceEditorResource(se); }} className="text-sm text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="edit" size={14} />Edit Entry</button>
+                        <button onClick={(e) => { e.stopPropagation(); setShowYamlPreview({ resource: {...se, type: 'serviceentry'}, type: 'serviceentry' }); }} className="text-sm text-gray-400 hover:text-amber-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="code" size={14} />YAML</button>
                         {!relatedDR && <button onClick={(e) => { e.stopPropagation(); setEditingDestinationRule({ isNew: true, namespace: se.namespace, host: se.hosts?.[0] || se.name, trafficPolicy: 'ROUND_ROBIN', mtls: 'SIMPLE', subsets: [] }); }} className="text-sm text-gray-400 hover:text-violet-400 flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-700/50 rounded"><Icon name="plus" size={14} />Add DR</button>}
                       </div>
                     </div>
@@ -3555,6 +3745,93 @@ import React, { useState } from 'react';
                     ))}
                   </div>
                 </div>
+
+                {/* Rate Limiting Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                      <Icon name="shield" size={20} className="text-rose-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Rate Limiting</h3>
+                      <p className="text-sm text-gray-400">Protect services from overload</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="users" size={20} className="text-emerald-400" /></div>
+                        <span className="text-sm text-gray-400">Clients</span>
+                      </div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/50 via-rose-500 to-blue-500/50 mx-2 relative">
+                        <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-rose-500/20 border border-rose-500/50 rounded-lg px-2 py-1">
+                          <span className="text-xs text-rose-400 font-medium">100 req/s</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-1"><Icon name="server" size={20} className="text-blue-400" /></div>
+                        <span className="text-sm text-gray-400">Service</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      <div className="text-xs text-gray-400 space-y-1">
+                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Local: Per-pod limits via EnvoyFilter</div>
+                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Global: Distributed via Redis + WASM plugin</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Options: EnvoyFilter (local) or WasmPlugin with Redis (global)</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Use cases:</span>
+                    <span className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded text-sm">API Protection</span>
+                    <span className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded text-sm">Cost Control</span>
+                  </div>
+                </div>
+
+                {/* A/B Testing Pattern */}
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                      <Icon name="shuffle" size={20} className="text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">A/B Testing</h3>
+                      <p className="text-sm text-gray-400">Header-based routing for experiments</p>
+                    </div>
+                  </div>
+                  <div className="relative bg-gray-900/50 rounded-lg p-4 mb-4">
+                    <div className="flex items-center justify-center gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-1"><Icon name="users" size={20} className="text-emerald-400" /></div>
+                        <span className="text-sm text-gray-400">Users</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-12 h-12 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mb-1"><Icon name="git-branch" size={20} className="text-violet-400" /></div>
+                        <span className="text-sm text-gray-400">VS</span>
+                        <span className="text-xs text-gray-500">Header Match</span>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="h-px w-8 bg-blue-500/50"></div>
+                          <span className="text-xs text-blue-400 bg-blue-500/20 px-1 rounded">x-variant: A</span>
+                          <div className="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center"><Icon name="server" size={14} className="text-blue-400" /></div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-px w-8 bg-amber-500/50"></div>
+                          <span className="text-xs text-amber-400 bg-amber-500/20 px-1 rounded">x-variant: B</span>
+                          <div className="w-8 h-8 rounded bg-amber-500/20 flex items-center justify-center"><Icon name="server" size={14} className="text-amber-400" /></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-3">Required resources: VirtualService with header matching + DestinationRule</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Headers:</span>
+                    <code className="px-2 py-0.5 bg-gray-700/50 text-gray-300 rounded text-sm">x-variant</code>
+                    <code className="px-2 py-0.5 bg-gray-700/50 text-gray-300 rounded text-sm">x-user-group</code>
+                    <code className="px-2 py-0.5 bg-gray-700/50 text-gray-300 rounded text-sm">x-experiment</code>
+                  </div>
+                </div>
               </div>
 
               {/* Linked Resources Summary */}
@@ -3599,6 +3876,186 @@ import React, { useState } from 'react';
                       </div>
                     ));
                   })()}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Compare Tab */}
+          {dadActiveTab === 'compare' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold mb-1">Istio Resource Comparison</h2>
+                <p className="text-sm text-gray-500">Understand the differences between similar resources</p>
+              </div>
+
+              {/* VirtualService vs DestinationRule */}
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700 bg-gray-800/30">
+                  <h3 className="font-semibold flex items-center gap-2"><Icon name="git-merge" size={18} className="text-cyan-400" />VirtualService vs DestinationRule</h3>
+                  <p className="text-sm text-gray-400 mt-1">Both control traffic, but at different levels</p>
+                </div>
+                <div className="grid grid-cols-2 divide-x divide-gray-700">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center"><Icon name="route" size={16} className="text-cyan-400" /></div>
+                      <span className="font-medium text-cyan-300">VirtualService</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Host-based routing (which service handles requests)</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Path matching and rewrites</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Traffic splitting (canary, A/B)</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Timeouts and retries</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Header manipulation</span></div>
+                    </div>
+                    <div className="mt-4 p-3 bg-cyan-500/10 rounded-lg">
+                      <div className="text-xs text-cyan-400 font-medium mb-1">Use when:</div>
+                      <div className="text-sm text-gray-300">You need to control WHERE traffic goes based on request properties</div>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center"><Icon name="sliders" size={16} className="text-violet-400" /></div>
+                      <span className="font-medium text-violet-300">DestinationRule</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Load balancing algorithm</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Connection pool settings</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Circuit breaker configuration</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">mTLS mode (client-side)</span></div>
+                      <div className="flex items-start gap-2"><Icon name="check" size={14} className="text-emerald-400 mt-0.5" /><span className="text-gray-300">Subsets for version targeting</span></div>
+                    </div>
+                    <div className="mt-4 p-3 bg-violet-500/10 rounded-lg">
+                      <div className="text-xs text-violet-400 font-medium mb-1">Use when:</div>
+                      <div className="text-sm text-gray-300">You need to control HOW traffic behaves after routing decision</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-3 bg-blue-500/10 border-t border-gray-700 flex items-center gap-2">
+                  <Icon name="info" size={14} className="text-blue-400" />
+                  <span className="text-sm text-blue-300">VirtualService routes TO a host, DestinationRule applies policies to traffic going there</span>
+                </div>
+              </div>
+
+              {/* Gateway Types */}
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700 bg-gray-800/30">
+                  <h3 className="font-semibold flex items-center gap-2"><Icon name="radio" size={18} className="text-emerald-400" />Gateway Types Comparison</h3>
+                  <p className="text-sm text-gray-400 mt-1">Entry and exit points for mesh traffic</p>
+                </div>
+                <div className="grid grid-cols-3 divide-x divide-gray-700">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center"><Icon name="log-in" size={16} className="text-cyan-400" /></div>
+                      <span className="font-medium text-cyan-300">Ingress</span>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>External → Mesh</p>
+                      <p>Exposes services to internet clients</p>
+                      <p>TLS termination, host routing</p>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500">→ VirtualService binds to route traffic</div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center"><Icon name="log-out" size={16} className="text-amber-400" /></div>
+                      <span className="font-medium text-amber-300">Egress</span>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>Mesh → External</p>
+                      <p>Controls outbound traffic to external services</p>
+                      <p>Security, monitoring exit points</p>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500">→ ServiceEntry defines external hosts</div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center"><Icon name="repeat" size={16} className="text-teal-400" /></div>
+                      <span className="font-medium text-teal-300">East-West</span>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>Mesh ↔ Mesh</p>
+                      <p>Cross-cluster communication</p>
+                      <p>Multi-cluster service discovery</p>
+                    </div>
+                    <div className="mt-3 text-xs text-gray-500">→ Enables multi-cluster mesh</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security Resources */}
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700 bg-gray-800/30">
+                  <h3 className="font-semibold flex items-center gap-2"><Icon name="shield" size={18} className="text-rose-400" />Security Resources</h3>
+                  <p className="text-sm text-gray-400 mt-1">Authentication vs Authorization</p>
+                </div>
+                <div className="grid grid-cols-2 divide-x divide-gray-700">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center"><Icon name="user-check" size={16} className="text-emerald-400" /></div>
+                      <span className="font-medium text-emerald-300">PeerAuthentication</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start gap-2"><Icon name="lock" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Controls mTLS between workloads</span></div>
+                      <div className="flex items-start gap-2"><Icon name="lock" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Modes: STRICT, PERMISSIVE, DISABLE</span></div>
+                      <div className="flex items-start gap-2"><Icon name="lock" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Server-side TLS settings</span></div>
+                    </div>
+                    <div className="mt-4 p-3 bg-emerald-500/10 rounded-lg text-sm text-gray-300">
+                      <span className="text-emerald-400 font-medium">Question:</span> "Is this request encrypted?"
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center"><Icon name="shield" size={16} className="text-rose-400" /></div>
+                      <span className="font-medium text-rose-300">AuthorizationPolicy</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start gap-2"><Icon name="key" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Controls who can access what</span></div>
+                      <div className="flex items-start gap-2"><Icon name="key" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Actions: ALLOW, DENY, CUSTOM</span></div>
+                      <div className="flex items-start gap-2"><Icon name="key" size={14} className="text-gray-400 mt-0.5" /><span className="text-gray-300">Source, operation, condition rules</span></div>
+                    </div>
+                    <div className="mt-4 p-3 bg-rose-500/10 rounded-lg text-sm text-gray-300">
+                      <span className="text-rose-400 font-medium">Question:</span> "Is this caller allowed to do this?"
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ServiceEntry vs Egress Gateway */}
+              <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+                <div className="p-4 border-b border-gray-700 bg-gray-800/30">
+                  <h3 className="font-semibold flex items-center gap-2"><Icon name="globe" size={18} className="text-orange-400" />External Services Configuration</h3>
+                  <p className="text-sm text-gray-400 mt-1">ServiceEntry defines what, Egress Gateway controls how</p>
+                </div>
+                <div className="grid grid-cols-2 divide-x divide-gray-700">
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center"><Icon name="external-link" size={16} className="text-orange-400" /></div>
+                      <span className="font-medium text-orange-300">ServiceEntry</span>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>Registers external APIs in the mesh</p>
+                      <p>Enables mTLS, retries, timeouts on external calls</p>
+                      <p>Required before mesh can reach unknown hosts</p>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-700/50 rounded text-xs text-gray-400">
+                      Example: api.stripe.com, kafka.external.com
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center"><Icon name="log-out" size={16} className="text-cyan-400" /></div>
+                      <span className="font-medium text-cyan-300">Egress Gateway</span>
+                    </div>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>Funnels all outbound traffic through one exit</p>
+                      <p>Enables logging, monitoring of external calls</p>
+                      <p>Required for firewall rules and compliance</p>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-700/50 rounded text-xs text-gray-400">
+                      Example: Route all S3 calls via egress for audit
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -4672,6 +5129,12 @@ import React, { useState } from 'react';
                             <div className="flex items-center gap-2 mb-4">
                               <Icon name="filter" size={16} className="text-cyan-400" />
                               <span className="text-sm font-medium text-gray-300">Match Conditions</span>
+                              <button type="button" className="p-1 text-cyan-500 hover:text-cyan-300" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'match-conditions', name: 'Match Conditions', summary: 'Controls which incoming requests are handled by this route. First matching route wins.', useCases: [
+                                { icon: 'git-branch', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'API Versioning', desc: 'Route different API versions to different backends', code: ['/api/v2/*', '/api/v1/*'] },
+                                { icon: 'flag', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Canary Releases', desc: 'Send beta users to new deployment via header', code: ['X-Beta: true', 'X-Canary: 1'] },
+                                { icon: 'activity', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Health Checks', desc: 'Match exact paths for load balancer probes', code: ['/health', '/ready'] },
+                                { icon: 'code', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Dynamic Paths', desc: 'Capture user IDs or resource IDs with regex', code: ['/users/[0-9]+', '/orders/*'] }
+                              ] }); }}><Icon name="help-circle" size={16} /></button>
                             </div>
                             <div className="space-y-3">
                               <div>
@@ -4705,6 +5168,12 @@ import React, { useState } from 'react';
                             <div className="flex items-center gap-2 mb-4">
                               <Icon name="server" size={16} className="text-emerald-400" />
                               <span className="text-sm font-medium text-gray-300">Destination</span>
+                              <button type="button" className="p-1 text-cyan-500 hover:text-cyan-300" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'destination', name: 'Destination', summary: 'Specifies where matched traffic should be routed and how to split it.', useCases: [
+                                { icon: 'percent', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Canary Releases', desc: 'Gradually shift traffic to new version', code: ['weight: 90', 'weight: 10'] },
+                                { icon: 'refresh-cw', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Blue-Green Deploy', desc: 'Instantly switch between two versions', code: ['subset: blue', 'subset: green'] },
+                                { icon: 'users', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'A/B Testing', desc: 'Route specific users to experimental features', code: ['X-User-Group', 'subset: experiment'] },
+                                { icon: 'tag', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Subset Routing', desc: 'Target pods by labels for version control', code: ['version=stable', 'version=canary'] }
+                              ] }); }}><Icon name="help-circle" size={16} /></button>
                             </div>
                             <div className="grid grid-cols-3 gap-3">
                               <div className="col-span-2">
@@ -4731,6 +5200,12 @@ import React, { useState } from 'react';
                             <div className="flex items-center gap-2 mb-4">
                               <Icon name="edit-3" size={16} className="text-amber-400" />
                               <span className="text-sm font-medium text-gray-300">Rewrite Rules</span>
+                              <button type="button" className="p-1 text-cyan-500 hover:text-cyan-300" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'rewrite-rules', name: 'Rewrite Rules', summary: 'Transforms the request URL or host header before sending to the backend.', useCases: [
+                                { icon: 'scissors', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Strip Versioning', desc: 'Remove API version prefix from paths', code: ['/api/v2/users', '→ /users'] },
+                                { icon: 'home', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Multi-Tenant', desc: 'Rewrite paths and set tenant authority', code: ['/tenant-a/*', 'authority: tenant-a'] },
+                                { icon: 'corner-up-right', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Legacy Migration', desc: 'Map old URLs to new paths transparently', code: ['/old-api/*', '→ /v1/*'] },
+                                { icon: 'type', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Normalize Paths', desc: 'Standardize trailing slashes and casing', code: ['/Users/', '→ /users'] }
+                              ] }); }}><Icon name="help-circle" size={16} /></button>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div>
@@ -4789,6 +5264,12 @@ import React, { useState } from 'react';
                             <div className="flex items-center gap-2 mb-4">
                               <Icon name="clock" size={16} className="text-blue-400" />
                               <span className="text-sm font-medium text-gray-300">Timeout & Retries</span>
+                              <button type="button" className="p-1 text-cyan-500 hover:text-cyan-300" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'timeout-retries', name: 'Timeout & Retries', summary: 'Controls how long to wait and when to automatically retry failed requests.', useCases: [
+                                { icon: 'clock', color: 'bg-blue-500/20', iconColor: 'text-blue-400', title: 'Request Timeouts', desc: 'Different timeouts for different endpoints', code: ['30s API', '5s health', '120s upload'] },
+                                { icon: 'refresh-cw', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Auto-Retry on 5xx', desc: 'Retry server errors but not client errors', code: ['5xx', 'reset', 'connect-failure'] },
+                                { icon: 'zap', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'Per-Try Limit', desc: 'Fail fast on each attempt to speed up recovery', code: ['perTryTimeout: 10s'] },
+                                { icon: 'shield', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Network Resilience', desc: 'Handle transient network failures gracefully', code: ['attempts: 3', 'retryOn: 5xx'] }
+                              ] }); }}><Icon name="help-circle" size={16} /></button>
                             </div>
                             <div className="grid grid-cols-4 gap-3">
                               <div>
@@ -4921,7 +5402,8 @@ import React, { useState } from 'react';
                     <div className="flex flex-wrap gap-2">
                       {[
                         { type: 'service', label: 'Service', icon: 'server', color: 'emerald' },
-                        { type: 'virtualservice', label: 'VirtualService', icon: 'git-branch', color: 'violet' },
+                        { type: 'virtualservice', label: 'VirtualService', icon: 'route', color: 'violet' },
+                        { type: 'destinationrule', label: 'DestinationRule', icon: 'sliders', color: 'blue' },
                         { type: 'ingress', label: 'Ingress GW', icon: 'log-in', color: 'cyan' },
                         { type: 'egress', label: 'Egress GW', icon: 'log-out', color: 'orange' },
                         { type: 'eastwest', label: 'East-West GW', icon: 'repeat', color: 'teal' },
@@ -5095,31 +5577,7 @@ import React, { useState } from 'react';
                     </div>
                   )}
 
-                  {newResourceType === 'authpolicy' && (
-                    <div className="space-y-3">
-                      <div className="p-3 bg-gray-800/50 rounded-lg">
-                        <label className="text-sm text-gray-400 mb-1 block">Destination (Target Workload)</label>
-                        <input type="text" value={newResourceData.destination || ''} onChange={e => setNewResourceData({...newResourceData, destination: e.target.value})}
-                          placeholder="app=my-service or version=v1"
-                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" />
-                      </div>
-                      <div className="p-3 bg-gray-800/50 rounded-lg">
-                        <label className="text-sm text-gray-400 mb-1 block">Action</label>
-                        <div className="flex gap-2">
-                          {['ALLOW', 'DENY'].map(a => (
-                            <button key={a} onClick={() => setNewResourceData({...newResourceData, action: a})}
-                              className={`flex-1 px-4 py-2 rounded text-sm font-medium ${newResourceData.action === a ? (a === 'ALLOW' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500' : 'bg-red-500/20 text-red-300 border border-red-500') : 'bg-gray-800 text-gray-400 border border-gray-600'}`}>{a}</button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="p-3 bg-gray-800/50 rounded-lg">
-                        <label className="text-sm text-gray-400 mb-1 block">Source Principals</label>
-                        <input type="text" value={newResourceData.principals || ''} onChange={e => setNewResourceData({...newResourceData, principals: e.target.value})}
-                          placeholder="cluster.local/ns/default/sa/*"
-                          className="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm font-mono focus:border-emerald-500 focus:outline-none" />
-                      </div>
-                    </div>
-                  )}
+
                 </div>
                 ); })()
                 )}
@@ -5132,7 +5590,7 @@ import React, { useState } from 'react';
                       const suffixes = { virtualservice: '-vs', destinationrule: '-dr', ingress: '-gw-ingress', egress: '-gw-egress', eastwest: '-gw-ew', serviceentry: '-se', authpolicy: '-authz', peerauthentication: '-mtls', service: '' };
                       const suffix = suffixes[newResourceType] || '';
                       const fullName = (newResourceData.name || 'new-resource') + suffix;
-                      const typeLabels = { service: 'Service', virtualservice: 'Virtual Service', ingress: 'Ingress Gateway', egress: 'Egress Gateway', eastwest: 'East-West Gateway', destinationrule: 'Destination Rule', authpolicy: 'Authorization Policy', serviceentry: 'ServiceEntry' };
+                      const typeLabels = { service: 'Service', virtualservice: 'Virtual Service', ingress: 'Ingress Gateway', egress: 'Egress Gateway', eastwest: 'East-West Gateway', destinationrule: 'Destination Rule', authpolicy: 'Authorization Policy', serviceentry: 'ServiceEntry', peerauthentication: 'PeerAuthentication' };
                       showNotification(`Created ${typeLabels[newResourceType]}: ${fullName}`, 'success');
                       setCreatingResource(false);
                     }} className="px-6 py-2 bg-violet-600 hover:bg-violet-500 rounded-lg text-sm font-medium flex items-center gap-2">
@@ -6518,10 +6976,184 @@ import React, { useState } from 'react';
             </div>
           </div>
 
+          {/* YAML Preview Modal */}
+          {showYamlPreview && (() => {
+            const r = showYamlPreview.resource;
+            const generateYaml = () => {
+              if (r.type === 'virtualservice') {
+                return `apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'default'}
+spec:
+  hosts:
+    - ${r.host || r.name + '.example.com'}
+  gateways:
+    - ${r.gateway || 'istio-system/main-gateway'}
+  http:${(r.httpRoutes || [{ match: { uri: { prefix: '/' } }, destination: { host: r.targetService || 'backend', port: 8080 } }]).map(route => `
+    - match:
+        - uri:
+            ${route.match?.uri?.prefix ? `prefix: "${route.match.uri.prefix}"` : route.match?.uri?.exact ? `exact: "${route.match.uri.exact}"` : 'prefix: "/"'}${route.rewrite ? `
+      rewrite:
+        uri: "${route.rewrite.uri}"` : ''}
+      route:
+        - destination:
+            host: ${route.destination?.host || r.targetService || 'backend-service'}
+            port:
+              number: ${route.destination?.port || 8080}${route.destination?.weight ? `
+          weight: ${route.destination.weight}` : ''}${route.timeout ? `
+      timeout: ${route.timeout}` : ''}${route.retries ? `
+      retries:
+        attempts: ${route.retries.attempts || 3}
+        perTryTimeout: ${route.retries.perTryTimeout || '10s'}
+        retryOn: ${route.retries.retryOn || '5xx,reset'}` : ''}`).join('')}`;
+              } else if (r.type === 'destinationrule') {
+                return `apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'default'}
+spec:
+  host: ${r.host || r.name}
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: ${r.maxConnections || 100}
+      http:
+        h2UpgradePolicy: UPGRADE
+        http1MaxPendingRequests: ${r.maxPendingRequests || 100}
+        http2MaxRequests: ${r.maxRequests || 1000}
+    loadBalancer:
+      simple: ${r.loadBalancer || 'ROUND_ROBIN'}
+    outlierDetection:
+      consecutive5xxErrors: ${r.consecutiveErrors || 5}
+      interval: ${r.interval || '30s'}
+      baseEjectionTime: ${r.baseEjectionTime || '30s'}
+      maxEjectionPercent: ${r.maxEjectionPercent || 10}${r.mtls !== false ? `
+    tls:
+      mode: ISTIO_MUTUAL` : ''}${r.subsets ? `
+  subsets:${r.subsets.map(s => `
+    - name: ${s.name}
+      labels:
+        version: ${s.version || s.name}`).join('')}` : ''}`;
+              } else if (r.type === 'gateway') {
+                return `apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'istio-system'}
+spec:
+  selector:
+    istio: ${r.selector || 'ingressgateway'}
+  servers:
+    - port:
+        number: ${r.port || 443}
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "${r.hosts?.[0] || '*.example.com'}"
+      tls:
+        mode: ${r.tlsMode || 'SIMPLE'}
+        credentialName: ${r.credentialName || r.name + '-credential'}`;
+              } else if (r.type === 'serviceentry') {
+                return `apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'default'}
+spec:
+  hosts:
+    - ${r.host || r.name}
+  location: ${r.location || 'MESH_EXTERNAL'}
+  ports:
+    - number: ${r.port || 443}
+      name: https
+      protocol: ${r.protocol || 'HTTPS'}
+  resolution: ${r.resolution || 'DNS'}`;
+              } else if (r.type === 'authpolicy') {
+                return `apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'default'}
+spec:
+  selector:
+    matchLabels:
+      app: ${r.selector || r.name.replace('-policy', '')}
+  action: ${r.action || 'ALLOW'}
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/${r.namespace || 'default'}/sa/*"]
+      to:
+        - operation:
+            methods: ${JSON.stringify(r.methods || ['GET', 'POST'])}
+            paths: ${JSON.stringify(r.paths || ['/*'])}`;
+              } else if (r.type === 'wasmplugin') {
+                return `apiVersion: extensions.istio.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: ${r.name}
+  namespace: ${r.namespace || 'istio-system'}
+spec:
+  selector:
+    matchLabels:
+      app: ${r.selector || 'istio-ingressgateway'}
+  url: ${r.url || 'oci://ghcr.io/example/' + r.name + ':latest'}
+  phase: ${r.phase || 'AUTHN'}
+  pluginConfig:
+    ${r.config ? Object.entries(r.config).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join('\n    ') : 'enabled: true'}`;
+              }
+              return `# YAML preview for ${r.type}\n# Resource: ${r.name}`;
+            };
+            const yaml = generateYaml();
+            return (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={() => setShowYamlPreview(null)}>
+                <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                        <Icon name="code" size={20} className="text-amber-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-semibold">{r.name}</h2>
+                        <p className="text-sm text-gray-400">Istio {r.type?.replace(/([A-Z])/g, ' $1').trim()} YAML</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => { navigator.clipboard.writeText(yaml); showNotification('YAML copied to clipboard'); }} className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <Icon name="copy" size={14} />Copy
+                      </button>
+                      <button onClick={() => setShowYamlPreview(null)} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
+                    </div>
+                  </div>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    <div className="bg-gray-950 border border-gray-800 rounded-xl p-4 font-mono text-sm overflow-x-auto">
+                      <pre className="text-emerald-300 whitespace-pre">{yaml}</pre>
+                    </div>
+                    <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <Icon name="info" size={16} className="text-blue-400 mt-0.5" />
+                        <div className="text-sm text-blue-300">
+                          <p className="font-medium mb-1">About this YAML</p>
+                          <p className="text-blue-400/80">This is a generated preview based on the current configuration. Apply with: <code className="bg-blue-500/20 px-1.5 py-0.5 rounded">kubectl apply -f {r.name}.yaml</code></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-700 flex justify-end gap-2">
+                    <button onClick={() => setShowYamlPreview(null)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium">Close</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Filter/WASM Info Modal */}
           {showFilterInfo && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={() => setShowFilterInfo(null)}>
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-xl ${showFilterInfo.type === 'wasm' ? 'bg-purple-500/20' : showFilterInfo.type === 'resource' ? 'bg-amber-500/20' : 'bg-cyan-500/20'} flex items-center justify-center`}>
@@ -6535,13 +7167,45 @@ import React, { useState } from 'react';
                   <button onClick={() => setShowFilterInfo(null)} className="p-2 hover:bg-gray-800 rounded-lg"><Icon name="x" size={20} /></button>
                 </div>
                 <div className="p-4 overflow-y-auto space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                      <Icon name="info" size={14} className="text-cyan-400" />
-                      Description
-                    </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">{showFilterInfo.desc}</p>
-                  </div>
+                  {showFilterInfo.summary && (
+                    <p className="text-sm text-gray-300 leading-relaxed">{showFilterInfo.summary}</p>
+                  )}
+                  {showFilterInfo.useCases ? (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                        <Icon name="lightbulb" size={14} className="text-amber-400" />
+                        Common Use Cases
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {showFilterInfo.useCases.map((uc, i) => (
+                          <div key={i} className="bg-gray-800/60 border border-gray-700/50 rounded-lg p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className={`w-7 h-7 rounded-md flex items-center justify-center ${uc.color || 'bg-cyan-500/20'}`}>
+                                <Icon name={uc.icon} size={14} className={uc.iconColor || 'text-cyan-400'} />
+                              </div>
+                              <span className="text-sm font-medium text-gray-200">{uc.title}</span>
+                            </div>
+                            <p className="text-xs text-gray-400 leading-relaxed">{uc.desc}</p>
+                            {uc.code && (
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                {uc.code.map((c, j) => (
+                                  <code key={j} className="px-1.5 py-0.5 bg-gray-700 text-cyan-300 rounded text-xs font-mono">{c}</code>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : showFilterInfo.desc && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                        <Icon name="info" size={14} className="text-cyan-400" />
+                        Description
+                      </h3>
+                      <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">{showFilterInfo.desc}</p>
+                    </div>
+                  )}
                   {showFilterInfo.example && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
@@ -8447,16 +9111,43 @@ import React, { useState } from 'react';
 
                   {/* Host */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="server" size={14} className="text-gray-400" />Host</h3>
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <Icon name="server" size={14} className="text-gray-400" />Host
+                      <span className="relative group">
+                        <Icon name="help-circle" size={14} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                        <span className="absolute left-0 top-6 w-64 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                          The Kubernetes service name this rule applies to. Use short name for same namespace, or FQDN (service.namespace.svc.cluster.local) for cross-namespace.
+                        </span>
+                      </span>
+                    </h3>
                     <input type="text" defaultValue={editingDestinationRule.host || ''} placeholder="service.namespace.svc.cluster.local" className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500" />
                   </div>
 
                   {/* Traffic Policy */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="sliders" size={14} className="text-gray-400" />Traffic Policy</h3>
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <Icon name="sliders" size={14} className="text-gray-400" />Traffic Policy
+                      <span className="relative group">
+                        <Icon name="help-circle" size={14} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                        <span className="absolute left-0 top-6 w-72 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                          Controls how traffic behaves when connecting to the host. Includes load balancing, connection pools, circuit breaking, and TLS settings.
+                        </span>
+                      </span>
+                    </h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1.5">Load Balancer</label>
+                        <label className="block text-sm text-gray-400 mb-1.5 flex items-center gap-1">
+                          Load Balancer
+                          <span className="relative group">
+                            <Icon name="help-circle" size={12} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                            <span className="absolute left-0 top-5 w-56 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                              <b>ROUND_ROBIN</b>: Rotate through endpoints<br/>
+                              <b>LEAST_CONN</b>: Pick endpoint with fewest active requests<br/>
+                              <b>RANDOM</b>: Random selection<br/>
+                              <b>PASSTHROUGH</b>: Direct to IP
+                            </span>
+                          </span>
+                        </label>
                         <select defaultValue={editingDestinationRule.trafficPolicy || 'ROUND_ROBIN'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
                           <option value="ROUND_ROBIN">ROUND_ROBIN</option>
                           <option value="LEAST_CONN">LEAST_CONN</option>
@@ -8465,7 +9156,18 @@ import React, { useState } from 'react';
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1.5">TLS Mode</label>
+                        <label className="block text-sm text-gray-400 mb-1.5 flex items-center gap-1">
+                          TLS Mode
+                          <span className="relative group">
+                            <Icon name="help-circle" size={12} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                            <span className="absolute left-0 top-5 w-56 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                              <b>ISTIO_MUTUAL</b>: Auto mTLS with Istio certs (recommended)<br/>
+                              <b>MUTUAL</b>: mTLS with custom certs<br/>
+                              <b>SIMPLE</b>: TLS origination<br/>
+                              <b>DISABLE</b>: No TLS
+                            </span>
+                          </span>
+                        </label>
                         <select defaultValue={editingDestinationRule.mtls || 'ISTIO_MUTUAL'} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500">
                           <option value="DISABLE">DISABLE</option>
                           <option value="SIMPLE">SIMPLE</option>
@@ -8478,7 +9180,15 @@ import React, { useState } from 'react';
 
                   {/* Circuit Breaker */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="zap" size={14} className="text-gray-400" />Circuit Breaker (Outlier Detection)</h3>
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <Icon name="zap" size={14} className="text-gray-400" />Circuit Breaker (Outlier Detection)
+                      <span className="relative group">
+                        <Icon name="help-circle" size={14} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                        <span className="absolute left-0 top-6 w-72 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                          Automatically removes unhealthy pods from the load balancing pool. After consecutive failures, the endpoint is ejected and traffic is routed to healthy endpoints.
+                        </span>
+                      </span>
+                    </h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <label className="text-sm text-gray-300">Enable Circuit Breaker</label>
@@ -8503,7 +9213,15 @@ import React, { useState } from 'react';
 
                   {/* Subsets */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="git-branch" size={14} className="text-gray-400" />Subsets ({(editingDestinationRule.subsets || []).length})</h3>
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <Icon name="git-branch" size={14} className="text-gray-400" />Subsets ({(editingDestinationRule.subsets || []).length})
+                      <span className="relative group">
+                        <Icon name="help-circle" size={14} className="text-gray-500 hover:text-cyan-400 cursor-help" />
+                        <span className="absolute left-0 top-6 w-72 p-2 bg-gray-950 border border-gray-600 rounded-lg text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+                          Named versions of your service (e.g., v1, v2, canary). Each subset uses labels to target specific pod versions. VirtualServices reference subsets for traffic splitting.
+                        </span>
+                      </span>
+                    </h3>
                     <div className="space-y-2">
                       {(editingDestinationRule.subsets || []).map((subset, idx) => (
                         <div key={idx} className="bg-gray-900/50 rounded-lg p-3 border border-gray-700">
