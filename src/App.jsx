@@ -93,6 +93,7 @@ import React, { useState } from 'react';
         flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></>,
         percent: <><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></>,
         lightbulb: <><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></>,
+        cloud: <><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></>,
       };
       return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
@@ -497,13 +498,14 @@ import React, { useState } from 'react';
     // Istio Mesh Resources - Services, Virtual Services, Gateways, Policies
     const mockMeshResources = [
       // Services (backend services in the mesh)
-      { id: 1, name: 'loan-service', type: 'service', namespace: 'sf-loans', status: 'healthy', host: 'loan-service.sf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-15' },
-      { id: 2, name: 'user-service', type: 'service', namespace: 'eot-platform', status: 'healthy', host: 'user-service.eot-platform.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20' },
-      { id: 3, name: 'payment-gateway', type: 'service', namespace: 'eot-integrations', status: 'degraded', host: 'payment-gateway.eot-integrations.svc.cluster.local', port: 8443, protocol: 'HTTPS', endpoints: 3, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-10' },
-      { id: 4, name: 'notification-service', type: 'service', namespace: 'eot-messaging', status: 'healthy', host: 'notification-service.eot-messaging.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-05' },
-      { id: 5, name: 'mortgage-calc-service', type: 'service', namespace: 'sf-mortgage', status: 'healthy', host: 'mortgage-calc-service.sf-mortgage.svc.cluster.local', port: 8080, protocol: 'gRPC', endpoints: 3, owner: 'sf-mortgage-team', bu: 'Single-Family', created: '2024-05-12' },
-      { id: 42, name: 'claims-processor', type: 'service', namespace: 'mf-claims', status: 'healthy', host: 'claims-processor.mf-claims.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-02-15' },
-      { id: 43, name: 'mf-loan-service', type: 'service', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service.mf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-20' },
+      { id: 1, name: 'loan-service', type: 'service', namespace: 'sf-loans', status: 'healthy', host: 'loan-service.sf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-15', businessDesc: 'Single-family loan origination API for lender portal and partner integrations' },
+      { id: 2, name: 'user-service', type: 'service', namespace: 'eot-platform', status: 'healthy', host: 'user-service.eot-platform.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-20', businessDesc: 'Enterprise identity & access management with Datadog observability' },
+      { id: 3, name: 'payment-gateway', type: 'service', namespace: 'eot-integrations', status: 'degraded', host: 'payment-gateway.eot-integrations.svc.cluster.local', port: 8443, protocol: 'HTTPS', endpoints: 3, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-10', businessDesc: 'Process loan disbursements and servicer payments via banking partners' },
+      { id: 4, name: 'notification-service', type: 'service', namespace: 'eot-messaging', status: 'healthy', host: 'notification-service.eot-messaging.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-05', businessDesc: 'Internal event-driven notifications with rate limiting and PII redaction' },
+      { id: 5, name: 'mortgage-calc-service', type: 'service', namespace: 'sf-mortgage', status: 'healthy', host: 'mortgage-calc-service.sf-mortgage.svc.cluster.local', port: 8080, protocol: 'gRPC', endpoints: 3, owner: 'sf-mortgage-team', bu: 'Single-Family', created: '2024-05-12', businessDesc: 'High-performance mortgage rate and affordability calculations' },
+      { id: 42, name: 'claims-processor', type: 'service', namespace: 'mf-claims', status: 'healthy', host: 'claims-processor.mf-claims.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-02-15', businessDesc: 'Automate MF insurance claims via DocuSign e-signatures and Verisk risk data' },
+      { id: 43, name: 'mf-loan-service', type: 'service', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service.mf-loans.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 3, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-20', businessDesc: 'Multi-family property loan underwriting and portfolio management API' },
+      { id: 58, name: 'doc-intelligence-svc', type: 'service', namespace: 'eot-ai', status: 'healthy', host: 'doc-intelligence-svc.eot-ai.svc.cluster.local', port: 8080, protocol: 'HTTP', endpoints: 2, owner: 'ai-platform', bu: 'Enterprise', created: '2024-06-10', businessDesc: 'RAG-powered document analysis using Azure OpenAI for loan doc extraction' },
       // Virtual Services (traffic routing) - host is external, targetService is internal service
       { id: 6, name: 'loan-api-vs', type: 'virtualservice', namespace: 'sf-loans', status: 'healthy', host: 'api.sf-loans.fm.com', targetService: 'loan-service', gateway: 'sf-loans-gw-ingress', timeout: '30s', retries: { attempts: 3, perTryTimeout: '10s', retryOn: '5xx,reset' }, httpRoutes: [
         { match: { uri: { prefix: '/api/v1/loans' } }, destination: { host: 'loan-service', port: 8080 }, rewrite: { uri: '/loans' } },
@@ -528,31 +530,48 @@ import React, { useState } from 'react';
         { match: { uri: { prefix: '/v1/eligibility' } }, destination: { host: 'eligibility-service', port: 8080 } },
         { match: { uri: { prefix: '/v2' } }, destination: { host: 'api-gateway-v2', port: 8080 }, rewrite: { uri: '/api' } }
       ], owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-10' },
+      { id: 48, name: 'mf-loan-api-vs', type: 'virtualservice', namespace: 'mf-loans', status: 'healthy', host: 'api.mf-loans.fm.com', targetService: 'mf-loan-service', gateway: 'mf-loans-gw-ingress', timeout: '30s', retries: { attempts: 3, perTryTimeout: '10s', retryOn: '5xx,reset' }, httpRoutes: [
+        { match: { uri: { prefix: '/api/v1/loans' } }, destination: { host: 'mf-loan-service', port: 8080 }, rewrite: { uri: '/loans' } },
+        { match: { uri: { prefix: '/api/v1/properties' } }, destination: { host: 'mf-loan-service', port: 8080 }, rewrite: { uri: '/properties' } },
+        { match: { uri: { prefix: '/api/v1/underwriting' } }, destination: { host: 'mf-loan-service', port: 8080 }, rewrite: { uri: '/underwriting' } },
+        { match: { uri: { prefix: '/health' } }, destination: { host: 'mf-loan-service', port: 8080 } }
+      ], owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-21' },
       // Ingress Gateways (external traffic entry)
       { id: 10, name: 'public-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.freddiemac.com', 'portal.freddiemac.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-05' },
       { id: 11, name: 'sf-loans-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.sf-loans.fm.com'], tls: 'SIMPLE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-10' },
       { id: 12, name: 'partner-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['partner-api.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-04-20' },
       { id: 40, name: 'integrations-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.payments.fm.com'], tls: 'MUTUAL', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-08' },
       { id: 41, name: 'platform-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.platform.fm.com'], tls: 'MUTUAL', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-18' },
+      { id: 47, name: 'mf-loans-gw-ingress', type: 'ingress', namespace: 'istio-system', status: 'healthy', hosts: ['api.mf-loans.fm.com'], tls: 'SIMPLE', port: 443, owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-18' },
       // Egress Gateways (controlled external calls)
       { id: 13, name: 'bank-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.bankofamerica.com', '*.chase.com', '*.wellsfargo.com'], tls: 'ORIGINATE', port: 443, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-15' },
       { id: 14, name: 'credit-bureau-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], tls: 'ORIGINATE', port: 443, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
       { id: 15, name: 'snowflake-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.snowflakecomputing.com'], tls: 'ORIGINATE', port: 443, owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
       { id: 38, name: 'external-apis-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.stripe.com', 'api.plaid.com', 'api.twilio.com'], tls: 'ORIGINATE', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-18' },
+      { id: 46, name: 'claims-vendors-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['api.docusign.com', 'demo.docusign.net', 'api.verisk.com'], tls: 'ORIGINATE', port: 443, owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-03-10' },
+      { id: 53, name: 'datadog-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['intake.logs.datadoghq.com', 'api.datadoghq.com'], tls: 'ORIGINATE', port: 443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-22' },
+      { id: 57, name: 'azure-ai-gw-egress', type: 'egress', namespace: 'istio-system', status: 'healthy', hosts: ['*.openai.azure.com', 'login.microsoftonline.com'], tls: 'ORIGINATE', port: 443, owner: 'ai-platform', bu: 'Enterprise', created: '2024-06-15' },
       // East-West Gateways (cross-cluster/namespace traffic)
       { id: 28, name: 'sf-to-eot-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-integrations.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-02-01' },
       { id: 29, name: 'platform-mesh-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.eot-platform.svc.cluster.local', '*.sf-loans.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-15' },
       { id: 30, name: 'cross-cluster-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.cluster-east.fm.com', '*.cluster-west.fm.com'], tls: 'MUTUAL', port: 15443, owner: 'platform-ops', bu: 'Enterprise', created: '2024-03-05' },
+      { id: 52, name: 'mf-cross-ns-gw-ew', type: 'eastwest', namespace: 'istio-system', status: 'healthy', hosts: ['*.mf-claims.svc.cluster.local', '*.mf-loans.svc.cluster.local'], tls: 'MUTUAL', port: 15443, owner: 'mf-platform', bu: 'Multi-Family', created: '2024-02-25' },
       // Destination Rules (load balancing, circuit breakers)
       { id: 16, name: 'loan-service-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'loan-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-17' },
       { id: 17, name: 'payment-gateway-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'warning', host: 'payment-gateway', trafficPolicy: 'LEAST_CONN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'integration-team', bu: 'Enterprise', created: '2024-02-12' },
       { id: 39, name: 'user-service-dr', type: 'destinationrule', namespace: 'eot-platform', status: 'healthy', host: 'user-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: false, mtls: 'STRICT', owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-22' },
+      { id: 49, name: 'mf-loan-service-dr', type: 'destinationrule', namespace: 'mf-loans', status: 'healthy', host: 'mf-loan-service', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'STRICT', subsets: [{ name: 'stable', labels: { version: 'v1' } }, { name: 'canary', labels: { version: 'v2' } }], owner: 'mf-lending-team', bu: 'Multi-Family', created: '2024-02-22' },
       { id: 18, name: 'external-banks-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: '*.bankofamerica.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-16' },
       { id: 31, name: 'stripe-api-dr', type: 'destinationrule', namespace: 'eot-integrations', status: 'healthy', host: 'api.stripe.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'integration-team', bu: 'Enterprise', created: '2024-02-21' },
       { id: 32, name: 'credit-bureau-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.equifax.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-21' },
       { id: 33, name: 'plaid-api-dr', type: 'destinationrule', namespace: 'sf-loans', status: 'healthy', host: 'api.plaid.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-26' },
       { id: 34, name: 'twilio-api-dr', type: 'destinationrule', namespace: 'eot-messaging', status: 'healthy', host: 'api.twilio.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-11' },
+      { id: 54, name: 'notification-service-dr', type: 'destinationrule', namespace: 'eot-messaging', status: 'healthy', host: 'notification-service', trafficPolicy: 'LEAST_CONN', circuitBreaker: true, mtls: 'STRICT', connectionPool: { tcp: { maxConnections: 100 }, http: { h2UpgradePolicy: 'UPGRADE', http1MaxPendingRequests: 100 } }, outlierDetection: { consecutive5xxErrors: 5, interval: '30s', baseEjectionTime: '60s' }, owner: 'platform-ops', bu: 'Enterprise', created: '2024-04-06' },
+      { id: 60, name: 'datadog-api-dr', type: 'destinationrule', namespace: 'eot-platform', status: 'healthy', host: 'api.datadoghq.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'platform-ops', bu: 'Enterprise', created: '2024-01-23' },
       { id: 35, name: 'snowflake-dr', type: 'destinationrule', namespace: 'eot-data', status: 'healthy', host: '*.snowflakecomputing.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'data-platform', bu: 'Enterprise', created: '2024-05-02' },
+      { id: 50, name: 'docusign-api-dr', type: 'destinationrule', namespace: 'mf-claims', status: 'healthy', host: 'api.docusign.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-03-12' },
+      { id: 51, name: 'verisk-api-dr', type: 'destinationrule', namespace: 'mf-claims', status: 'healthy', host: 'api.verisk.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-03-16' },
+      { id: 59, name: 'azure-openai-dr', type: 'destinationrule', namespace: 'eot-ai', status: 'healthy', host: '*.openai.azure.com', trafficPolicy: 'ROUND_ROBIN', circuitBreaker: true, mtls: 'SIMPLE', connectionPool: { tcp: { maxConnections: 50 }, http: { http2MaxRequests: 100 } }, owner: 'ai-platform', bu: 'Enterprise', created: '2024-06-16' },
       // Authorization Policies (access control)
       { id: 19, name: 'sf-loans-authz', type: 'authpolicy', namespace: 'sf-loans', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/eot-platform/sa/user-service'], rules: 5, owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-18' },
       { id: 20, name: 'integrations-authz', type: 'authpolicy', namespace: 'eot-integrations', status: 'healthy', action: 'ALLOW', principals: ['cluster.local/ns/sf-loans/sa/*'], rules: 8, owner: 'integration-team', bu: 'Enterprise', created: '2024-02-13' },
@@ -566,6 +585,10 @@ import React, { useState } from 'react';
       { id: 27, name: 'legacy-mainframe-se', type: 'serviceentry', namespace: 'eot-integrations', status: 'warning', hosts: ['mainframe.internal.fm.com'], location: 'MESH_INTERNAL', resolution: 'STATIC', ports: [{ number: 5250, protocol: 'TCP' }], endpoints: ['10.50.100.15', '10.50.100.16'], owner: 'integration-team', bu: 'Enterprise', created: '2024-05-05' },
       { id: 36, name: 'credit-bureaus-se', type: 'serviceentry', namespace: 'sf-loans', status: 'healthy', hosts: ['api.equifax.com', 'api.experian.com', 'api.transunion.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'sf-lending-team', bu: 'Single-Family', created: '2024-03-20' },
       { id: 37, name: 'snowflake-api-se', type: 'serviceentry', namespace: 'eot-data', status: 'healthy', hosts: ['*.snowflakecomputing.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'data-platform', bu: 'Enterprise', created: '2024-05-01' },
+      { id: 44, name: 'docusign-api-se', type: 'serviceentry', namespace: 'mf-claims', status: 'healthy', hosts: ['api.docusign.com', 'demo.docusign.net'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-03-10' },
+      { id: 45, name: 'verisk-api-se', type: 'serviceentry', namespace: 'mf-claims', status: 'healthy', hosts: ['api.verisk.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'mf-claims-team', bu: 'Multi-Family', created: '2024-03-15' },
+      { id: 55, name: 'azure-openai-se', type: 'serviceentry', namespace: 'eot-ai', status: 'healthy', hosts: ['*.openai.azure.com', 'fm-openai.openai.azure.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'ai-platform', bu: 'Enterprise', created: '2024-06-15' },
+      { id: 56, name: 'azure-ad-se', type: 'serviceentry', namespace: 'istio-system', status: 'healthy', hosts: ['login.microsoftonline.com', 'login.microsoft.com'], location: 'MESH_EXTERNAL', resolution: 'DNS', ports: [{ number: 443, protocol: 'HTTPS' }], owner: 'platform-ops', bu: 'Enterprise', created: '2024-06-15' },
     ];
 
     // WASM Plugins for Envoy
@@ -613,6 +636,8 @@ import React, { useState } from 'react';
       { id: 28, name: 'rate-limiter-notifications', namespace: 'comms', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/rate-limiter:v1.2.0', module: 'rate-limiter', version: 'v1.2.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'notification-service' } }, targetService: 'notification-service', priority: 100, owner: 'platform-ops', bu: 'Enterprise', created: '2024-10-01', config: { requests_per_minute: 2000, burst: 100 }, metrics: { requests: '320K', blocked: '450' } },
       // mortgage-calc-service WASM filter
       { id: 29, name: 'grpc-validator-mortgage', namespace: 'lending', status: 'active', enabled: true, phase: 'AUTHN', image: 'oci://gcr.io/fm-wasm/grpc-validator:v1.0.0', module: 'grpc-validator', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'app': 'mortgage-calc-service' } }, targetService: 'mortgage-calc-service', priority: 80, owner: 'loans-origination', bu: 'Single-Family', created: '2024-06-01', config: { proto_descriptor: 's3://fm-protos/mortgage-calc/v1/descriptor.pb', validate_requests: true, validate_responses: false }, metrics: { requests: '560K', valid: '558K', invalid: '2K' } },
+      // Azure OAuth Token Injector - Manages Azure AD client credentials flow for Azure OpenAI
+      { id: 30, name: 'azure-oauth-token-injector', namespace: 'eot-ai', status: 'active', enabled: true, phase: 'AUTHZ', image: 'oci://gcr.io/fm-wasm/azure-oauth-injector:v1.0.0', module: 'azure-oauth-injector', version: 'v1.0.0', sourceType: 'OCI', pullPolicy: 'IfNotPresent', selector: { matchLabels: { 'egress': 'azure-openai' } }, targetGateway: 'azure-ai-gw-egress', priority: 105, owner: 'ai-platform', bu: 'Enterprise', created: '2024-06-18', config: { token_endpoint: 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token', tenant_id: 'fm-enterprise-tenant', client_id_secret: 'aws-secrets-manager:prod/ai/azure-client-id', client_secret_secret: 'aws-secrets-manager:prod/ai/azure-client-secret', scope: 'https://cognitiveservices.azure.com/.default', cache_ttl_seconds: 3600, refresh_before_expiry_seconds: 3600, inject_as: 'header', header_name: 'Authorization', header_prefix: 'Bearer ' }, metrics: { requests: '245K', tokens_issued: '68', tokens_cached: '244.9K', refresh_calls: '68' } },
     ];
 
     // Auth Policies (Istio AuthorizationPolicy resources)
@@ -852,6 +877,9 @@ import React, { useState } from 'react';
       const [wasmFilter, setWasmFilter] = useState('Enabled');
       const [luaFilter, setLuaFilter] = useState('All');
       const [dadActiveTab, setDadActiveTab] = useState('resources');
+      const [traceService, setTraceService] = useState(null);
+      const [traceDirection, setTraceDirection] = useState('inbound');
+      const [tracePath, setTracePath] = useState(null); // Selected gateway/path within direction
       const [expandedWasmModules, setExpandedWasmModules] = useState([]);
       const [expandedServices, setExpandedServices] = useState([]);
       const [expandedLuaFilters, setExpandedLuaFilters] = useState([]);
@@ -941,6 +969,115 @@ import React, { useState } from 'react';
         });
         return filters;
       };
+
+      // Get available paths for a service in a given direction
+      const getAvailablePaths = (service, direction) => {
+        if (!service) return [];
+
+        if (direction === 'inbound') {
+          // Inbound typically has one path per VirtualService
+          const vs = meshResources.find(r => r.type === 'virtualservice' && r.targetService === service.name);
+          const gateway = vs ? meshResources.find(r => ['ingress', 'egress', 'eastwest'].includes(r.type) && r.name === vs.gateway) : null;
+          if (gateway) return [{ id: gateway.name, label: gateway.name, icon: 'log-in', resource: gateway }];
+          return [];
+        }
+        else if (direction === 'egress') {
+          // Each ServiceEntry is a separate egress path
+          const serviceEntries = meshResources.filter(r => r.type === 'serviceentry' && r.namespace === service.namespace);
+          return serviceEntries.map(se => ({
+            id: se.name,
+            label: se.hosts?.[0] || se.name,
+            icon: 'external-link',
+            resource: se
+          }));
+        }
+        else if (direction === 'eastwest') {
+          // Each E/W gateway is a separate path
+          const ewGateways = meshResources.filter(r => r.type === 'eastwest' &&
+            r.hosts?.some(h => h.includes(service.namespace + '.svc') || h.includes('*.' + service.namespace + '.'))
+          );
+          return ewGateways.map(ew => ({
+            id: ew.name,
+            label: ew.name,
+            icon: 'repeat',
+            resource: ew
+          }));
+        }
+        return [];
+      };
+
+      // Build request trace for packet view - shows full path from ingress to service
+      const buildRequestTrace = (service, direction = 'inbound', selectedPath = null) => {
+        if (!service) return [];
+        const trace = [];
+
+        if (direction === 'inbound') {
+          // INBOUND: External → Ingress → VirtualService → AuthPolicy → Filters → DR → Service
+          const vs = meshResources.find(r => r.type === 'virtualservice' && r.targetService === service.name);
+          const gateway = vs ? meshResources.find(r => ['ingress', 'egress', 'eastwest'].includes(r.type) && r.name === vs.gateway) : null;
+          const authPolicies = meshResources.filter(r => r.type === 'authpolicy' && r.namespace === service.namespace);
+          const filters = getServiceFilters(service);
+          const dr = meshResources.find(r => r.type === 'destinationrule' && r.host === service.name);
+
+          if (gateway) trace.push({ type: 'gateway', subtype: gateway.type, resource: gateway });
+          if (vs) trace.push({ type: 'virtualservice', resource: vs });
+          if (authPolicies.length > 0) trace.push({ type: 'authpolicy', resources: authPolicies });
+          if (filters.length > 0) trace.push({ type: 'filters', resources: filters });
+          if (dr) trace.push({ type: 'destinationrule', resource: dr });
+          trace.push({ type: 'service', resource: service });
+        }
+        else if (direction === 'egress') {
+          // EGRESS: DR (external) → ServiceEntry → Egress Gateway → External
+          const serviceEntries = meshResources.filter(r => r.type === 'serviceentry' && r.namespace === service.namespace);
+          const egressGateways = meshResources.filter(r => r.type === 'egress');
+
+          // Filter to selected path or show first one
+          const targetEntries = selectedPath
+            ? serviceEntries.filter(se => se.name === selectedPath)
+            : serviceEntries.slice(0, 1);
+
+          targetEntries.forEach(se => {
+            const matchingEgress = egressGateways.find(eg =>
+              eg.hosts?.some(egHost => se.hosts?.some(seHost =>
+                egHost === seHost || egHost.replace('*.', '').split('.').slice(-2).join('.') === seHost.split('.').slice(-2).join('.')
+              ))
+            );
+            const externalDr = meshResources.find(r => r.type === 'destinationrule' && se.hosts?.some(h => r.host?.includes(h.replace('api.', '').split('.')[0])));
+
+            if (externalDr) trace.push({ type: 'destinationrule', resource: externalDr, label: 'Outbound Policy' });
+            trace.push({ type: 'serviceentry', resource: se });
+            if (matchingEgress) trace.push({ type: 'gateway', subtype: 'egress', resource: matchingEgress });
+            trace.push({ type: 'external', resource: { name: se.hosts?.[0], hosts: se.hosts, resolution: se.resolution } });
+          });
+        }
+        else if (direction === 'eastwest') {
+          // EAST-WEST: East-West Gateway → Remote Service
+          const ewGateways = meshResources.filter(r => r.type === 'eastwest' &&
+            r.hosts?.some(h => h.includes(service.namespace + '.svc') || h.includes('*.' + service.namespace + '.'))
+          );
+
+          // Filter to selected path or show first one
+          const targetGateways = selectedPath
+            ? ewGateways.filter(ew => ew.name === selectedPath)
+            : ewGateways.slice(0, 1);
+
+          targetGateways.forEach(ew => {
+            trace.push({ type: 'gateway', subtype: 'eastwest', resource: ew });
+            const remoteHosts = ew.hosts?.filter(h => !h.includes(service.namespace)) || [];
+            const localHosts = ew.hosts?.filter(h => h.includes(service.namespace)) || [];
+            if (remoteHosts.length > 0) {
+              // Outbound: service can reach these remote namespaces
+              trace.push({ type: 'remote', resource: { name: 'Remote Services', hosts: remoteHosts, tls: ew.tls } });
+            } else if (localHosts.length > 0) {
+              // Inbound: service is exposed to remote clusters via this gateway
+              trace.push({ type: 'exposed', resource: { name: 'Exposed to Remote Clusters', hosts: localHosts, tls: ew.tls } });
+            }
+          });
+        }
+
+        return trace;
+      };
+
       const availableFilters = [
         { id: 'jwt', name: 'JWT Auth', icon: 'key', category: 'security', phase: 'AUTHN', desc: 'Validates JSON Web Tokens (JWT) for authentication. Verifies token signature, expiration, and claims against configured issuers.', example: 'issuer: https://auth.example.com\naudiences:\n  - api.example.com\njwks_uri: https://auth.example.com/.well-known/jwks.json\nforward_payload_header: x-jwt-payload' },
         { id: 'oauth2', name: 'OAuth2', icon: 'lock', category: 'security', phase: 'AUTHN', desc: 'Implements OAuth 2.0 authorization flow. Handles token exchange, refresh tokens, and integration with identity providers.', example: 'token_endpoint: https://auth.example.com/oauth/token\nclient_id: my-service\nclient_secret_ref: oauth-secret\nscopes:\n  - read\n  - write' },
@@ -2571,74 +2708,20 @@ import React, { useState } from 'react';
           if (dadFilter === 'Svc Entries') return r.type === 'serviceentry';
           return true;
         });
-        const [showTrafficFlow, setShowTrafficFlow] = useState(false);
         return (
         <div className="p-6">
-          {/* Traffic Flow Diagram - Collapsible */}
-          <div className="mb-6">
-            <button onClick={() => setShowTrafficFlow(!showTrafficFlow)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-cyan-400 mb-2">
-              <Icon name={showTrafficFlow ? 'chevron-down' : 'chevron-right'} size={16} />
-              <Icon name="help-circle" size={14} />
-              <span>How does Istio route traffic?</span>
-            </button>
-            {showTrafficFlow && (
-              <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 mb-4">
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-gray-700 flex items-center justify-center"><Icon name="globe" size={24} className="text-gray-400" /></div>
-                    <span className="text-xs text-gray-400 mt-1">Client</span>
-                  </div>
-                  <Icon name="arrow-right" size={20} className="text-gray-600" />
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center"><Icon name="log-in" size={24} className="text-cyan-400" /></div>
-                    <span className="text-xs text-cyan-400 mt-1">Gateway</span>
-                    <span className="text-xs text-gray-500">TLS/Hosts</span>
-                  </div>
-                  <Icon name="arrow-right" size={20} className="text-gray-600" />
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-violet-500/20 border border-violet-500/40 flex items-center justify-center"><Icon name="git-branch" size={24} className="text-violet-400" /></div>
-                    <span className="text-xs text-violet-400 mt-1">VirtualService</span>
-                    <span className="text-xs text-gray-500">Routing</span>
-                  </div>
-                  <Icon name="arrow-right" size={20} className="text-gray-600" />
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center"><Icon name="sliders" size={24} className="text-amber-400" /></div>
-                    <span className="text-xs text-amber-400 mt-1">DestinationRule</span>
-                    <span className="text-xs text-gray-500">Policy</span>
-                  </div>
-                  <Icon name="arrow-right" size={20} className="text-gray-600" />
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center"><Icon name="server" size={24} className="text-blue-400" /></div>
-                    <span className="text-xs text-blue-400 mt-1">Service</span>
-                    <span className="text-xs text-gray-500">K8s</span>
-                  </div>
-                  <Icon name="arrow-right" size={20} className="text-gray-600" />
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center"><Icon name="box" size={24} className="text-emerald-400" /></div>
-                    <span className="text-xs text-emerald-400 mt-1">Pod</span>
-                    <span className="text-xs text-gray-500">Workload</span>
-                  </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-700 grid grid-cols-3 gap-4 text-xs">
-                  <div><span className="text-cyan-400 font-semibold">Gateway:</span> <span className="text-gray-400">Entry point - TLS termination, host matching</span></div>
-                  <div><span className="text-violet-400 font-semibold">VirtualService:</span> <span className="text-gray-400">Routing rules - path matching, traffic split, retries</span></div>
-                  <div><span className="text-amber-400 font-semibold">DestinationRule:</span> <span className="text-gray-400">Policies - load balancing, circuit breaker, mTLS</span></div>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Tab Navigation */}
           <div className="flex gap-1 mb-6 border-b-2 border-gray-600">
             {[
               { id: 'services', label: 'Services', icon: 'server' },
               { id: 'resources', label: 'Mesh Config', icon: 'git-branch' },
               { id: 'patterns', label: 'Patterns', icon: 'layers' },
-              { id: 'compare', label: 'Compare', icon: 'columns' },
               ...(featureFlags.dadSecurity ? [{ id: 'security', label: 'Security', icon: 'shield' }] : []),
               ...(featureFlags.dadCertificates ? [{ id: 'certs', label: 'Certificates', icon: 'lock' }] : []),
               { id: 'wasm', label: 'WASM Filters', icon: 'cpu' },
               ...(featureFlags.dadLua ? [{ id: 'lua', label: 'Lua', icon: 'code' }] : []),
+              { id: 'trace', label: 'Trace', icon: 'activity' },
+              { id: 'compare', label: 'Compare', icon: 'columns' },
             ].map(tab => (
               <button key={tab.id} onClick={() => setDadActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2.5 text-base font-semibold border-b-2 -mb-px transition-colors ${dadActiveTab === tab.id ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-gray-400 hover:text-gray-200'}`}>
                 <Icon name={tab.icon} size={18} />{tab.label}
@@ -2719,7 +2802,7 @@ import React, { useState } from 'react';
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             {/* Auth Policies Column - First since AuthZ is first check */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})</div>
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="shield" size={12} className="text-rose-400" />Auth Policies ({authPolicies.length})<button type="button" className="p-0.5 text-rose-400 hover:text-rose-300 ml-auto" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'auth-policies', name: 'Auth Policies', summary: 'Istio AuthorizationPolicy resources that control who can access this service based on JWT claims, source IPs, and request properties.', useCases: [{ icon: 'shield', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'ALLOW Rules', desc: 'Permit access when conditions match', code: ['principals: ["cluster.local/ns/default/sa/webapp"]'] }, { icon: 'x-circle', color: 'bg-red-500/20', iconColor: 'text-red-400', title: 'DENY Rules', desc: 'Block access when conditions match', code: ['notRequestPrincipals: ["*"]'] }, { icon: 'key', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'JWT Claims', desc: 'Authorize based on token claims', code: ['request.auth.claims[role]: "admin"'] }] }); }}><Icon name="help-circle" size={14} /></button></div>
                               {authPolicies.length > 0 ? (
                                 <div className="space-y-1.5">
                                   {authPolicies.map((ap, i) => (
@@ -2739,7 +2822,7 @@ import React, { useState } from 'react';
                             </div>
                             {/* Filters Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="filter" size={12} className="text-cyan-400" />Filters ({filters.length})</div>
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="filter" size={12} className="text-cyan-400" />Filters ({filters.length})<button type="button" className="p-0.5 text-cyan-400 hover:text-cyan-300 ml-auto" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'filters', name: 'Filters', summary: 'WASM and Lua filters that process requests at different phases of the Envoy filter chain (AUTHN, AUTHZ, STATS, DEFAULT).', useCases: [{ icon: 'cpu', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'WASM Plugins', desc: 'High-performance compiled modules', code: ['rate_limiter.wasm', 'jwt_auth.wasm'] }, { icon: 'code', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Lua Scripts', desc: 'Flexible scripting for custom logic', code: ['header_transform.lua', 'logging.lua'] }, { icon: 'layers', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Filter Phases', desc: 'Control execution order in chain', code: ['AUTHN → AUTHZ → STATS → DEFAULT'] }] }); }}><Icon name="help-circle" size={14} /></button></div>
                               {filters.length > 0 ? (
                                 <div className="space-y-1.5">
                                   {filters.map((f, i) => (
@@ -2756,7 +2839,7 @@ import React, { useState } from 'react';
                             </div>
                             {/* Destination Rule Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule</div>
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="sliders" size={12} className="text-violet-400" />Destination Rule<button type="button" className="p-0.5 text-violet-400 hover:text-violet-300 ml-auto" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'destination-rule', name: 'Destination Rule', summary: 'Configures load balancing, connection pool settings, circuit breaking, and mTLS for traffic to this service.', useCases: [{ icon: 'shuffle', color: 'bg-blue-500/20', iconColor: 'text-blue-400', title: 'Load Balancing', desc: 'Distribute traffic across pods', code: ['ROUND_ROBIN', 'LEAST_CONN', 'RANDOM'] }, { icon: 'zap-off', color: 'bg-red-500/20', iconColor: 'text-red-400', title: 'Circuit Breaking', desc: 'Protect from cascading failures', code: ['consecutive5xxErrors: 5', 'ejectionTime: 30s'] }, { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'mTLS Mode', desc: 'Mutual TLS between services', code: ['STRICT', 'PERMISSIVE', 'DISABLE'] }] }); }}><Icon name="help-circle" size={14} /></button></div>
                               {dr ? (
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between">
@@ -2778,7 +2861,7 @@ import React, { useState } from 'react';
                             </div>
                             {/* Routing Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="git-branch" size={12} className="text-blue-400" />Virtual Services ({vs.length})</div>
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="git-branch" size={12} className="text-blue-400" />Virtual Services ({vs.length})<button type="button" className="p-0.5 text-blue-400 hover:text-blue-300 ml-auto" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'virtual-services', name: 'Virtual Services', summary: 'Define traffic routing rules including path-based routing, header matching, retries, timeouts, and traffic splitting.', useCases: [{ icon: 'git-branch', color: 'bg-violet-500/20', iconColor: 'text-violet-400', title: 'Path Routing', desc: 'Route requests by URL path', code: ['/api/v1/* → svc-v1', '/api/v2/* → svc-v2'] }, { icon: 'percent', color: 'bg-amber-500/20', iconColor: 'text-amber-400', title: 'Traffic Splitting', desc: 'Canary and A/B deployments', code: ['stable: 90%', 'canary: 10%'] }, { icon: 'clock', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Timeouts & Retries', desc: 'Resilience configuration', code: ['timeout: 30s', 'retries: 3'] }] }); }}><Icon name="help-circle" size={14} /></button></div>
                               {vs.length > 0 ? (
                                 <div className="space-y-1.5">
                                   {vs.map((v, i) => (
@@ -2795,7 +2878,7 @@ import React, { useState } from 'react';
                             </div>
                             {/* Gateways Column */}
                             <div className="bg-gray-800/50 rounded-lg p-3">
-                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="log-in" size={12} className="text-orange-400" />Gateways ({gateways.length})</div>
+                              <div className="text-sm text-gray-400 mb-2 flex items-center gap-1 font-medium"><Icon name="log-in" size={12} className="text-orange-400" />Gateways ({gateways.length})<button type="button" className="p-0.5 text-orange-400 hover:text-orange-300 ml-auto" onClick={(e) => { e.stopPropagation(); setShowFilterInfo({ type: 'resource', id: 'gateways', name: 'Gateways', summary: 'Ingress and Egress gateways that expose this service to external traffic or allow it to reach external services.', useCases: [{ icon: 'log-in', color: 'bg-cyan-500/20', iconColor: 'text-cyan-400', title: 'Ingress', desc: 'Accept external traffic into mesh', code: ['api.example.com:443', 'TLS: SIMPLE'] }, { icon: 'log-out', color: 'bg-orange-500/20', iconColor: 'text-orange-400', title: 'Egress', desc: 'Allow traffic to external services', code: ['*.stripe.com', 'TLS: ORIGINATE'] }, { icon: 'lock', color: 'bg-emerald-500/20', iconColor: 'text-emerald-400', title: 'TLS Modes', desc: 'Configure encryption at edge', code: ['SIMPLE', 'MUTUAL', 'PASSTHROUGH'] }] }); }}><Icon name="help-circle" size={14} /></button></div>
                               {gateways.length > 0 ? (
                                 <div className="space-y-1.5">
                                   {gateways.map((gw, i) => (
@@ -2828,6 +2911,333 @@ import React, { useState } from 'react';
               )}
             </div>
           ); })()}
+
+          {/* Trace Tab - Packet view showing request path through mesh */}
+          {dadActiveTab === 'trace' && (() => {
+            const services = meshResources.filter(r => r.type === 'service');
+            const availablePaths = traceService ? getAvailablePaths(traceService, traceDirection) : [];
+            const effectivePath = tracePath || (availablePaths.length > 0 ? availablePaths[0].id : null);
+            const trace = traceService ? buildRequestTrace(traceService, traceDirection, effectivePath) : [];
+
+            const stepConfig = {
+              gateway: { icon: 'log-in', label: 'Ingress Gateway', color: 'cyan', iconColor: 'text-cyan-400', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/30' },
+              egress: { icon: 'log-out', label: 'Egress Gateway', color: 'orange', iconColor: 'text-orange-400', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/30' },
+              eastwest: { icon: 'repeat', label: 'East-West Gateway', color: 'teal', iconColor: 'text-teal-400', bgColor: 'bg-teal-500/10', borderColor: 'border-teal-500/30' },
+              virtualservice: { icon: 'git-branch', label: 'Virtual Service', color: 'violet', iconColor: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/30' },
+              authpolicy: { icon: 'shield', label: 'Authorization', color: 'rose', iconColor: 'text-rose-400', bgColor: 'bg-rose-500/10', borderColor: 'border-rose-500/30' },
+              filters: { icon: 'filter', label: 'Filters', color: 'cyan', iconColor: 'text-cyan-400', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/30' },
+              destinationrule: { icon: 'sliders', label: 'Destination Rule', color: 'violet', iconColor: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/30' },
+              service: { icon: 'server', label: 'Service', color: 'emerald', iconColor: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30' },
+              serviceentry: { icon: 'external-link', label: 'Service Entry', color: 'amber', iconColor: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/30' },
+              external: { icon: 'cloud', label: 'External Service', color: 'gray', iconColor: 'text-gray-400', bgColor: 'bg-gray-500/10', borderColor: 'border-gray-500/30' },
+              remote: { icon: 'globe', label: 'Remote Cluster', color: 'blue', iconColor: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/30' },
+              exposed: { icon: 'radio', label: 'Exposed to Remote', color: 'purple', iconColor: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/30' }
+            };
+
+            const handleEditStep = (step) => {
+              if (step.type === 'gateway') setEditingGateway(step.resource);
+              else if (step.type === 'virtualservice') setEditingVirtualService({...step.resource, routes: step.resource.httpRoutes || []});
+              else if (step.type === 'authpolicy') setEditingAuthPolicy({...step.resources[0], rules: step.resources[0].rules || []});
+              else if (step.type === 'filters') { setServiceEditorResource(traceService); setShowServiceEditor(true); }
+              else if (step.type === 'destinationrule') setEditingDestinationRule({...step.resource, subsets: step.resource.subsets || []});
+            };
+
+            const directionTabs = [
+              { id: 'inbound', label: 'Inbound', icon: 'log-in', desc: 'External → Service' },
+              { id: 'egress', label: 'Egress', icon: 'log-out', desc: 'Service → External' },
+              { id: 'eastwest', label: 'East-West', icon: 'repeat', desc: 'Cross-cluster' }
+            ];
+
+            // Filter services based on direction
+            const getServicesForDirection = (dir) => {
+              if (dir === 'inbound') {
+                // Services with VirtualService + Gateway
+                return services.filter(svc => {
+                  const vs = meshResources.find(r => r.type === 'virtualservice' && r.targetService === svc.name);
+                  const gw = vs ? meshResources.find(r => r.type === 'ingress' && r.name === vs.gateway) : null;
+                  return vs && gw;
+                });
+              } else if (dir === 'egress') {
+                // Services whose namespace has ServiceEntries
+                return services.filter(svc => {
+                  const serviceEntries = meshResources.filter(r => r.type === 'serviceentry' && r.namespace === svc.namespace);
+                  return serviceEntries.length > 0;
+                });
+              } else if (dir === 'eastwest') {
+                // Services with matching East-West gateway
+                return services.filter(svc => {
+                  const ewGateways = meshResources.filter(r => r.type === 'eastwest' &&
+                    r.hosts?.some(h => h.includes(svc.namespace + '.svc') || h.includes('*.' + svc.namespace + '.'))
+                  );
+                  return ewGateways.length > 0;
+                });
+              }
+              return services;
+            };
+
+            const filteredServices = getServicesForDirection(traceDirection);
+
+            return (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold">Request Trace</h2>
+                    <p className="text-sm text-gray-500">Visualize the full path a request takes through the service mesh</p>
+                  </div>
+                </div>
+
+                {/* Direction Tabs + Service Selector */}
+                <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-4">
+                  <div className="flex flex-wrap items-end gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Traffic Direction</label>
+                      <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
+                        {directionTabs.map(tab => {
+                          const count = getServicesForDirection(tab.id).length;
+                          return (
+                            <button
+                              key={tab.id}
+                              onClick={() => { setTraceDirection(tab.id); setTraceService(null); setTracePath(null); }}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                                traceDirection === tab.id
+                                  ? 'bg-cyan-600 text-white'
+                                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                              }`}
+                            >
+                              <Icon name={tab.icon} size={14} />
+                              {tab.label}
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${traceDirection === tab.id ? 'bg-cyan-500' : 'bg-gray-700'}`}>{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {filteredServices.length > 0 && (
+                      <div className="flex-1 min-w-[300px]">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Select a service</label>
+                        <select
+                          value={traceService?.name || ''}
+                          onChange={(e) => { setTraceService(filteredServices.find(s => s.name === e.target.value) || null); setTracePath(null); }}
+                          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+                        >
+                          <option value="">Choose a service...</option>
+                          {filteredServices.map(svc => (
+                            <option key={svc.id} value={svc.name}>{svc.name} — {svc.businessDesc || svc.namespace}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {/* Path Selector - only show if multiple paths available */}
+                    {traceService && availablePaths.length > 1 && (
+                      <div className="min-w-[250px]">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          {traceDirection === 'egress' ? 'External API' : traceDirection === 'eastwest' ? 'Gateway' : 'Gateway'}
+                        </label>
+                        <select
+                          value={effectivePath || ''}
+                          onChange={(e) => setTracePath(e.target.value)}
+                          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500"
+                        >
+                          {availablePaths.map(path => (
+                            <option key={path.id} value={path.id}>{path.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Empty State - No services configured for this direction */}
+                {filteredServices.length === 0 && (
+                  <div className="bg-gray-800/30 border border-dashed border-gray-600 rounded-xl p-8 text-center">
+                    <Icon name={traceDirection === 'inbound' ? 'log-in' : traceDirection === 'egress' ? 'log-out' : 'repeat'} size={32} className="text-gray-500 mx-auto mb-3" />
+                    <p className="text-gray-300 font-medium mb-2">
+                      {traceDirection === 'inbound' && 'No services have inbound traffic configured'}
+                      {traceDirection === 'egress' && 'No services have egress dependencies configured'}
+                      {traceDirection === 'eastwest' && 'No services have cross-cluster routing configured'}
+                    </p>
+                    <p className="text-gray-500 text-sm mb-4">
+                      {traceDirection === 'inbound' && 'Add an Ingress Gateway and VirtualService to expose services externally'}
+                      {traceDirection === 'egress' && 'Add ServiceEntry + Egress Gateway to allow outbound traffic to external APIs'}
+                      {traceDirection === 'eastwest' && 'Add an East-West Gateway to enable traffic between clusters'}
+                    </p>
+                    <button className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
+                      <Icon name="plus" size={14} className="inline mr-2" />
+                      {traceDirection === 'inbound' && 'Add Ingress Gateway'}
+                      {traceDirection === 'egress' && 'Add Egress Configuration'}
+                      {traceDirection === 'eastwest' && 'Add East-West Gateway'}
+                    </button>
+                  </div>
+                )}
+
+                {/* Trace Visualization */}
+                {traceService && (
+                  <div className="flex flex-col items-center">
+                    {/* Header with business description */}
+                    <div className={`w-full max-w-2xl border rounded-xl p-4 mb-2 ${
+                      traceDirection === 'inbound' ? 'bg-gray-800/50 border-gray-600' :
+                      traceDirection === 'egress' ? 'bg-emerald-500/10 border-emerald-500/30' :
+                      'bg-emerald-500/10 border-emerald-500/30'
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          traceDirection === 'inbound' ? 'bg-gray-700' : 'bg-emerald-500/20'
+                        }`}>
+                          <Icon name={traceDirection === 'inbound' ? 'globe' : 'server'} size={20} className={traceDirection === 'inbound' ? 'text-gray-400' : 'text-emerald-400'} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-200">
+                            {traceDirection === 'inbound' ? 'External Request' : traceService.name}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {traceService.businessDesc}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {traceDirection === 'inbound' && (trace.find(t => t.type === 'virtualservice')?.resource?.host || traceService.host)}
+                            {traceDirection === 'egress' && `Outbound from ${traceService.namespace}`}
+                            {traceDirection === 'eastwest' && `Cross-cluster traffic from ${traceService.namespace}`}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Trace Steps */}
+                    {trace.map((step, idx) => {
+                      const config = step.type === 'gateway' ? stepConfig[step.subtype] || stepConfig.gateway : stepConfig[step.type];
+                      return (
+                        <React.Fragment key={idx}>
+                          {/* Connector Line */}
+                          <div className="w-0.5 h-6 bg-gray-600" />
+                          <div className="text-gray-500 text-xs mb-1">
+                            <Icon name="chevron-down" size={16} />
+                          </div>
+
+                          {/* Step Card */}
+                          <div className={`w-full max-w-2xl ${config.bgColor} border ${config.borderColor} rounded-xl p-4 hover:border-opacity-60 transition-colors`}>
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-3">
+                                <div className={`w-10 h-10 rounded-lg ${config.bgColor} flex items-center justify-center`}>
+                                  <Icon name={config.icon} size={20} className={config.iconColor} />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className={`font-medium ${config.iconColor}`}>{config.label}</span>
+                                    {step.resource && (
+                                      <code className="text-xs bg-gray-700/50 px-2 py-0.5 rounded text-gray-300">{step.resource.name}</code>
+                                    )}
+                                  </div>
+
+                                  {/* Step Details */}
+                                  <div className="text-sm text-gray-400 space-y-1">
+                                    {step.type === 'gateway' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Host: {step.resource.hosts?.join(', ')}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />TLS: {step.resource.tls}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Port: {step.resource.port}</div>
+                                      </>
+                                    )}
+                                    {step.type === 'virtualservice' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Routes: {step.resource.httpRoutes?.length || 0} rules</div>
+                                        {step.resource.timeout && <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Timeout: {step.resource.timeout}</div>}
+                                        {step.resource.retries && <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Retries: {step.resource.retries.attempts} attempts</div>}
+                                      </>
+                                    )}
+                                    {step.type === 'authpolicy' && (
+                                      <>
+                                        {step.resources.map((ap, i) => (
+                                          <div key={i} className="flex items-center gap-2">
+                                            <Icon name={ap.action === 'ALLOW' ? 'check' : 'x'} size={12} className={ap.action === 'ALLOW' ? 'text-emerald-400' : 'text-red-400'} />
+                                            {ap.name}: {ap.action}
+                                          </div>
+                                        ))}
+                                      </>
+                                    )}
+                                    {step.type === 'filters' && (
+                                      <div className="space-y-1">
+                                        {['AUTHN', 'AUTHZ', 'STATS', 'UNSPECIFIED'].map(phase => {
+                                          const phaseFilters = step.resources.filter(f => f.phase === phase);
+                                          if (phaseFilters.length === 0) return null;
+                                          return (
+                                            <div key={phase} className="flex items-center gap-2">
+                                              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 w-20">{phase === 'UNSPECIFIED' ? 'DEFAULT' : phase}</span>
+                                              {phaseFilters.map((f, i) => (
+                                                <span key={i} className="text-xs text-gray-300">{f.name}{i < phaseFilters.length - 1 ? ',' : ''}</span>
+                                              ))}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                    {step.type === 'destinationrule' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Load Balance: {step.resource.trafficPolicy}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />mTLS: {step.resource.mtls}</div>
+                                        {step.resource.circuitBreaker && <div className="flex items-center gap-2"><Icon name="alert-triangle" size={12} className="text-amber-400" />Circuit Breaker: enabled</div>}
+                                        {step.resource.subsets?.length > 0 && <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Subsets: {step.resource.subsets.map(s => s.name).join(', ')}</div>}
+                                      </>
+                                    )}
+                                    {step.type === 'service' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Host: {step.resource.host}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Port: {step.resource.port} ({step.resource.protocol})</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-emerald-400" />Endpoints: {step.resource.endpoints} pods</div>
+                                      </>
+                                    )}
+                                    {step.type === 'serviceentry' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-amber-400" />Hosts: {step.resource.hosts?.join(', ')}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-amber-400" />Location: {step.resource.location}</div>
+                                        <div className="flex items-center gap-2"><Icon name="check" size={12} className="text-amber-400" />Resolution: {step.resource.resolution}</div>
+                                      </>
+                                    )}
+                                    {step.type === 'external' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="arrow-right" size={12} className="text-gray-400" />{step.resource.hosts?.join(', ')}</div>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500">Resolution: {step.resource.resolution}</div>
+                                      </>
+                                    )}
+                                    {step.type === 'remote' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="arrow-right" size={12} className="text-blue-400" />{step.resource.hosts?.join(', ')}</div>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500">mTLS: {step.resource.tls}</div>
+                                      </>
+                                    )}
+                                    {step.type === 'exposed' && (
+                                      <>
+                                        <div className="flex items-center gap-2"><Icon name="arrow-left" size={12} className="text-purple-400" />Remote clusters can reach: {step.resource.hosts?.join(', ')}</div>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500">mTLS: {step.resource.tls}</div>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              {!['service', 'external', 'remote', 'exposed'].includes(step.type) && (
+                                <button onClick={() => handleEditStep(step)} className={`p-2 rounded-lg hover:${config.bgColor} ${config.iconColor} opacity-60 hover:opacity-100 transition-opacity`}>
+                                  <Icon name="edit" size={16} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+
+                  </div>
+                )}
+
+                {/* Prompt to select a service - only when services exist for this direction */}
+                {!traceService && filteredServices.length > 0 && (
+                  <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-12 text-center">
+                    <Icon name="activity" size={48} className="text-gray-600 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-300 mb-2">Select a Service to Trace</h3>
+                    <p className="text-gray-500 max-w-md mx-auto">Choose a service from the dropdown above to see the full request path through gateways, routing rules, filters, and policies.</p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Mesh Config Tab (formerly Resources/Traffic) */}
           {dadActiveTab === 'resources' && (() => {
@@ -9502,7 +9912,8 @@ spec:
                     </div>
                   </div>
 
-                  {/* Type */}
+                  {/* Type - only show when creating new */}
+                  {editingGateway.isNew && (
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                     <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="layers" size={14} className="text-gray-400" />Gateway Type</h3>
                     <div className="flex gap-3">
@@ -9524,6 +9935,7 @@ spec:
                       </label>
                     </div>
                   </div>
+                  )}
 
                   {/* Servers */}
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
