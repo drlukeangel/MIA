@@ -7447,7 +7447,8 @@ spec:
     - name: ${s.name}
       labels:
         version: ${s.version || s.name}`).join('')}` : ''}`;
-              } else if (r.type === 'gateway') {
+              } else if (r.type === 'gateway' || ['ingress', 'egress', 'eastwest'].includes(r.type)) {
+                const gatewaySelector = r.type === 'egress' ? 'egressgateway' : r.type === 'eastwest' ? 'eastwestgateway' : 'ingressgateway';
                 return `apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -7455,17 +7456,17 @@ metadata:
   namespace: ${r.namespace || 'istio-system'}
 spec:
   selector:
-    istio: ${r.selector || 'ingressgateway'}
+    istio: ${r.selector || gatewaySelector}
   servers:
     - port:
         number: ${r.port || 443}
-        name: https
-        protocol: HTTPS
-      hosts:
-        - "${r.hosts?.[0] || '*.example.com'}"
+        name: ${r.type === 'eastwest' ? 'tls' : 'https'}
+        protocol: ${r.type === 'eastwest' ? 'TLS' : 'HTTPS'}
+      hosts:${(r.hosts || ['*.example.com']).map(h => `
+        - "${h}"`).join('')}
       tls:
-        mode: ${r.tlsMode || 'SIMPLE'}
-        credentialName: ${r.credentialName || r.name + '-credential'}`;
+        mode: ${r.tls || r.tlsMode || (r.type === 'eastwest' ? 'AUTO_PASSTHROUGH' : 'SIMPLE')}${r.type !== 'eastwest' ? `
+        credentialName: ${r.credentialName || r.name + '-credential'}` : ''}`;
               } else if (r.type === 'serviceentry') {
                 return `apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
