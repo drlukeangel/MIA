@@ -7386,6 +7386,7 @@ import React, { useState } from 'react';
                       else if (dadActiveTab === 'certs') showNotification('Creating new Certificate...');
                       else if (dadActiveTab === 'wasm') showNotification('Creating new WASM Plugin...');
                       else if (dadActiveTab === 'lua') showNotification('Creating new Lua Filter...');
+                      else { setCreatingResource(true); setCreateResourceTab('pattern'); setNewResourceType('virtualservice'); setNewResourceData({ name: '', namespace: 'default' }); }
                     }
                     else if (activeNav === 'auntie') { setEditingMessaging(null); setNewMessagingData({ name: '', type: 'sqs', zone: 'local', description: '', owner: '', retention: '', encryption: 'AWS KMS' }); setShowNewMessaging(true); }
                     else if (activeNav === 'rosie') { setJobEditorResource({ id: Date.now(), name: 'New Job', isNew: true }); setJobEditorNodes([]); setJobEditorConfig({ name: '', description: '', schedule: '0 2 * * *', scheduleType: 'cron', tags: [] }); setJobEditorSelectedNode(null); setEditingBranch(null); setShowJobEditor(true); }
