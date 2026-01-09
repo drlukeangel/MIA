@@ -8480,42 +8480,74 @@ spec:
           {/* New BRO Network Resource Modal */}
           {showNewNetworkResource && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowNewNetworkResource(false)}>
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
-                  <h2 className="text-lg font-semibold">Create Network Resource</h2>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
+                      <Icon name="globe" size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Create Network Resource</h2>
+                      <p className="text-sm text-gray-400">Add infrastructure to B.R.O.</p>
+                    </div>
+                  </div>
                   <button onClick={() => setShowNewNetworkResource(false)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
                 </div>
                 <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                  {/* Resource Type Selector */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Resource Type</label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { type: 'vpc', label: 'VPC', icon: 'box', color: 'cyan' },
+                        { type: 'tgw', label: 'Transit GW', icon: 'git-merge', color: 'violet' },
+                        { type: 'vpn', label: 'VPN', icon: 'shield', color: 'amber' },
+                        { type: 'directconnect', label: 'Direct Connect', icon: 'zap', color: 'emerald' },
+                        { type: 'route53', label: 'Route 53', icon: 'globe', color: 'blue' },
+                        { type: 'peering', label: 'VPC Peering', icon: 'link', color: 'rose' },
+                        { type: 'privatelink', label: 'PrivateLink', icon: 'lock', color: 'indigo' },
+                      ].map(rt => (
+                        <button key={rt.type} onClick={() => setNewNetworkData({...newNetworkData, type: rt.type})}
+                          className={`p-3 rounded-xl border text-center transition-all ${newNetworkData.type === rt.type
+                            ? `bg-${rt.color}-500/20 border-${rt.color}-500 ring-1 ring-${rt.color}-500/50`
+                            : 'bg-gray-800/50 border-gray-700 hover:border-gray-600 hover:bg-gray-800'}`}
+                          style={newNetworkData.type === rt.type ? {
+                            backgroundColor: rt.color === 'cyan' ? 'rgba(6,182,212,0.2)' : rt.color === 'violet' ? 'rgba(139,92,246,0.2)' : rt.color === 'amber' ? 'rgba(245,158,11,0.2)' : rt.color === 'emerald' ? 'rgba(16,185,129,0.2)' : rt.color === 'blue' ? 'rgba(59,130,246,0.2)' : rt.color === 'rose' ? 'rgba(244,63,94,0.2)' : 'rgba(99,102,241,0.2)',
+                            borderColor: rt.color === 'cyan' ? '#06b6d4' : rt.color === 'violet' ? '#8b5cf6' : rt.color === 'amber' ? '#f59e0b' : rt.color === 'emerald' ? '#10b981' : rt.color === 'blue' ? '#3b82f6' : rt.color === 'rose' ? '#f43f5e' : '#6366f1'
+                          } : {}}>
+                          <div className={`w-8 h-8 mx-auto mb-1 rounded-lg flex items-center justify-center ${newNetworkData.type === rt.type ? '' : 'bg-gray-700/50'}`}
+                            style={newNetworkData.type === rt.type ? {
+                              backgroundColor: rt.color === 'cyan' ? 'rgba(6,182,212,0.3)' : rt.color === 'violet' ? 'rgba(139,92,246,0.3)' : rt.color === 'amber' ? 'rgba(245,158,11,0.3)' : rt.color === 'emerald' ? 'rgba(16,185,129,0.3)' : rt.color === 'blue' ? 'rgba(59,130,246,0.3)' : rt.color === 'rose' ? 'rgba(244,63,94,0.3)' : 'rgba(99,102,241,0.3)'
+                            } : {}}>
+                            <Icon name={rt.icon} size={16} style={newNetworkData.type === rt.type ? {
+                              color: rt.color === 'cyan' ? '#06b6d4' : rt.color === 'violet' ? '#8b5cf6' : rt.color === 'amber' ? '#f59e0b' : rt.color === 'emerald' ? '#10b981' : rt.color === 'blue' ? '#3b82f6' : rt.color === 'rose' ? '#f43f5e' : '#6366f1'
+                            } : { color: '#9ca3af' }} />
+                          </div>
+                          <div className={`text-xs font-medium ${newNetworkData.type === rt.type ? 'text-white' : 'text-gray-400'}`}>{rt.label}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Resource Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Resource Name</label>
-                    <input type="text" value={newNetworkData.name} onChange={e => setNewNetworkData({...newNetworkData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g., production-vpc" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Resource Type</label>
-                    <select value={newNetworkData.type} onChange={e => setNewNetworkData({...newNetworkData, type: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
-                      <option value="vpc">VPC</option>
-                      <option value="tgw">Transit Gateway</option>
-                      <option value="vpn">VPN Connection</option>
-                      <option value="directconnect">Direct Connect</option>
-                      <option value="route53">Route 53 Hosted Zone</option>
-                      <option value="peering">VPC Peering</option>
-                      <option value="privatelink">PrivateLink Endpoint</option>
-                    </select>
+                    <input type="text" value={newNetworkData.name} onChange={e => setNewNetworkData({...newNetworkData, name: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="e.g., production-vpc" />
                   </div>
                   {newNetworkData.type === 'vpc' && (
                     <>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">CIDR Block</label>
-                        <input type="text" value={newNetworkData.cidr || ''} onChange={e => setNewNetworkData({...newNetworkData, cidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="e.g., 10.0.0.0/16" />
+                        <input type="text" value={newNetworkData.cidr || ''} onChange={e => setNewNetworkData({...newNetworkData, cidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="e.g., 10.0.0.0/16" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Subnets</label>
-                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="6" />
+                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="6" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Flow Logs</label>
-                          <select value={newNetworkData.flowLogs || 'true'} onChange={e => setNewNetworkData({...newNetworkData, flowLogs: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                          <select value={newNetworkData.flowLogs || 'true'} onChange={e => setNewNetworkData({...newNetworkData, flowLogs: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
                             <option value="true">Enabled</option>
                             <option value="false">Disabled</option>
                           </select>
@@ -8527,11 +8559,11 @@ spec:
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Bandwidth</label>
-                        <input type="text" value={newNetworkData.bandwidth || ''} onChange={e => setNewNetworkData({...newNetworkData, bandwidth: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="50 Gbps" />
+                        <input type="text" value={newNetworkData.bandwidth || ''} onChange={e => setNewNetworkData({...newNetworkData, bandwidth: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="50 Gbps" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Route Tables</label>
-                        <input type="number" value={newNetworkData.routeTables || ''} onChange={e => setNewNetworkData({...newNetworkData, routeTables: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="3" />
+                        <input type="number" value={newNetworkData.routeTables || ''} onChange={e => setNewNetworkData({...newNetworkData, routeTables: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="3" />
                       </div>
                     </div>
                   )}
@@ -8540,11 +8572,11 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Remote IP</label>
-                          <input type="text" value={newNetworkData.remoteIp || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteIp: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="203.0.113.10" />
+                          <input type="text" value={newNetworkData.remoteIp || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteIp: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="203.0.113.10" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Encryption</label>
-                          <select value={newNetworkData.encryption || 'AES-256'} onChange={e => setNewNetworkData({...newNetworkData, encryption: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                          <select value={newNetworkData.encryption || 'AES-256'} onChange={e => setNewNetworkData({...newNetworkData, encryption: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
                             <option value="AES-256">AES-256</option>
                             <option value="AES-256-GCM">AES-256-GCM</option>
                             <option value="AES-128">AES-128</option>
@@ -8554,11 +8586,11 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Local CIDR</label>
-                          <input type="text" value={newNetworkData.localCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, localCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="10.0.0.0/8" />
+                          <input type="text" value={newNetworkData.localCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, localCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="10.0.0.0/8" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Remote CIDR</label>
-                          <input type="text" value={newNetworkData.remoteCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="172.16.0.0/12" />
+                          <input type="text" value={newNetworkData.remoteCidr || ''} onChange={e => setNewNetworkData({...newNetworkData, remoteCidr: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="172.16.0.0/12" />
                         </div>
                       </div>
                     </>
@@ -8567,7 +8599,7 @@ spec:
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Connection Speed</label>
-                        <select value={newNetworkData.connection || '10 Gbps'} onChange={e => setNewNetworkData({...newNetworkData, connection: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <select value={newNetworkData.connection || '10 Gbps'} onChange={e => setNewNetworkData({...newNetworkData, connection: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
                           <option value="1 Gbps">1 Gbps</option>
                           <option value="10 Gbps">10 Gbps</option>
                           <option value="100 Gbps">100 Gbps</option>
@@ -8575,7 +8607,7 @@ spec:
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
-                        <input type="text" value={newNetworkData.location || ''} onChange={e => setNewNetworkData({...newNetworkData, location: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="Equinix DC6" />
+                        <input type="text" value={newNetworkData.location || ''} onChange={e => setNewNetworkData({...newNetworkData, location: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="Equinix DC6" />
                       </div>
                     </div>
                   )}
@@ -8583,11 +8615,11 @@ spec:
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Domain Name</label>
-                        <input type="text" value={newNetworkData.domain || ''} onChange={e => setNewNetworkData({...newNetworkData, domain: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="example.com" />
+                        <input type="text" value={newNetworkData.domain || ''} onChange={e => setNewNetworkData({...newNetworkData, domain: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="example.com" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Zone Type</label>
-                        <select value={newNetworkData.zoneType || 'public'} onChange={e => setNewNetworkData({...newNetworkData, zoneType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <select value={newNetworkData.zoneType || 'public'} onChange={e => setNewNetworkData({...newNetworkData, zoneType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
                           <option value="public">Public</option>
                           <option value="private">Private</option>
                         </select>
@@ -8598,11 +8630,11 @@ spec:
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Requester VPC</label>
-                        <input type="text" value={newNetworkData.requester || ''} onChange={e => setNewNetworkData({...newNetworkData, requester: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="prod-vpc" />
+                        <input type="text" value={newNetworkData.requester || ''} onChange={e => setNewNetworkData({...newNetworkData, requester: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="prod-vpc" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Accepter VPC</label>
-                        <input type="text" value={newNetworkData.accepter || ''} onChange={e => setNewNetworkData({...newNetworkData, accepter: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="shared-vpc" />
+                        <input type="text" value={newNetworkData.accepter || ''} onChange={e => setNewNetworkData({...newNetworkData, accepter: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="shared-vpc" />
                       </div>
                     </div>
                   )}
@@ -8611,28 +8643,28 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Endpoint Type</label>
-                          <select value={newNetworkData.endpointType || 'Interface'} onChange={e => setNewNetworkData({...newNetworkData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                          <select value={newNetworkData.endpointType || 'Interface'} onChange={e => setNewNetworkData({...newNetworkData, endpointType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
                             <option value="Interface">Interface</option>
                             <option value="Gateway">Gateway</option>
                           </select>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Target VPC</label>
-                          <input type="text" value={newNetworkData.vpc || ''} onChange={e => setNewNetworkData({...newNetworkData, vpc: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="prod-vpc" />
+                          <input type="text" value={newNetworkData.vpc || ''} onChange={e => setNewNetworkData({...newNetworkData, vpc: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" placeholder="prod-vpc" />
                         </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-400 mb-1">Service Name</label>
-                        <input type="text" value={newNetworkData.service || ''} onChange={e => setNewNetworkData({...newNetworkData, service: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="com.amazonaws.us-east-1.s3" />
+                        <input type="text" value={newNetworkData.service || ''} onChange={e => setNewNetworkData({...newNetworkData, service: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" placeholder="com.amazonaws.us-east-1.s3" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Subnets</label>
-                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="3" />
+                          <input type="number" value={newNetworkData.subnets || ''} onChange={e => setNewNetworkData({...newNetworkData, subnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" placeholder="3" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">Private DNS</label>
-                          <select value={newNetworkData.privateDns || 'true'} onChange={e => setNewNetworkData({...newNetworkData, privateDns: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                          <select value={newNetworkData.privateDns || 'true'} onChange={e => setNewNetworkData({...newNetworkData, privateDns: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
                             <option value="true">Enabled</option>
                             <option value="false">Disabled</option>
                           </select>
@@ -8642,7 +8674,7 @@ spec:
                   )}
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Region</label>
-                    <select value={newNetworkData.region} onChange={e => setNewNetworkData({...newNetworkData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                    <select value={newNetworkData.region} onChange={e => setNewNetworkData({...newNetworkData, region: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500">
                       <option value="us-east-1">US East (N. Virginia)</option>
                       <option value="us-west-2">US West (Oregon)</option>
                       <option value="eu-west-1">EU (Ireland)</option>
@@ -8651,11 +8683,11 @@ spec:
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Owner</label>
-                    <input type="text" value={newNetworkData.owner} onChange={e => setNewNetworkData({...newNetworkData, owner: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="platform-ops" />
+                    <input type="text" value={newNetworkData.owner} onChange={e => setNewNetworkData({...newNetworkData, owner: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="platform-ops" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
-                    <textarea value={newNetworkData.description} onChange={e => setNewNetworkData({...newNetworkData, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 resize-none" rows={3} placeholder="Describe the purpose of this network resource..." />
+                    <textarea value={newNetworkData.description} onChange={e => setNewNetworkData({...newNetworkData, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 resize-none" rows={3} placeholder="Describe the purpose of this network resource..." />
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700 flex-shrink-0">
