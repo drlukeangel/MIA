@@ -451,37 +451,37 @@ import React, { useState } from 'react';
     // U.N.C.L.E. - Data Storage resources
     const mockDatastores = [
       // PostgreSQL (Aurora)
-      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', status: 'available', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.',
+      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', status: 'available', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', zone: 'prod', environment: 'production', officeHours: { enabled: false, startTime: '07:00', endTime: '19:00' }, description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.',
         // Terraform fields
         engineVersion: '15.4', instanceClass: 'db.r6g.large', replicaCount: '2', backupRetention: '7', storageSize: '500', multiAz: true, encryption: true, performanceInsights: true, iamAuth: false,
         // Display/metrics
         engine: 'PostgreSQL 15.4', size: 'db.r6g.large', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
-      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', status: 'available', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.',
+      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', status: 'available', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', zone: 'prod', environment: 'production', officeHours: { enabled: false, startTime: '07:00', endTime: '19:00' }, description: 'Payment ledger and transaction history. ACID-compliant for financial operations.',
         engineVersion: '15.4', instanceClass: 'db.r6g.xlarge', replicaCount: '3', backupRetention: '35', storageSize: '800', multiAz: true, encryption: true, performanceInsights: true, iamAuth: true,
         engine: 'PostgreSQL 15.4', size: 'db.r6g.xlarge', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
       // MongoDB (Atlas)
-      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', description: 'User profile and preferences store. Powers personalization and user settings across all applications.',
+      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', zone: 'prod', environment: 'consumer-testing', officeHours: { enabled: true, startTime: '08:00', endTime: '18:00' }, description: 'User profile and preferences store. Powers personalization and user settings across all applications.',
         clusterTier: 'M30', mongoVersion: '7.0', replicaNodes: '3', backupFrequency: 'daily', encryption: true, sharding: false, biConnector: false,
         engine: 'MongoDB 7.0', size: 'M30', storage: '125 GB', nodes: 3, collections: 45, documents: '2.8M' },
-      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.',
+      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', zone: 'non-prod', environment: 'qa', officeHours: { enabled: true, startTime: '06:00', endTime: '22:00' }, description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.',
         clusterTier: 'M40', mongoVersion: '7.0', replicaNodes: '3', backupFrequency: 'daily', encryption: true, sharding: false, biConnector: true,
         engine: 'MongoDB 7.0', size: 'M40', storage: '45 GB', nodes: 3, collections: 28, documents: '1.8M' },
-      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', description: 'Session and cache store for west coast users. Provides low-latency session management.',
+      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', zone: 'non-prod', environment: 'dev', officeHours: { enabled: true, startTime: '06:00', endTime: '23:00' }, description: 'Session and cache store for west coast users. Provides low-latency session management.',
         clusterTier: 'M30', mongoVersion: '6.0', replicaNodes: '3', backupFrequency: 'hourly', encryption: true, sharding: false, biConnector: false,
         engine: 'MongoDB 6.0', size: 'M30', storage: '85 GB', nodes: 3, collections: 12, documents: '2.1M' },
       // DynamoDB
-      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', description: 'Orders table with order items and status. Supports high-throughput order processing.',
+      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', zone: 'prod', environment: 'production', officeHours: { enabled: false, startTime: '07:00', endTime: '19:00' }, description: 'Orders table with order items and status. Supports high-throughput order processing.',
         billingMode: 'PAY_PER_REQUEST', tableClass: 'STANDARD', partitionKey: 'orderId (S)', sortKey: 'timestamp (N)', encryption: true, pitr: true, streams: true, ttl: false,
         mode: 'On-Demand', size: '8.5 GB', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M' },
       // DSQL (Aurora Serverless)
-      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.',
+      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', zone: 'non-prod', environment: 'perf', officeHours: { enabled: true, startTime: '07:00', endTime: '20:00' }, description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.',
         minCapacity: '2', maxCapacity: '64', autoPauseDelay: '1800', backupRetention: '14', encryption: true, autoPause: true, dataApi: true,
         engine: 'Aurora DSQL', size: 'Serverless v2', storage: '1.2 TB', queries: '2.4K/day', users: 45, vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
       // DocumentDB
-      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.',
+      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', zone: 'prod', environment: 'consumer-testing', officeHours: { enabled: true, startTime: '08:00', endTime: '18:00' }, description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.',
         engineVersion: '5.0', instanceClass: 'db.r6g.large', clusterInstances: '3', backupRetention: '7', port: '27017', encryption: true, tls: true, auditLogs: false,
         engine: 'DocumentDB 5.0', size: 'db.r6g.large', storage: '180 GB', nodes: 3, collections: 32, documents: '4.2M', connections: 28, vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
-      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', description: 'Compliance audit log storage. Immutable document store for regulatory requirements.',
+      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', zone: 'prod', environment: 'production', officeHours: { enabled: false, startTime: '07:00', endTime: '19:00' }, description: 'Compliance audit log storage. Immutable document store for regulatory requirements.',
         engineVersion: '5.0', instanceClass: 'db.r6g.xlarge', clusterInstances: '3', backupRetention: '35', port: '27017', encryption: true, tls: true, auditLogs: true,
         engine: 'DocumentDB 5.0', size: 'db.r6g.xlarge', storage: '2.1 TB', nodes: 3, collections: 18, documents: '125M', connections: 15, vpc: 'vpc-prod', subnetGroup: 'db-isolated-subnets' },
     ];
@@ -885,7 +885,8 @@ import React, { useState } from 'react';
       const [selectedDatastore, setSelectedDatastore] = useState(null);
       const [uncleEditMode, setUncleEditMode] = useState(false);
       const [uncleEditData, setUncleEditData] = useState({});
-      const [backupModal, setBackupModal] = useState(null); // holds datastore object when backup modal is open
+      const [backupModal, setBackupModal] = useState(null);
+    const [officeHoursModal, setOfficeHoursModal] = useState(null); // holds datastore object when backup modal is open
       const [backupOptions, setBackupOptions] = useState({ type: 'snapshot', retention: '30', description: '' });
       const [dmsWizard, setDmsWizard] = useState(null); // DMS wizard state: { step: 1, source: {}, target: {}, replication: {}, task: {} }
       const [momFilter, setMomFilter] = useState('All');
@@ -1917,6 +1918,7 @@ sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.t
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Configuration</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Environment</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
                 <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
               </tr></thead>
@@ -2333,6 +2335,7 @@ sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.t
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Type</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Size</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Status</th>
+                <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Environment</th>
                 <th className="text-left px-4 py-3 text-base font-semibold text-gray-300">Cost</th>
                 <th className="px-4 py-3 text-right text-base font-semibold text-gray-300">Actions</th>
               </tr></thead>
@@ -2351,9 +2354,22 @@ sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.t
                     <td className="px-4 py-3"><div><span className="text-sm text-gray-300 uppercase">{d.type}</span><div className="text-sm text-gray-400">{d.engine || d.version || d.mode}</div></div></td>
                     <td className="px-4 py-3"><code className="text-sm text-gray-300 bg-gray-700/50 px-2 py-0.5 rounded">{d.size || d.mode || d.version}</code></td>
                     <td className="px-4 py-3"><StatusBadge status={['available', 'active'].includes(d.status) ? 'healthy' : 'warning'} size="sm" /></td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${d.zone === 'prod' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}`}>
+                          {d.zone === 'prod' ? 'PROD' : 'NON-PROD'}
+                        </span>
+                        <span className="text-sm text-gray-400 capitalize">{d.environment?.replace('-', ' ')}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-sm text-emerald-400">{d.monthlyCost}</td>
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
+                        {d.zone === 'prod' && (
+                          <button onClick={() => setOfficeHoursModal(d)} className={`p-1.5 rounded-lg ${d.officeHours?.enabled ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30' : 'hover:bg-gray-700 text-gray-400 hover:text-gray-200'}`} title="Office Hours">
+                            <Icon name="clock" size={14} />
+                          </button>
+                        )}
                         <button onClick={() => setDmsWizard({ step: 2, source: d, target: { type: d.type, region: '', environment: '' }, options: { migrationType: 'full-load', includeSchema: true, tableMappings: 'all' }, mode: 'refresh' })} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={14} /></button>
                         <button onClick={() => { setBackupModal(d); setBackupOptions({ type: 'snapshot', retention: '30', description: '' }); }} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={14} /></button>
                         <button onClick={() => setDatastoreMetrics(d)} className="p-1.5 hover:bg-blue-500/20 rounded-lg text-gray-400 hover:text-blue-400" title="View Metrics"><Icon name="activity" size={14} /></button>
@@ -3283,6 +3299,143 @@ sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.t
                       Start Backup
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Office Hours Modal */}
+          {officeHoursModal && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setOfficeHoursModal(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                      <Icon name="clock" size={20} className="text-amber-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Office Hours</h2>
+                      <p className="text-sm text-gray-400">{officeHoursModal.name}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setOfficeHoursModal(null)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4">
+                  {/* Enable Toggle */}
+                  <div className="flex items-center justify-between p-3 bg-gray-800/50 border border-gray-700 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Icon name={officeHoursModal.officeHours?.enabled ? 'toggle-right' : 'toggle-left'} size={24} className={officeHoursModal.officeHours?.enabled ? 'text-amber-400' : 'text-gray-500'} />
+                      <div>
+                        <div className="text-sm font-medium text-gray-200">Auto Shutdown</div>
+                        <div className="text-xs text-gray-500">Turn off database outside business hours</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const updated = mockDatastores.find(d => d.id === officeHoursModal.id);
+                        if (updated) {
+                          updated.officeHours = { ...updated.officeHours, enabled: !updated.officeHours?.enabled };
+                          setOfficeHoursModal({...updated});
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${officeHoursModal.officeHours?.enabled ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                    >
+                      {officeHoursModal.officeHours?.enabled ? 'Enabled' : 'Disabled'}
+                    </button>
+                  </div>
+
+                  {/* Schedule */}
+                  {officeHoursModal.officeHours?.enabled && (
+                    <>
+                      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                        <div className="flex items-center gap-2 text-amber-300 text-sm font-medium mb-1">
+                          <Icon name="info" size={14} />
+                          Cost Savings Mode
+                        </div>
+                        <p className="text-xs text-gray-400">Database will automatically stop outside the scheduled hours to reduce costs. Estimated savings: ~40% of compute costs.</p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Start Time (Business Hours)</label>
+                          <input
+                            type="time"
+                            value={officeHoursModal.officeHours?.startTime || '07:00'}
+                            onChange={e => {
+                              const updated = mockDatastores.find(d => d.id === officeHoursModal.id);
+                              if (updated) {
+                                updated.officeHours = { ...updated.officeHours, startTime: e.target.value };
+                                setOfficeHoursModal({...updated});
+                              }
+                            }}
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">End Time (Shutdown)</label>
+                          <input
+                            type="time"
+                            value={officeHoursModal.officeHours?.endTime || '19:00'}
+                            onChange={e => {
+                              const updated = mockDatastores.find(d => d.id === officeHoursModal.id);
+                              if (updated) {
+                                updated.officeHours = { ...updated.officeHours, endTime: e.target.value };
+                                setOfficeHoursModal({...updated});
+                              }
+                            }}
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">Timezone</label>
+                        <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                          <option value="America/New_York">Eastern Time (ET)</option>
+                          <option value="America/Chicago">Central Time (CT)</option>
+                          <option value="America/Denver">Mountain Time (MT)</option>
+                          <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                          <option value="UTC">UTC</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-2">Active Days</label>
+                        <div className="flex gap-2">
+                          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                            <button
+                              key={day}
+                              className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${idx < 5 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-gray-800 text-gray-500 border border-gray-700 hover:border-gray-600'}`}
+                            >
+                              {day}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Status Info */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Icon name="database" size={16} className="text-gray-400" />
+                      <div>
+                        <div className="text-sm text-gray-300">Current Status</div>
+                        <div className="text-xs text-gray-500">{officeHoursModal.status === 'available' || officeHoursModal.status === 'active' ? 'Running' : 'Stopped'}</div>
+                      </div>
+                    </div>
+                    <StatusBadge status={officeHoursModal.status === 'available' || officeHoursModal.status === 'active' ? 'healthy' : 'warning'} size="sm" />
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700 bg-gray-800/30">
+                  <button onClick={() => setOfficeHoursModal(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                  <button onClick={() => {
+                    showNotification(`Office Hours schedule updated for ${officeHoursModal.name}`, 'success');
+                    setOfficeHoursModal(null);
+                  }} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-sm font-medium rounded-lg flex items-center gap-2">
+                    <Icon name="check" size={14} />
+                    Save Schedule
+                  </button>
                 </div>
               </div>
             </div>
