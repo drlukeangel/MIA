@@ -23,6 +23,7 @@ import React, { useState } from 'react';
         'alert-circle': <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
         'alert-triangle': <><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>,
         'check-circle': <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+        'check-square': <><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></>,
         'x-circle': <><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>,
         network: <><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></>,
         lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
@@ -449,15 +450,40 @@ import React, { useState } from 'react';
 
     // U.N.C.L.E. - Data Storage resources
     const mockDatastores = [
-      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.' },
-      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', nodes: 3, collections: 45, documents: '2.8M', storage: '125 GB', description: 'User profile and preferences store. Powers personalization and user settings across all applications.' },
-      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', mode: 'On-demand', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M', size: '8.5 GB', description: 'Orders table with order items and status. Supports high-throughput order processing.' },
-      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', engine: 'Aurora DSQL', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', queries: '2.4K/day', storage: '1.2 TB', users: 45, description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.' },
-      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M40', status: 'available', size: 'M40', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', nodes: 3, collections: 28, documents: '1.8M', storage: '45 GB', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.' },
-      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', engine: 'MongoDB Atlas M30', status: 'available', size: 'M30', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', nodes: 3, collections: 12, documents: '2.1M', storage: '85 GB', description: 'Session and cache store for west coast users. Provides low-latency session management.' },
-      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', engine: 'PostgreSQL 15', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.' },
-      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.large', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', nodes: 3, collections: 32, documents: '4.2M', storage: '180 GB', connections: 28, description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.' },
-      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', engine: 'DocumentDB 5.0', status: 'available', size: 'db.r6g.xlarge', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', nodes: 3, collections: 18, documents: '125M', storage: '2.1 TB', connections: 15, description: 'Compliance audit log storage. Immutable document store for regulatory requirements.' },
+      // PostgreSQL (Aurora)
+      { id: 1, name: 'loan-service-db', type: 'postgresql', namespace: 'sf-loans', status: 'available', region: 'us-east-1', owner: 'loans-origination', created: '2024-06-15', monthlyCost: '$485', description: 'Primary database for loan origination service. Contains customer applications, loan products, and pricing data.',
+        // Terraform fields
+        engineVersion: '15.4', instanceClass: 'db.r6g.large', replicaCount: '2', backupRetention: '7', storageSize: '500', multiAz: true, encryption: true, performanceInsights: true, iamAuth: false,
+        // Display/metrics
+        engine: 'PostgreSQL 15.4', size: 'db.r6g.large', storage: '500 GB', connections: 42, cpu: '23%', iops: '1,250', vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
+      { id: 6, name: 'payments-ledger', type: 'postgresql', namespace: 'eot-integrations', status: 'available', region: 'us-east-1', owner: 'payments-team', created: '2024-07-15', monthlyCost: '$750', description: 'Payment ledger and transaction history. ACID-compliant for financial operations.',
+        engineVersion: '15.4', instanceClass: 'db.r6g.xlarge', replicaCount: '3', backupRetention: '35', storageSize: '800', multiAz: true, encryption: true, performanceInsights: true, iamAuth: true,
+        engine: 'PostgreSQL 15.4', size: 'db.r6g.xlarge', storage: '800 GB', connections: 85, cpu: '34%', iops: '2,500', vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
+      // MongoDB (Atlas)
+      { id: 2, name: 'user-profiles', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'identity-team', created: '2024-08-22', monthlyCost: '$624', description: 'User profile and preferences store. Powers personalization and user settings across all applications.',
+        clusterTier: 'M30', mongoVersion: '7.0', replicaNodes: '3', backupFrequency: 'daily', encryption: true, sharding: false, biConnector: false,
+        engine: 'MongoDB 7.0', size: 'M30', storage: '125 GB', nodes: 3, collections: 45, documents: '2.8M' },
+      { id: 5, name: 'document-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'content-team', created: '2024-05-30', monthlyCost: '$420', description: 'Document store for CMS and content management. Stores articles, templates, and media metadata.',
+        clusterTier: 'M40', mongoVersion: '7.0', replicaNodes: '3', backupFrequency: 'daily', encryption: true, sharding: false, biConnector: true,
+        engine: 'MongoDB 7.0', size: 'M40', storage: '45 GB', nodes: 3, collections: 28, documents: '1.8M' },
+      { id: 9, name: 'session-store', type: 'mongodb', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-east-2, us-west-1', owner: 'platform-team', created: '2024-10-05', monthlyCost: '$624', description: 'Session and cache store for west coast users. Provides low-latency session management.',
+        clusterTier: 'M30', mongoVersion: '6.0', replicaNodes: '3', backupFrequency: 'hourly', encryption: true, sharding: false, biConnector: false,
+        engine: 'MongoDB 6.0', size: 'M30', storage: '85 GB', nodes: 3, collections: 12, documents: '2.1M' },
+      // DynamoDB
+      { id: 3, name: 'orders-table', type: 'dynamodb', namespace: 'sf-loans', status: 'active', region: 'us-east-1', owner: 'orders-team', created: '2024-04-20', monthlyCost: '$156', description: 'Orders table with order items and status. Supports high-throughput order processing.',
+        billingMode: 'PAY_PER_REQUEST', tableClass: 'STANDARD', partitionKey: 'orderId (S)', sortKey: 'timestamp (N)', encryption: true, pitr: true, streams: true, ttl: false,
+        mode: 'On-Demand', size: '8.5 GB', reads: '12.5K/sec', writes: '3.2K/sec', items: '4.2M' },
+      // DSQL (Aurora Serverless)
+      { id: 4, name: 'analytics-db', type: 'dsql', namespace: 'eot-data', status: 'available', region: 'us-east-1, us-west-2', owner: 'data-platform', created: '2024-02-10', monthlyCost: '$890', description: 'Distributed SQL database for analytics. Powers BI dashboards and executive reports with strong consistency.',
+        minCapacity: '2', maxCapacity: '64', autoPauseDelay: '1800', backupRetention: '14', encryption: true, autoPause: true, dataApi: true,
+        engine: 'Aurora DSQL', size: 'Serverless v2', storage: '1.2 TB', queries: '2.4K/day', users: 45, vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
+      // DocumentDB
+      { id: 7, name: 'customer-360', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'customer-data-team', created: '2024-09-10', monthlyCost: '$580', description: 'Customer 360 view with flexible schema. Stores customer interactions, preferences, and history.',
+        engineVersion: '5.0', instanceClass: 'db.r6g.large', clusterInstances: '3', backupRetention: '7', port: '27017', encryption: true, tls: true, auditLogs: false,
+        engine: 'DocumentDB 5.0', size: 'db.r6g.large', storage: '180 GB', nodes: 3, collections: 32, documents: '4.2M', connections: 28, vpc: 'vpc-prod', subnetGroup: 'db-private-subnets' },
+      { id: 8, name: 'audit-logs-db', type: 'documentdb', namespace: 'eot-platform', status: 'available', region: 'us-east-1', owner: 'compliance-team', created: '2024-06-20', monthlyCost: '$890', description: 'Compliance audit log storage. Immutable document store for regulatory requirements.',
+        engineVersion: '5.0', instanceClass: 'db.r6g.xlarge', clusterInstances: '3', backupRetention: '35', port: '27017', encryption: true, tls: true, auditLogs: true,
+        engine: 'DocumentDB 5.0', size: 'db.r6g.xlarge', storage: '2.1 TB', nodes: 3, collections: 18, documents: '125M', connections: 15, vpc: 'vpc-prod', subnetGroup: 'db-isolated-subnets' },
     ];
 
     // B.R.O. - Networking resources
@@ -859,6 +885,9 @@ import React, { useState } from 'react';
       const [selectedDatastore, setSelectedDatastore] = useState(null);
       const [uncleEditMode, setUncleEditMode] = useState(false);
       const [uncleEditData, setUncleEditData] = useState({});
+      const [backupModal, setBackupModal] = useState(null); // holds datastore object when backup modal is open
+      const [backupOptions, setBackupOptions] = useState({ type: 'snapshot', retention: '30', description: '' });
+      const [dmsWizard, setDmsWizard] = useState(null); // DMS wizard state: { step: 1, source: {}, target: {}, replication: {}, task: {} }
       const [momFilter, setMomFilter] = useState('All');
       const [infraResources, setInfraResources] = useState([...mockInfraResources]);
       const [networkResources, setNetworkResources] = useState([...mockNetworkResources]);
@@ -899,18 +928,18 @@ import React, { useState } from 'react';
       const [momEditMode, setMomEditMode] = useState(false);
       const [momEditData, setMomEditData] = useState({});
       const [newMomData, setNewMomData] = useState({ name: '', type: 'ec2', region: 'us-east-1', owner: '', description: '',
-        // EC2 fields
-        ami: 'ami-0abcdef1234567890', instanceType: 't3.medium', subnetId: 'subnet-prod-01', keyName: 'prod-keypair', securityGroups: 'sg-default', iamInstanceProfile: '', volumeSize: 100, volumeType: 'gp3',
-        // Lambda fields
-        runtime: 'python3.11', handler: 'main.handler', memory: 512, timeout: 30, role: '', layers: '',
-        // ECS fields
-        cluster: 'prod-cluster', launchType: 'FARGATE', desiredCount: 2, cpu: 512, memoryMb: 1024, image: '', taskRole: '', executionRole: '',
-        // EMR fields
-        releaseLabel: 'emr-6.10.0', applications: 'Spark,Hive', masterInstanceType: 'm5.xlarge', coreInstanceType: 'r5.xlarge', coreCount: 2, serviceRole: '', ec2Role: '',
-        // API Gateway fields
-        protocolType: 'HTTP', endpointType: 'REGIONAL', defaultAuthorizer: 'NONE', corsEnabled: false,
-        // Pipe fields
-        sourceType: 'SQS', sourceArn: '', targetType: 'EventBridge', targetArn: '', enrichmentType: 'None', batchSize: 10
+        // EC2 fields (aws_instance)
+        ami: 'ami-0abcdef1234567890', instanceType: 't3.medium', subnetId: 'subnet-prod-01', keyName: 'prod-keypair', securityGroups: 'sg-default', iamInstanceProfile: '', volumeSize: 100, volumeType: 'gp3', availabilityZone: '', associatePublicIp: false, monitoring: false, userData: '',
+        // Lambda fields (aws_lambda_function)
+        runtime: 'python3.11', handler: 'main.handler', memory: 512, timeout: 30, role: '', layers: '', s3Bucket: '', s3Key: '', architecture: 'x86_64', vpcSubnets: '', vpcSecurityGroups: '', envVars: '',
+        // ECS fields (aws_ecs_service + aws_ecs_task_definition)
+        cluster: 'prod-cluster', launchType: 'FARGATE', desiredCount: 2, cpu: 512, memoryMb: 1024, image: '', taskRole: '', executionRole: '', containerPort: 8080, ecsSubnets: '', ecsSecurityGroups: '', assignPublicIp: true,
+        // EMR fields (aws_emr_cluster)
+        releaseLabel: 'emr-6.10.0', applications: 'Spark,Hive', masterInstanceType: 'm5.xlarge', coreInstanceType: 'r5.xlarge', coreCount: 2, serviceRole: '', ec2Role: '', emrSubnetId: '', logUri: '', terminationProtection: false,
+        // API Gateway fields (aws_apigatewayv2_api)
+        protocolType: 'HTTP', apiKeySelection: 'HEADER', routeSelection: '', disableExecuteEndpoint: false, corsEnabled: false, corsAllowOrigins: '*', corsAllowMethods: 'GET,POST,PUT,DELETE',
+        // Pipe fields (aws_pipes_pipe)
+        sourceType: 'SQS', sourceArn: '', targetType: 'EventBridge', targetArn: '', enrichmentType: 'None', batchSize: 10, pipeRoleArn: '', desiredState: 'RUNNING'
       });
       const [rosieStatusFilter, setRosieStatusFilter] = useState('All');
       const [editingResource, setEditingResource] = useState(null);
@@ -1524,12 +1553,12 @@ import React, { useState } from 'react';
                       <button onClick={() => {
                         const d = momEditData;
                         const updated = { ...selectedResource, name: d.name, region: d.region, description: d.description };
-                        if (selectedResource.type === 'ec2') Object.assign(updated, { instanceType: d.instanceType, ami: d.ami, subnetId: d.subnetId, keyName: d.keyName, securityGroups: d.securityGroups.split(',').map(s => s.trim()).filter(Boolean), iamInstanceProfile: d.iamInstanceProfile, ebsVolumes: [{ ...selectedResource.ebsVolumes?.[0], volumeSize: d.volumeSize, volumeType: d.volumeType }] });
-                        else if (selectedResource.type === 'lambda') Object.assign(updated, { runtime: d.runtime, handler: d.handler, memory: d.memory, timeout: d.timeout, role: d.role, layers: d.layers ? d.layers.split(',').map(s => s.trim()) : [] });
-                        else if (selectedResource.type === 'ecs') Object.assign(updated, { cluster: d.cluster, launchType: d.launchType, desiredCount: d.desiredCount, cpu: d.cpu, memoryMb: d.memoryMb, image: d.image, taskRole: d.taskRole, executionRole: d.executionRole });
-                        else if (selectedResource.type === 'emr') Object.assign(updated, { releaseLabel: d.releaseLabel, applications: d.applications.split(',').map(s => s.trim()), masterInstanceType: d.masterInstanceType, coreInstanceType: d.coreInstanceType, coreCount: d.coreCount, serviceRole: d.serviceRole, ec2Role: d.ec2Role });
+                        if (selectedResource.type === 'ec2') Object.assign(updated, { instanceType: d.instanceType, ami: d.ami, subnetId: d.subnetId, keyName: d.keyName, securityGroups: d.securityGroups.split(',').map(s => s.trim()).filter(Boolean), iamInstanceProfile: d.iamInstanceProfile, ebsVolumes: [{ ...selectedResource.ebsVolumes?.[0], volumeSize: d.volumeSize, volumeType: d.volumeType }], availabilityZone: d.availabilityZone, associatePublicIp: d.associatePublicIp, monitoring: d.monitoring, userData: d.userData });
+                        else if (selectedResource.type === 'lambda') Object.assign(updated, { runtime: d.runtime, handler: d.handler, memory: d.memory, timeout: d.timeout, role: d.role, layers: d.layers ? d.layers.split(',').map(s => s.trim()) : [], s3Bucket: d.s3Bucket, s3Key: d.s3Key, architecture: d.architecture, vpcConfig: d.vpcSubnets ? { subnetIds: d.vpcSubnets.split(',').map(s => s.trim()), securityGroupIds: d.vpcSecurityGroups.split(',').map(s => s.trim()) } : null });
+                        else if (selectedResource.type === 'ecs') Object.assign(updated, { cluster: d.cluster, launchType: d.launchType, desiredCount: d.desiredCount, cpu: d.cpu, memoryMb: d.memoryMb, image: d.image, taskRole: d.taskRole, executionRole: d.executionRole, subnets: d.ecsSubnets ? d.ecsSubnets.split(',').map(s => s.trim()) : [], securityGroups: d.ecsSecurityGroups ? d.ecsSecurityGroups.split(',').map(s => s.trim()) : [], assignPublicIp: d.assignPublicIp, loadBalancer: { ...selectedResource.loadBalancer, containerPort: d.containerPort } });
+                        else if (selectedResource.type === 'emr') Object.assign(updated, { releaseLabel: d.releaseLabel, applications: d.applications.split(',').map(s => s.trim()), masterInstanceType: d.masterInstanceType, coreInstanceType: d.coreInstanceType, coreCount: d.coreCount, serviceRole: d.serviceRole, ec2Role: d.ec2Role, subnetId: d.emrSubnetId, logUri: d.logUri, terminationProtection: d.terminationProtection });
                         else if (selectedResource.type === 'apigateway') Object.assign(updated, { protocolType: d.protocolType, endpointType: d.endpointType, defaultAuthorizer: d.defaultAuthorizer, corsConfig: d.corsEnabled ? { allowOrigins: ['*'], allowMethods: ['GET','POST','PUT','DELETE'], enabled: true } : null });
-                        else if (selectedResource.type === 'pipe') Object.assign(updated, { sourceType: d.sourceType, sourceArn: d.sourceArn, targetType: d.targetType, targetArn: d.targetArn, enrichmentType: d.enrichmentType, batchSize: d.batchSize });
+                        else if (selectedResource.type === 'pipe') Object.assign(updated, { sourceType: d.sourceType, sourceArn: d.sourceArn, targetType: d.targetType, targetArn: d.targetArn, enrichmentType: d.enrichmentType, batchSize: d.batchSize, roleArn: d.pipeRoleArn, status: d.desiredState === 'RUNNING' ? 'running' : 'stopped' });
                         setInfraResources(prev => prev.map(r => r.id === selectedResource.id ? updated : r));
                         setSelectedResource(updated);
                         setMomEditMode(false);
@@ -1539,7 +1568,19 @@ import React, { useState } from 'react';
                   ) : (
                     <div className="flex items-center gap-2">
                       <button onClick={() => { const id = selectedResource.id; setInfraResources(prev => prev.map(r => r.id === id ? {...r, status: 'restarting'} : r)); setSelectedResource(prev => ({...prev, status: 'restarting'})); showNotification('Restarting "' + selectedResource.name + '"...', 'info'); setTimeout(() => { setInfraResources(prev => prev.map(r => r.id === id ? {...r, status: 'running'} : r)); setSelectedResource(prev => prev && prev.id === id ? {...prev, status: 'running'} : prev); showNotification('"' + selectedResource.name + '" restarted successfully', 'success'); }, 2000); }} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Restart"><Icon name="refresh-cw" size={16} /></button>
-                      <button onClick={() => { const r = selectedResource; setMomEditData({ name: r.name, type: r.type, region: r.region, owner: r.owner || '', description: r.description || '', ami: r.ami || '', instanceType: r.instanceType || 't3.medium', subnetId: r.subnetId || '', keyName: r.keyName || '', securityGroups: Array.isArray(r.securityGroups) ? r.securityGroups.join(', ') : (r.securityGroups || ''), iamInstanceProfile: r.iamInstanceProfile || '', volumeSize: r.ebsVolumes?.[0]?.volumeSize || 100, volumeType: r.ebsVolumes?.[0]?.volumeType || 'gp3', runtime: r.runtime || 'python3.11', handler: r.handler || 'main.handler', memory: r.memory || 512, timeout: r.timeout || 30, role: r.role || '', layers: Array.isArray(r.layers) ? r.layers.join(', ') : (r.layers || ''), cluster: r.cluster || '', launchType: r.launchType || 'FARGATE', desiredCount: r.desiredCount || 2, cpu: r.cpu || 512, memoryMb: r.memoryMb || 1024, image: r.image || '', taskRole: r.taskRole || '', executionRole: r.executionRole || '', releaseLabel: r.releaseLabel || 'emr-6.10.0', applications: Array.isArray(r.applications) ? r.applications.join(', ') : (r.applications || ''), masterInstanceType: r.masterInstanceType || 'm5.xlarge', coreInstanceType: r.coreInstanceType || 'r5.xlarge', coreCount: r.coreCount || 2, serviceRole: r.serviceRole || '', ec2Role: r.ec2Role || '', protocolType: r.protocolType || 'HTTP', endpointType: r.endpointType || 'REGIONAL', defaultAuthorizer: r.defaultAuthorizer || 'NONE', corsEnabled: r.corsConfig?.enabled || false, sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.targetType || 'EventBridge', targetArn: r.targetArn || '', enrichmentType: r.enrichmentType || 'None', batchSize: r.batchSize || 10 }); setMomEditMode(true); }} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Edit"><Icon name="edit" size={16} /></button>
+                      <button onClick={() => { const r = selectedResource; setMomEditData({ name: r.name, type: r.type, region: r.region, owner: r.owner || '', description: r.description || '',
+// EC2 fields
+ami: r.ami || '', instanceType: r.instanceType || 't3.medium', subnetId: r.subnetId || '', keyName: r.keyName || '', securityGroups: Array.isArray(r.securityGroups) ? r.securityGroups.join(', ') : (r.securityGroups || ''), iamInstanceProfile: r.iamInstanceProfile || '', volumeSize: r.ebsVolumes?.[0]?.volumeSize || 100, volumeType: r.ebsVolumes?.[0]?.volumeType || 'gp3', availabilityZone: r.availabilityZone || '', associatePublicIp: r.associatePublicIp || false, monitoring: r.monitoring || false, userData: r.userData || '',
+// Lambda fields
+runtime: r.runtime || 'python3.11', handler: r.handler || 'main.handler', memory: r.memory || 512, timeout: r.timeout || 30, role: r.role || '', layers: Array.isArray(r.layers) ? r.layers.join(', ') : (r.layers || ''), s3Bucket: r.s3Bucket || '', s3Key: r.s3Key || '', architecture: r.architecture || 'x86_64', vpcSubnets: r.vpcConfig?.subnetIds?.join(', ') || '', vpcSecurityGroups: r.vpcConfig?.securityGroupIds?.join(', ') || '',
+// ECS fields
+cluster: r.cluster || '', launchType: r.launchType || 'FARGATE', desiredCount: r.desiredCount || 2, cpu: r.cpu || 512, memoryMb: r.memoryMb || 1024, image: r.image || '', taskRole: r.taskRole || '', executionRole: r.executionRole || '', containerPort: r.loadBalancer?.containerPort || 8080, ecsSubnets: r.subnets?.join(', ') || '', ecsSecurityGroups: Array.isArray(r.securityGroups) ? r.securityGroups.join(', ') : '', assignPublicIp: r.assignPublicIp || false,
+// EMR fields
+releaseLabel: r.releaseLabel || 'emr-6.10.0', applications: Array.isArray(r.applications) ? r.applications.join(', ') : (r.applications || ''), masterInstanceType: r.masterInstanceType || 'm5.xlarge', coreInstanceType: r.coreInstanceType || 'r5.xlarge', coreCount: r.coreCount || 2, serviceRole: r.serviceRole || '', ec2Role: r.ec2Role || '', emrSubnetId: r.subnetId || '', logUri: r.logUri || '', terminationProtection: r.terminationProtection || false,
+// API Gateway fields
+protocolType: r.protocolType || 'HTTP', endpointType: r.endpointType || 'REGIONAL', defaultAuthorizer: r.defaultAuthorizer || 'NONE', corsEnabled: r.corsConfig?.enabled || false,
+// Pipe fields
+sourceType: r.sourceType || 'SQS', sourceArn: r.sourceArn || '', targetType: r.targetType || 'EventBridge', targetArn: r.targetArn || '', enrichmentType: r.enrichmentType || 'None', batchSize: r.batchSize || 10, pipeRoleArn: r.roleArn || '', desiredState: r.status === 'running' ? 'RUNNING' : 'STOPPED' }); setMomEditMode(true); }} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Edit"><Icon name="edit" size={16} /></button>
                       <button onClick={() => { setInfraResources(prev => prev.filter(r => r.id !== selectedResource.id)); showNotification('Resource "' + selectedResource.name + '" deleted', 'warning'); setSelectedResource(null); }} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
                       <button onClick={() => setSelectedResource(null)} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Close"><Icon name="x" size={16} /></button>
                     </div>
@@ -1565,9 +1606,14 @@ import React, { useState } from 'react';
                           <div><label className="text-sm text-gray-400 mb-1 block">ami</label><input type="text" value={momEditData.ami || ''} onChange={e => setMomEditData({...momEditData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">instance_type</label><select value={momEditData.instanceType || 't3.medium'} onChange={e => setMomEditData({...momEditData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="r5.large">r5.large</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={momEditData.subnetId || ''} onChange={e => setMomEditData({...momEditData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">availability_zone</label><input type="text" value={momEditData.availabilityZone || ''} onChange={e => setMomEditData({...momEditData, availabilityZone: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" placeholder="us-east-1a" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={momEditData.keyName || ''} onChange={e => setMomEditData({...momEditData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">security_groups</label><input type="text" value={momEditData.securityGroups || ''} onChange={e => setMomEditData({...momEditData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="sg-xxx, sg-yyy" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={momEditData.iamInstanceProfile || ''} onChange={e => setMomEditData({...momEditData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
+                          <div className="flex items-center gap-4 pt-5">
+                            <label className="flex items-center gap-2 text-sm text-gray-400"><input type="checkbox" checked={momEditData.associatePublicIp || false} onChange={e => setMomEditData({...momEditData, associatePublicIp: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" />public_ip</label>
+                            <label className="flex items-center gap-2 text-sm text-gray-400"><input type="checkbox" checked={momEditData.monitoring || false} onChange={e => setMomEditData({...momEditData, monitoring: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" />monitoring</label>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1576,12 +1622,15 @@ import React, { useState } from 'react';
                       <div className="space-y-3 border-t border-gray-700 pt-4">
                         <div className="text-xs text-amber-400 font-medium">aws_lambda_function configuration</div>
                         <div className="grid grid-cols-2 gap-3">
-                          <div><label className="text-sm text-gray-400 mb-1 block">runtime</label><select value={momEditData.runtime || 'python3.11'} onChange={e => setMomEditData({...momEditData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="go1.x">go1.x</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">handler</label><input type="text" value={momEditData.handler || ''} onChange={e => setMomEditData({...momEditData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">memory_size</label><select value={momEditData.memory || 512} onChange={e => setMomEditData({...momEditData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">timeout</label><input type="number" value={momEditData.timeout || 30} onChange={e => setMomEditData({...momEditData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role</label><input type="text" value={momEditData.role || ''} onChange={e => setMomEditData({...momEditData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers</label><input type="text" value={momEditData.layers || ''} onChange={e => setMomEditData({...momEditData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-cyan-500" placeholder="comma-separated ARNs" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">runtime</label><select value={momEditData.runtime || 'python3.11'} onChange={e => setMomEditData({...momEditData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="go1.x">go1.x</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">handler</label><input type="text" value={momEditData.handler || ''} onChange={e => setMomEditData({...momEditData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-amber-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">architectures</label><select value={momEditData.architecture || 'x86_64'} onChange={e => setMomEditData({...momEditData, architecture: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"><option value="x86_64">x86_64</option><option value="arm64">arm64</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">timeout</label><input type="number" value={momEditData.timeout || 30} onChange={e => setMomEditData({...momEditData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">memory_size</label><select value={momEditData.memory || 512} onChange={e => setMomEditData({...momEditData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">s3_bucket</label><input type="text" value={momEditData.s3Bucket || ''} onChange={e => setMomEditData({...momEditData, s3Bucket: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role</label><input type="text" value={momEditData.role || ''} onChange={e => setMomEditData({...momEditData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-amber-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">vpc subnet_ids</label><input type="text" value={momEditData.vpcSubnets || ''} onChange={e => setMomEditData({...momEditData, vpcSubnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-amber-500" placeholder="subnet-xxx, subnet-yyy" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">vpc security_groups</label><input type="text" value={momEditData.vpcSecurityGroups || ''} onChange={e => setMomEditData({...momEditData, vpcSecurityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-amber-500" placeholder="sg-xxx, sg-yyy" /></div>
                         </div>
                       </div>
                     )}
@@ -1592,12 +1641,15 @@ import React, { useState } from 'react';
                         <div className="grid grid-cols-2 gap-3">
                           <div><label className="text-sm text-gray-400 mb-1 block">cluster</label><input type="text" value={momEditData.cluster || ''} onChange={e => setMomEditData({...momEditData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">launch_type</label><select value={momEditData.launchType || 'FARGATE'} onChange={e => setMomEditData({...momEditData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={momEditData.desiredCount || 2} onChange={e => setMomEditData({...momEditData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={momEditData.desiredCount || 2} onChange={e => setMomEditData({...momEditData, desiredCount: parseInt(e.target.value) || 1})} min="0" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">container_port</label><input type="number" value={momEditData.containerPort || 8080} onChange={e => setMomEditData({...momEditData, containerPort: parseInt(e.target.value) || 8080})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">cpu</label><select value={momEditData.cpu || 512} onChange={e => setMomEditData({...momEditData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">memory</label><select value={momEditData.memoryMb || 1024} onChange={e => setMomEditData({...momEditData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option></select></div>
                           <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image</label><input type="text" value={momEditData.image || ''} onChange={e => setMomEditData({...momEditData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
-                          <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={momEditData.taskRole || ''} onChange={e => setMomEditData({...momEditData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">subnets</label><input type="text" value={momEditData.ecsSubnets || ''} onChange={e => setMomEditData({...momEditData, ecsSubnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" placeholder="subnet-xxx, subnet-yyy" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">security_groups</label><input type="text" value={momEditData.ecsSecurityGroups || ''} onChange={e => setMomEditData({...momEditData, ecsSecurityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" placeholder="sg-xxx" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={momEditData.executionRole || ''} onChange={e => setMomEditData({...momEditData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-orange-500" /></div>
+                          <div className="flex items-center gap-2 pt-5"><input type="checkbox" checked={momEditData.assignPublicIp || false} onChange={e => setMomEditData({...momEditData, assignPublicIp: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-orange-500" /><label className="text-sm text-gray-400">assign_public_ip</label></div>
                         </div>
                       </div>
                     )}
@@ -1611,8 +1663,11 @@ import React, { useState } from 'react';
                           <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={momEditData.masterInstanceType || 'm5.xlarge'} onChange={e => setMomEditData({...momEditData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={momEditData.coreInstanceType || 'r5.xlarge'} onChange={e => setMomEditData({...momEditData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">core_count</label><input type="number" value={momEditData.coreCount || 2} onChange={e => setMomEditData({...momEditData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={momEditData.emrSubnetId || ''} onChange={e => setMomEditData({...momEditData, emrSubnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-purple-500" placeholder="subnet-xxx" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={momEditData.serviceRole || ''} onChange={e => setMomEditData({...momEditData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_role</label><input type="text" value={momEditData.ec2Role || ''} onChange={e => setMomEditData({...momEditData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">ec2_role</label><input type="text" value={momEditData.ec2Role || ''} onChange={e => setMomEditData({...momEditData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">log_uri</label><input type="text" value={momEditData.logUri || ''} onChange={e => setMomEditData({...momEditData, logUri: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500" placeholder="s3://my-bucket/emr-logs/" /></div>
+                          <div className="flex items-center gap-2 pt-1"><input type="checkbox" checked={momEditData.terminationProtection || false} onChange={e => setMomEditData({...momEditData, terminationProtection: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-purple-500" /><label className="text-sm text-gray-400">termination_protection</label></div>
                         </div>
                       </div>
                     )}
@@ -1635,9 +1690,11 @@ import React, { useState } from 'react';
                         <div className="grid grid-cols-2 gap-3">
                           <div><label className="text-sm text-gray-400 mb-1 block">source_type</label><select value={momEditData.sourceType || 'SQS'} onChange={e => setMomEditData({...momEditData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB</option><option value="Kinesis">Kinesis</option><option value="MSK">MSK</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">target_type</label><select value={momEditData.targetType || 'EventBridge'} onChange={e => setMomEditData({...momEditData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option></select></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source_arn</label><input type="text" value={momEditData.sourceArn || ''} onChange={e => setMomEditData({...momEditData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
-                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target_arn</label><input type="text" value={momEditData.targetArn || ''} onChange={e => setMomEditData({...momEditData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source (ARN)</label><input type="text" value={momEditData.sourceArn || ''} onChange={e => setMomEditData({...momEditData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target (ARN)</label><input type="text" value={momEditData.targetArn || ''} onChange={e => setMomEditData({...momEditData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
+                          <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role_arn</label><input type="text" value={momEditData.pipeRoleArn || ''} onChange={e => setMomEditData({...momEditData, pipeRoleArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-teal-500" /></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={momEditData.enrichmentType || 'None'} onChange={e => setMomEditData({...momEditData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option></select></div>
+                          <div><label className="text-sm text-gray-400 mb-1 block">desired_state</label><select value={momEditData.desiredState || 'RUNNING'} onChange={e => setMomEditData({...momEditData, desiredState: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500"><option value="RUNNING">RUNNING</option><option value="STOPPED">STOPPED</option></select></div>
                           <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={momEditData.batchSize || 10} onChange={e => setMomEditData({...momEditData, batchSize: parseInt(e.target.value) || 10})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" /></div>
                         </div>
                       </div>
@@ -2297,8 +2354,8 @@ import React, { useState } from 'react';
                     <td className="px-4 py-3 text-sm text-emerald-400">{d.monthlyCost}</td>
                     <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => showNotification(`Refreshing ${d.name}...`, 'success')} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={14} /></button>
-                        <button onClick={() => showNotification(`Creating backup for ${d.name}...`, 'success')} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={14} /></button>
+                        <button onClick={() => setDmsWizard({ step: 2, source: d, target: { type: d.type, region: '', environment: '' }, options: { migrationType: 'full-load', includeSchema: true, tableMappings: 'all' }, mode: 'refresh' })} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={14} /></button>
+                        <button onClick={() => { setBackupModal(d); setBackupOptions({ type: 'snapshot', retention: '30', description: '' }); }} className="p-1.5 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={14} /></button>
                         <button onClick={() => setDatastoreMetrics(d)} className="p-1.5 hover:bg-blue-500/20 rounded-lg text-gray-400 hover:text-blue-400" title="View Metrics"><Icon name="activity" size={14} /></button>
                         <button onClick={() => { setSelectedDatastore(d); setUncleEditMode(true); setUncleEditData({ size: d.size || d.mode || '', storage: d.storage || '500 GB', engine: d.engine || d.version || '' }); }} className="p-1.5 hover:bg-cyan-500/20 rounded-lg text-gray-400 hover:text-cyan-400" title="Edit"><Icon name="edit" size={14} /></button>
                         <button onClick={() => showNotification(`Datastore "${d.name}" deleted`, 'warning')} className="p-1.5 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={14} /></button>
@@ -2330,8 +2387,8 @@ import React, { useState } from 'react';
                     </div>
                   ) : (
                     <div className="flex items-center gap-1">
-                      <button onClick={() => showNotification(`Refreshing ${selectedDatastore.name}...`, 'success')} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={16} /></button>
-                      <button onClick={() => showNotification(`Creating backup for ${selectedDatastore.name}...`, 'success')} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={16} /></button>
+                      <button onClick={() => setDmsWizard({ step: 2, source: selectedDatastore, target: { type: selectedDatastore.type, region: '', environment: '' }, options: { migrationType: 'full-load', includeSchema: true, tableMappings: 'all' }, mode: 'refresh' })} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Refresh"><Icon name="refresh-cw" size={16} /></button>
+                      <button onClick={() => { setBackupModal(selectedDatastore); setBackupOptions({ type: 'snapshot', retention: '30', description: '' }); }} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Backup"><Icon name="hard-drive" size={16} /></button>
                       <button onClick={() => { setUncleEditMode(true); setUncleEditData({ size: selectedDatastore.size || selectedDatastore.mode || '', storage: selectedDatastore.storage || '500 GB', engine: selectedDatastore.engine || selectedDatastore.version || '' }); }} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Edit"><Icon name="edit" size={16} /></button>
                       <button onClick={() => { showNotification(`Datastore "${selectedDatastore.name}" deleted`, 'warning'); setSelectedDatastore(null); }} className="p-2 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-400" title="Delete"><Icon name="trash2" size={16} /></button>
                       <button onClick={() => { setSelectedDatastore(null); setUncleEditMode(false); }} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-gray-200" title="Close"><Icon name="x" size={16} /></button>
@@ -2351,25 +2408,203 @@ import React, { useState } from 'react';
                     <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Icon name="settings" size={14} className="text-gray-400" />Configuration</h3>
                     {uncleEditMode ? (
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm text-gray-400 mb-1">Type</label>
-                            <div className="text-gray-400 uppercase text-sm bg-gray-700/30 px-3 py-2 rounded-lg">{selectedDatastore.type}</div>
-                          </div>
-                          <div>
-                            <label className="block text-sm text-gray-400 mb-1">Size/Mode</label>
-                            <input type="text" value={uncleEditData.size} onChange={e => setUncleEditData({...uncleEditData, size: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
-                          </div>
-                          <div>
-                            <label className="block text-sm text-gray-400 mb-1">Engine</label>
-                            <input type="text" value={uncleEditData.engine} onChange={e => setUncleEditData({...uncleEditData, engine: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
-                          </div>
-                          <div>
-                            <label className="block text-sm text-gray-400 mb-1">Storage</label>
-                            <input type="text" value={uncleEditData.storage} onChange={e => setUncleEditData({...uncleEditData, storage: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
-                          </div>
-                        </div>
-                        <div className="text-sm text-gray-400">Created: {selectedDatastore.created}</div>
+                        {/* PostgreSQL Edit Fields */}
+                        {selectedDatastore.type === 'postgresql' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Engine Version</label>
+                                <select value={uncleEditData.engineVersion || selectedDatastore.engineVersion} onChange={e => setUncleEditData({...uncleEditData, engineVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                                  <option value="15.4">PostgreSQL 15.4</option>
+                                  <option value="14.9">PostgreSQL 14.9</option>
+                                  <option value="13.12">PostgreSQL 13.12</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Instance Class</label>
+                                <select value={uncleEditData.instanceClass || selectedDatastore.instanceClass} onChange={e => setUncleEditData({...uncleEditData, instanceClass: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                                  <option value="db.r6g.large">db.r6g.large</option>
+                                  <option value="db.r6g.xlarge">db.r6g.xlarge</option>
+                                  <option value="db.r6g.2xlarge">db.r6g.2xlarge</option>
+                                  <option value="db.r6g.4xlarge">db.r6g.4xlarge</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Replica Count</label>
+                                <select value={uncleEditData.replicaCount || selectedDatastore.replicaCount} onChange={e => setUncleEditData({...uncleEditData, replicaCount: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                                  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                                <select value={uncleEditData.backupRetention || selectedDatastore.backupRetention} onChange={e => setUncleEditData({...uncleEditData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                                  <option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option><option value="35">35 days</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Storage (GB)</label>
+                                <input type="number" value={uncleEditData.storageSize || selectedDatastore.storageSize} onChange={e => setUncleEditData({...uncleEditData, storageSize: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.multiAz ?? selectedDatastore.multiAz} onChange={e => setUncleEditData({...uncleEditData, multiAz: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Multi-AZ</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.performanceInsights ?? selectedDatastore.performanceInsights} onChange={e => setUncleEditData({...uncleEditData, performanceInsights: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Performance Insights</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.iamAuth ?? selectedDatastore.iamAuth} onChange={e => setUncleEditData({...uncleEditData, iamAuth: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />IAM Auth</label>
+                            </div>
+                          </>
+                        )}
+                        {/* MongoDB Edit Fields */}
+                        {selectedDatastore.type === 'mongodb' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Cluster Tier</label>
+                                <select value={uncleEditData.clusterTier || selectedDatastore.clusterTier} onChange={e => setUncleEditData({...uncleEditData, clusterTier: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                  <option value="M10">M10</option><option value="M20">M20</option><option value="M30">M30</option><option value="M40">M40</option><option value="M50">M50</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">MongoDB Version</label>
+                                <select value={uncleEditData.mongoVersion || selectedDatastore.mongoVersion} onChange={e => setUncleEditData({...uncleEditData, mongoVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                  <option value="7.0">7.0</option><option value="6.0">6.0</option><option value="5.0">5.0</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Replica Nodes</label>
+                                <select value={uncleEditData.replicaNodes || selectedDatastore.replicaNodes} onChange={e => setUncleEditData({...uncleEditData, replicaNodes: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                  <option value="3">3</option><option value="5">5</option><option value="7">7</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Backup Frequency</label>
+                                <select value={uncleEditData.backupFrequency || selectedDatastore.backupFrequency} onChange={e => setUncleEditData({...uncleEditData, backupFrequency: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                  <option value="hourly">Hourly</option><option value="daily">Daily</option><option value="weekly">Weekly</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.sharding ?? selectedDatastore.sharding} onChange={e => setUncleEditData({...uncleEditData, sharding: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Sharding</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.biConnector ?? selectedDatastore.biConnector} onChange={e => setUncleEditData({...uncleEditData, biConnector: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />BI Connector</label>
+                            </div>
+                          </>
+                        )}
+                        {/* DocumentDB Edit Fields */}
+                        {selectedDatastore.type === 'documentdb' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Engine Version</label>
+                                <select value={uncleEditData.engineVersion || selectedDatastore.engineVersion} onChange={e => setUncleEditData({...uncleEditData, engineVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                                  <option value="5.0">5.0</option><option value="4.0">4.0</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Instance Class</label>
+                                <select value={uncleEditData.instanceClass || selectedDatastore.instanceClass} onChange={e => setUncleEditData({...uncleEditData, instanceClass: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                                  <option value="db.r6g.large">db.r6g.large</option><option value="db.r6g.xlarge">db.r6g.xlarge</option><option value="db.r6g.2xlarge">db.r6g.2xlarge</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Cluster Instances</label>
+                                <select value={uncleEditData.clusterInstances || selectedDatastore.clusterInstances} onChange={e => setUncleEditData({...uncleEditData, clusterInstances: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                                  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                                <select value={uncleEditData.backupRetention || selectedDatastore.backupRetention} onChange={e => setUncleEditData({...uncleEditData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                                  <option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="35">35 days</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Port</label>
+                                <input type="number" value={uncleEditData.port || selectedDatastore.port} onChange={e => setUncleEditData({...uncleEditData, port: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" />
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.tls ?? selectedDatastore.tls} onChange={e => setUncleEditData({...uncleEditData, tls: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />TLS Enabled</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.auditLogs ?? selectedDatastore.auditLogs} onChange={e => setUncleEditData({...uncleEditData, auditLogs: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Audit Logs</label>
+                            </div>
+                          </>
+                        )}
+                        {/* DynamoDB Edit Fields */}
+                        {selectedDatastore.type === 'dynamodb' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Billing Mode</label>
+                                <select value={uncleEditData.billingMode || selectedDatastore.billingMode} onChange={e => setUncleEditData({...uncleEditData, billingMode: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                                  <option value="PAY_PER_REQUEST">On-Demand</option><option value="PROVISIONED">Provisioned</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Table Class</label>
+                                <select value={uncleEditData.tableClass || selectedDatastore.tableClass} onChange={e => setUncleEditData({...uncleEditData, tableClass: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                                  <option value="STANDARD">Standard</option><option value="STANDARD_INFREQUENT_ACCESS">Standard-IA</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Partition Key</label>
+                                <input type="text" value={uncleEditData.partitionKey || selectedDatastore.partitionKey || ''} onChange={e => setUncleEditData({...uncleEditData, partitionKey: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Sort Key</label>
+                                <input type="text" value={uncleEditData.sortKey || selectedDatastore.sortKey || ''} onChange={e => setUncleEditData({...uncleEditData, sortKey: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" />
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.pitr ?? selectedDatastore.pitr} onChange={e => setUncleEditData({...uncleEditData, pitr: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Point-in-Time Recovery</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.streams ?? selectedDatastore.streams} onChange={e => setUncleEditData({...uncleEditData, streams: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />DynamoDB Streams</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.ttl ?? selectedDatastore.ttl} onChange={e => setUncleEditData({...uncleEditData, ttl: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />TTL Enabled</label>
+                            </div>
+                          </>
+                        )}
+                        {/* DSQL Edit Fields */}
+                        {selectedDatastore.type === 'dsql' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Min Capacity (ACU)</label>
+                                <select value={uncleEditData.minCapacity || selectedDatastore.minCapacity} onChange={e => setUncleEditData({...uncleEditData, minCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                                  <option value="0">0 (Pause)</option><option value="0.5">0.5</option><option value="1">1</option><option value="2">2</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Max Capacity (ACU)</label>
+                                <select value={uncleEditData.maxCapacity || selectedDatastore.maxCapacity} onChange={e => setUncleEditData({...uncleEditData, maxCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                                  <option value="4">4</option><option value="8">8</option><option value="16">16</option><option value="32">32</option><option value="64">64</option><option value="128">128</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Auto-Pause Delay</label>
+                                <select value={uncleEditData.autoPauseDelay || selectedDatastore.autoPauseDelay} onChange={e => setUncleEditData({...uncleEditData, autoPauseDelay: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                                  <option value="300">5 min</option><option value="600">10 min</option><option value="900">15 min</option><option value="1800">30 min</option><option value="3600">1 hour</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                                <select value={uncleEditData.backupRetention || selectedDatastore.backupRetention} onChange={e => setUncleEditData({...uncleEditData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                                  <option value="1">1 day</option><option value="7">7 days</option><option value="14">14 days</option><option value="35">35 days</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.autoPause ?? selectedDatastore.autoPause} onChange={e => setUncleEditData({...uncleEditData, autoPause: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Auto-Pause</label>
+                              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer"><input type="checkbox" checked={uncleEditData.dataApi ?? selectedDatastore.dataApi} onChange={e => setUncleEditData({...uncleEditData, dataApi: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />Data API</label>
+                            </div>
+                          </>
+                        )}
+                        <div className="text-sm text-gray-400 pt-2 border-t border-gray-700">Created: {selectedDatastore.created}</div>
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-4 text-sm">
@@ -2453,9 +2688,17 @@ import React, { useState } from 'react';
           {/* New Datastore Modal */}
           {showNewDatastore && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setShowNewDatastore(false)}>
-              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                  <h2 className="text-lg font-semibold">Create New Datastore</h2>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                      <Icon name="database" size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Create New Datastore</h2>
+                      <p className="text-sm text-gray-400">Provision database infrastructure</p>
+                    </div>
+                  </div>
                   <button onClick={() => setShowNewDatastore(false)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
                 </div>
                 <div className="p-4 space-y-4 overflow-y-auto flex-1">
@@ -2488,6 +2731,335 @@ import React, { useState } from 'react';
                         </button>
                     </div>
                   </div>
+
+                  {/* PostgreSQL/Aurora Config */}
+                  {newDatastoreData.type === 'postgresql' && (
+                    <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-blue-400 text-sm font-medium mb-2">
+                        <Icon name="database" size={16} />Aurora PostgreSQL Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Engine Version</label>
+                          <select value={newDatastoreData.engineVersion || '15.4'} onChange={e => setNewDatastoreData({...newDatastoreData, engineVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="15.4">PostgreSQL 15.4</option>
+                            <option value="14.9">PostgreSQL 14.9</option>
+                            <option value="13.12">PostgreSQL 13.12</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Instance Class</label>
+                          <select value={newDatastoreData.instanceClass || 'db.r6g.large'} onChange={e => setNewDatastoreData({...newDatastoreData, instanceClass: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="db.r6g.large">db.r6g.large (2 vCPU, 16 GB)</option>
+                            <option value="db.r6g.xlarge">db.r6g.xlarge (4 vCPU, 32 GB)</option>
+                            <option value="db.r6g.2xlarge">db.r6g.2xlarge (8 vCPU, 64 GB)</option>
+                            <option value="db.r6g.4xlarge">db.r6g.4xlarge (16 vCPU, 128 GB)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Replica Count</label>
+                          <select value={newDatastoreData.replicaCount || '2'} onChange={e => setNewDatastoreData({...newDatastoreData, replicaCount: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="1">1 (Primary only)</option>
+                            <option value="2">2 (1 Replica)</option>
+                            <option value="3">3 (2 Replicas)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                          <select value={newDatastoreData.backupRetention || '7'} onChange={e => setNewDatastoreData({...newDatastoreData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="7">7 days</option>
+                            <option value="14">14 days</option>
+                            <option value="30">30 days</option>
+                            <option value="35">35 days</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Storage (GB)</label>
+                          <input type="number" value={newDatastoreData.storageSize || '100'} onChange={e => setNewDatastoreData({...newDatastoreData, storageSize: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder="100" />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.multiAz !== false} onChange={e => setNewDatastoreData({...newDatastoreData, multiAz: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500" />
+                          Multi-AZ
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.encryption !== false} onChange={e => setNewDatastoreData({...newDatastoreData, encryption: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500" />
+                          Encryption at Rest
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.performanceInsights !== false} onChange={e => setNewDatastoreData({...newDatastoreData, performanceInsights: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500" />
+                          Performance Insights
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.iamAuth || false} onChange={e => setNewDatastoreData({...newDatastoreData, iamAuth: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500" />
+                          IAM Authentication
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MongoDB Atlas Config */}
+                  {newDatastoreData.type === 'mongodb' && (
+                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium mb-2">
+                        <Icon name="file-text" size={16} />MongoDB Atlas Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Cluster Tier</label>
+                          <select value={newDatastoreData.clusterTier || 'M10'} onChange={e => setNewDatastoreData({...newDatastoreData, clusterTier: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                            <option value="M10">M10 (2 GB RAM, General)</option>
+                            <option value="M20">M20 (4 GB RAM, General)</option>
+                            <option value="M30">M30 (8 GB RAM, General)</option>
+                            <option value="M40">M40 (16 GB RAM, Low-CPU)</option>
+                            <option value="M50">M50 (32 GB RAM, Low-CPU)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">MongoDB Version</label>
+                          <select value={newDatastoreData.mongoVersion || '7.0'} onChange={e => setNewDatastoreData({...newDatastoreData, mongoVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                            <option value="7.0">MongoDB 7.0</option>
+                            <option value="6.0">MongoDB 6.0</option>
+                            <option value="5.0">MongoDB 5.0</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Replica Set Nodes</label>
+                          <select value={newDatastoreData.replicaNodes || '3'} onChange={e => setNewDatastoreData({...newDatastoreData, replicaNodes: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                            <option value="3">3 Nodes</option>
+                            <option value="5">5 Nodes</option>
+                            <option value="7">7 Nodes</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Storage (GB)</label>
+                          <input type="number" value={newDatastoreData.storageSize || '50'} onChange={e => setNewDatastoreData({...newDatastoreData, storageSize: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="50" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Backup Frequency</label>
+                          <select value={newDatastoreData.backupFrequency || 'daily'} onChange={e => setNewDatastoreData({...newDatastoreData, backupFrequency: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.encryption !== false} onChange={e => setNewDatastoreData({...newDatastoreData, encryption: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500" />
+                          Encryption at Rest
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.sharding || false} onChange={e => setNewDatastoreData({...newDatastoreData, sharding: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500" />
+                          Enable Sharding
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.biConnector || false} onChange={e => setNewDatastoreData({...newDatastoreData, biConnector: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500" />
+                          BI Connector
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DocumentDB Config */}
+                  {newDatastoreData.type === 'documentdb' && (
+                    <div className="bg-teal-500/5 border border-teal-500/20 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-teal-400 text-sm font-medium mb-2">
+                        <Icon name="clipboard" size={16} />Amazon DocumentDB Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Engine Version</label>
+                          <select value={newDatastoreData.engineVersion || '5.0'} onChange={e => setNewDatastoreData({...newDatastoreData, engineVersion: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <option value="5.0">DocumentDB 5.0</option>
+                            <option value="4.0">DocumentDB 4.0</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Instance Class</label>
+                          <select value={newDatastoreData.instanceClass || 'db.r6g.large'} onChange={e => setNewDatastoreData({...newDatastoreData, instanceClass: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <option value="db.r6g.large">db.r6g.large (2 vCPU, 16 GB)</option>
+                            <option value="db.r6g.xlarge">db.r6g.xlarge (4 vCPU, 32 GB)</option>
+                            <option value="db.r6g.2xlarge">db.r6g.2xlarge (8 vCPU, 64 GB)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Cluster Instances</label>
+                          <select value={newDatastoreData.clusterInstances || '3'} onChange={e => setNewDatastoreData({...newDatastoreData, clusterInstances: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <option value="1">1 Instance</option>
+                            <option value="2">2 Instances</option>
+                            <option value="3">3 Instances</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                          <select value={newDatastoreData.backupRetention || '7'} onChange={e => setNewDatastoreData({...newDatastoreData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <option value="1">1 day</option>
+                            <option value="7">7 days</option>
+                            <option value="14">14 days</option>
+                            <option value="35">35 days</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Port</label>
+                          <input type="number" value={newDatastoreData.port || '27017'} onChange={e => setNewDatastoreData({...newDatastoreData, port: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-teal-500" placeholder="27017" />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.encryption !== false} onChange={e => setNewDatastoreData({...newDatastoreData, encryption: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500" />
+                          Encryption at Rest
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.tls !== false} onChange={e => setNewDatastoreData({...newDatastoreData, tls: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500" />
+                          TLS Enabled
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.auditLogs || false} onChange={e => setNewDatastoreData({...newDatastoreData, auditLogs: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500" />
+                          Audit Logs
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DynamoDB Config */}
+                  {newDatastoreData.type === 'dynamodb' && (
+                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-amber-400 text-sm font-medium mb-2">
+                        <Icon name="layers" size={16} />Amazon DynamoDB Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Billing Mode</label>
+                          <select value={newDatastoreData.billingMode || 'PAY_PER_REQUEST'} onChange={e => setNewDatastoreData({...newDatastoreData, billingMode: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <option value="PAY_PER_REQUEST">On-Demand</option>
+                            <option value="PROVISIONED">Provisioned</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Table Class</label>
+                          <select value={newDatastoreData.tableClass || 'STANDARD'} onChange={e => setNewDatastoreData({...newDatastoreData, tableClass: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <option value="STANDARD">Standard</option>
+                            <option value="STANDARD_INFREQUENT_ACCESS">Standard-IA</option>
+                          </select>
+                        </div>
+                      </div>
+                      {newDatastoreData.billingMode === 'PROVISIONED' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs text-gray-400 mb-1">Read Capacity Units</label>
+                            <input type="number" value={newDatastoreData.readCapacity || '5'} onChange={e => setNewDatastoreData({...newDatastoreData, readCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="5" />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-400 mb-1">Write Capacity Units</label>
+                            <input type="number" value={newDatastoreData.writeCapacity || '5'} onChange={e => setNewDatastoreData({...newDatastoreData, writeCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="5" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Partition Key</label>
+                          <input type="text" value={newDatastoreData.partitionKey || ''} onChange={e => setNewDatastoreData({...newDatastoreData, partitionKey: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="id (String)" />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Sort Key (Optional)</label>
+                          <input type="text" value={newDatastoreData.sortKey || ''} onChange={e => setNewDatastoreData({...newDatastoreData, sortKey: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="timestamp (Number)" />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.encryption !== false} onChange={e => setNewDatastoreData({...newDatastoreData, encryption: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-amber-500 focus:ring-amber-500" />
+                          Encryption at Rest
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.pitr || false} onChange={e => setNewDatastoreData({...newDatastoreData, pitr: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-amber-500 focus:ring-amber-500" />
+                          Point-in-Time Recovery
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.streams || false} onChange={e => setNewDatastoreData({...newDatastoreData, streams: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-amber-500 focus:ring-amber-500" />
+                          DynamoDB Streams
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.ttl || false} onChange={e => setNewDatastoreData({...newDatastoreData, ttl: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-amber-500 focus:ring-amber-500" />
+                          TTL Enabled
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DSQL Config */}
+                  {newDatastoreData.type === 'dsql' && (
+                    <div className="bg-violet-500/5 border border-violet-500/20 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center gap-2 text-violet-400 text-sm font-medium mb-2">
+                        <Icon name="server" size={16} />Aurora DSQL Configuration
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Min Capacity (ACU)</label>
+                          <select value={newDatastoreData.minCapacity || '0.5'} onChange={e => setNewDatastoreData({...newDatastoreData, minCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                            <option value="0">0 (Pause when idle)</option>
+                            <option value="0.5">0.5 ACU</option>
+                            <option value="1">1 ACU</option>
+                            <option value="2">2 ACU</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Max Capacity (ACU)</label>
+                          <select value={newDatastoreData.maxCapacity || '16'} onChange={e => setNewDatastoreData({...newDatastoreData, maxCapacity: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                            <option value="4">4 ACU</option>
+                            <option value="8">8 ACU</option>
+                            <option value="16">16 ACU</option>
+                            <option value="32">32 ACU</option>
+                            <option value="64">64 ACU</option>
+                            <option value="128">128 ACU</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Auto-Pause Delay</label>
+                          <select value={newDatastoreData.autoPauseDelay || '300'} onChange={e => setNewDatastoreData({...newDatastoreData, autoPauseDelay: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                            <option value="300">5 minutes</option>
+                            <option value="600">10 minutes</option>
+                            <option value="900">15 minutes</option>
+                            <option value="1800">30 minutes</option>
+                            <option value="3600">1 hour</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Backup Retention</label>
+                          <select value={newDatastoreData.backupRetention || '7'} onChange={e => setNewDatastoreData({...newDatastoreData, backupRetention: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                            <option value="1">1 day</option>
+                            <option value="7">7 days</option>
+                            <option value="14">14 days</option>
+                            <option value="35">35 days</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.encryption !== false} onChange={e => setNewDatastoreData({...newDatastoreData, encryption: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-violet-500 focus:ring-violet-500" />
+                          Encryption at Rest
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.autoPause !== false} onChange={e => setNewDatastoreData({...newDatastoreData, autoPause: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-violet-500 focus:ring-violet-500" />
+                          Auto-Pause Enabled
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={newDatastoreData.dataApi || false} onChange={e => setNewDatastoreData({...newDatastoreData, dataApi: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-violet-500 focus:ring-violet-500" />
+                          Data API
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-sm text-gray-400 mb-1.5">Environment</label>
                     <select value={newDatastoreData.environment || 'prod'} onChange={e => setNewDatastoreData({...newDatastoreData, environment: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
@@ -2495,19 +3067,40 @@ import React, { useState } from 'react';
                       <option value="np">Non-Production</option>
                     </select>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">VPC</label>
+                      <select value={newDatastoreData.vpc || ''} onChange={e => setNewDatastoreData({...newDatastoreData, vpc: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <option value="">Select VPC...</option>
+                        <option value="vpc-prod">vpc-prod (10.0.0.0/16)</option>
+                        <option value="vpc-nonprod">vpc-nonprod (10.1.0.0/16)</option>
+                        <option value="vpc-shared">vpc-shared (10.2.0.0/16)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1.5">Subnet Group</label>
+                      <select value={newDatastoreData.subnetGroup || ''} onChange={e => setNewDatastoreData({...newDatastoreData, subnetGroup: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        <option value="">Select Subnet Group...</option>
+                        <option value="db-private-subnets">db-private-subnets</option>
+                        <option value="db-isolated-subnets">db-isolated-subnets</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
                     <label className="block text-sm text-gray-400 mb-3">Ownership</label>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Admin</label>
+                        <label className="block text-xs text-gray-400 mb-1">LDAP Group - Admin</label>
                         <input type="text" value={newDatastoreData.ldapAdmin || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapAdmin: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-admins,ou=groups,dc=corp" />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Dev</label>
+                        <label className="block text-xs text-gray-400 mb-1">LDAP Group - Dev</label>
                         <input type="text" value={newDatastoreData.ldapDev || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapDev: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-developers,ou=groups,dc=corp" />
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">LDAP Group - Read</label>
+                        <label className="block text-xs text-gray-400 mb-1">LDAP Group - Read</label>
                         <input type="text" value={newDatastoreData.ldapRead || ''} onChange={e => setNewDatastoreData({...newDatastoreData, ldapRead: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500" placeholder="cn=db-readonly,ou=groups,dc=corp" />
                       </div>
                     </div>
@@ -2520,6 +3113,491 @@ import React, { useState } from 'react';
                 <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700">
                   <button onClick={() => setShowNewDatastore(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
                   <button onClick={() => { showNotification(`Datastore "${newDatastoreData.name}" created successfully`); setShowNewDatastore(false); }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-lg">Create Datastore</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Database Backup Modal */}
+          {backupModal && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setBackupModal(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${backupModal.type === 'postgresql' ? 'bg-blue-500/20 text-blue-400' : backupModal.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : backupModal.type === 'documentdb' ? 'bg-teal-500/20 text-teal-400' : backupModal.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                      <Icon name="hard-drive" size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Create Backup</h2>
+                      <p className="text-sm text-gray-400">{backupModal.name}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setBackupModal(null)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+                <div className="p-4 space-y-4">
+                  {/* Backup Type */}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Backup Type</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'snapshot', label: 'Snapshot', icon: 'camera', desc: 'Point-in-time snapshot' },
+                        { id: 'continuous', label: 'Continuous', icon: 'refresh-cw', desc: 'Enable PITR' },
+                        { id: 'export', label: 'Export', icon: 'download', desc: 'Export to S3' },
+                      ].map(bt => (
+                        <button key={bt.id} onClick={() => setBackupOptions({...backupOptions, type: bt.id})}
+                          className={`p-3 rounded-xl border text-left transition-all ${backupOptions.type === bt.id ? 'bg-blue-500/20 border-blue-500' : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'}`}>
+                          <div className="flex items-center gap-2 mb-1">
+                            <Icon name={bt.icon} size={16} className={backupOptions.type === bt.id ? 'text-blue-400' : 'text-gray-400'} />
+                            <span className={`text-sm font-medium ${backupOptions.type === bt.id ? 'text-white' : 'text-gray-300'}`}>{bt.label}</span>
+                          </div>
+                          <div className="text-xs text-gray-500">{bt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Snapshot Options */}
+                  {backupOptions.type === 'snapshot' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Retention Period</label>
+                          <select value={backupOptions.retention} onChange={e => setBackupOptions({...backupOptions, retention: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="7">7 days</option>
+                            <option value="14">14 days</option>
+                            <option value="30">30 days</option>
+                            <option value="90">90 days</option>
+                            <option value="365">1 year</option>
+                            <option value="permanent">Permanent</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Snapshot Name</label>
+                          <input type="text" value={backupOptions.snapshotName || ''} onChange={e => setBackupOptions({...backupOptions, snapshotName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" placeholder={`${backupModal.name}-${new Date().toISOString().slice(0,10)}`} />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={backupOptions.encrypt !== false} onChange={e => setBackupOptions({...backupOptions, encrypt: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />
+                          Encrypt backup
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                          <input type="checkbox" checked={backupOptions.copyTags || false} onChange={e => setBackupOptions({...backupOptions, copyTags: e.target.checked})} className="rounded border-gray-600 bg-gray-800" />
+                          Copy tags
+                        </label>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Continuous Backup Options */}
+                  {backupOptions.type === 'continuous' && (
+                    <div className="bg-violet-500/10 border border-violet-500/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Icon name="info" size={18} className="text-violet-400 mt-0.5" />
+                        <div>
+                          <div className="text-sm font-medium text-violet-300 mb-1">Point-in-Time Recovery</div>
+                          <p className="text-sm text-gray-400">
+                            Enables continuous backups allowing you to restore to any point within the retention window.
+                            {backupModal.type === 'dynamodb' ? ' DynamoDB supports up to 35 days.' : backupModal.type === 'postgresql' || backupModal.type === 'documentdb' ? ' Aurora/DocumentDB supports up to 35 days.' : ' MongoDB Atlas supports continuous backup with oplog.'}
+                          </p>
+                          <div className="mt-3">
+                            <label className="block text-sm text-gray-400 mb-1">Recovery Window</label>
+                            <select value={backupOptions.recoveryWindow || '7'} onChange={e => setBackupOptions({...backupOptions, recoveryWindow: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500">
+                              <option value="1">1 day</option>
+                              <option value="7">7 days</option>
+                              <option value="14">14 days</option>
+                              <option value="35">35 days (max)</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Export Options */}
+                  {backupOptions.type === 'export' && (
+                    <>
+                      <div>
+                        <label className="block text-sm text-gray-400 mb-1">S3 Bucket</label>
+                        <select value={backupOptions.s3Bucket || ''} onChange={e => setBackupOptions({...backupOptions, s3Bucket: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                          <option value="">Select bucket...</option>
+                          <option value="db-backups-prod">db-backups-prod</option>
+                          <option value="db-backups-dr">db-backups-dr</option>
+                          <option value="compliance-archive">compliance-archive</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">Export Format</label>
+                          <select value={backupOptions.format || 'native'} onChange={e => setBackupOptions({...backupOptions, format: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="native">Native Format</option>
+                            <option value="parquet">Apache Parquet</option>
+                            <option value="csv">CSV</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-400 mb-1">KMS Key</label>
+                          <select value={backupOptions.kmsKey || 'default'} onChange={e => setBackupOptions({...backupOptions, kmsKey: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="default">AWS Managed Key</option>
+                            <option value="cmk-prod">cmk-prod (Customer Managed)</option>
+                            <option value="cmk-compliance">cmk-compliance</option>
+                          </select>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Description (Optional)</label>
+                    <textarea value={backupOptions.description} onChange={e => setBackupOptions({...backupOptions, description: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 resize-none" rows={2} placeholder="Reason for backup or notes..." />
+                  </div>
+
+                  {/* Estimated Info */}
+                  <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Icon name="database" size={16} className="text-gray-400" />
+                      <div>
+                        <div className="text-sm text-gray-300">Estimated Size</div>
+                        <div className="text-xs text-gray-500">{backupModal.storage || '500 GB'}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-300">Est. Duration</div>
+                      <div className="text-xs text-gray-500">~{parseInt(backupModal.storage || '500') > 500 ? '15-30' : '5-15'} minutes</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-3 p-4 border-t border-gray-700 bg-gray-800/30">
+                  <div className="text-xs text-gray-500">
+                    <Icon name="clock" size={12} className="inline mr-1" />
+                    Backup will run immediately
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setBackupModal(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200">Cancel</button>
+                    <button onClick={() => {
+                      showNotification(`Backup started for ${backupModal.name}. ${backupOptions.type === 'snapshot' ? 'Snapshot' : backupOptions.type === 'continuous' ? 'PITR enabled' : 'Export'} in progress...`, 'success');
+                      setBackupModal(null);
+                    }} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-lg flex items-center gap-2">
+                      <Icon name="play" size={14} />
+                      Start Backup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DMS Migration Wizard Modal */}
+          {dmsWizard && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setDmsWizard(null)}>
+              <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
+                <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                      <Icon name="refresh-cw" size={20} className="text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Database Migration</h3>
+                      <p className="text-sm text-gray-400">Refresh non-production from production</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setDmsWizard(null)} className="p-1 hover:bg-gray-800 rounded-lg"><Icon name="x" size={18} /></button>
+                </div>
+
+                {/* Progress Steps */}
+                <div className="px-6 py-4 border-b border-gray-700 bg-gray-800/30">
+                  <div className="flex items-center justify-between">
+                    {[
+                      { step: 1, label: 'Source Database' },
+                      { step: 2, label: 'Target Location' },
+                      { step: 3, label: 'Review & Migrate' }
+                    ].map((s, i) => (
+                      <div key={s.step} className="flex items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${dmsWizard.step >= s.step ? 'bg-emerald-500 text-white' : 'bg-gray-700 text-gray-400'}`}>{s.step}</div>
+                        <span className={`ml-2 text-sm ${dmsWizard.step >= s.step ? 'text-white' : 'text-gray-500'}`}>{s.label}</span>
+                        {i < 2 && <div className={`w-16 h-0.5 mx-4 ${dmsWizard.step > s.step ? 'bg-emerald-500' : 'bg-gray-700'}`} />}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  {/* Step 1: Select Source Database */}
+                  {dmsWizard.step === 1 && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Select Source Database (Production)</label>
+                        <div className="space-y-2 max-h-64 overflow-auto">
+                          {mockDatastores.map(db => (
+                            <button
+                              key={db.id}
+                              onClick={() => setDmsWizard({...dmsWizard, source: db, target: { ...dmsWizard.target, type: db.type }})}
+                              className={`w-full p-3 rounded-lg border text-left flex items-center gap-3 transition-all ${dmsWizard.source?.id === db.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/50'}`}
+                            >
+                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${db.type === 'postgresql' ? 'bg-blue-500/20 text-blue-400' : db.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : db.type === 'documentdb' ? 'bg-teal-500/20 text-teal-400' : db.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                                <Icon name="database" size={18} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-medium">{db.name}</div>
+                                <div className="text-xs text-gray-400">{db.type.toUpperCase()} • {db.region} • {db.storage || db.size}</div>
+                              </div>
+                              <div className={`px-2 py-0.5 rounded text-xs ${db.status === 'available' || db.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>{db.status}</div>
+                              {dmsWizard.source?.id === db.id && <Icon name="check-circle" size={18} className="text-emerald-400" />}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 2: Target Location */}
+                  {dmsWizard.step === 2 && (
+                    <div className="space-y-4">
+                      <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-start gap-3">
+                        <Icon name="info" size={16} className="text-blue-400 mt-0.5" />
+                        <div className="text-sm">
+                          <div className="font-medium text-blue-300">Source: {dmsWizard.source?.name}</div>
+                          <div className="text-gray-400">{dmsWizard.source?.type.toUpperCase()} database from {dmsWizard.source?.region}</div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Target Environment</label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {['dev', 'staging', 'qa', 'prod'].map(env => (
+                            <button
+                              key={env}
+                              onClick={() => setDmsWizard({...dmsWizard, target: {...dmsWizard.target, environment: env, account: env === 'prod' ? '' : dmsWizard.target.account}})}
+                              className={`p-3 rounded-lg border text-center ${dmsWizard.target.environment === env ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600'}`}
+                            >
+                              <Icon name={env === 'dev' ? 'code' : env === 'staging' ? 'git-branch' : env === 'qa' ? 'check-square' : 'shield'} size={20} className={`mx-auto mb-1 ${dmsWizard.target.environment === env ? 'text-emerald-400' : 'text-gray-400'}`} />
+                              <div className={`text-sm font-medium ${dmsWizard.target.environment === env ? 'text-emerald-300' : 'text-gray-300'}`}>{env.charAt(0).toUpperCase() + env.slice(1)}</div>
+                            </button>
+                          ))}
+                        </div>
+                        {dmsWizard.target.environment === 'prod' && (
+                          <div className="mt-3">
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Target Account</label>
+                            <select
+                              value={dmsWizard.target.account || ''}
+                              onChange={e => setDmsWizard({...dmsWizard, target: {...dmsWizard.target, account: e.target.value}})}
+                              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                            >
+                              <option value="">Select account...</option>
+                              <option value="prod-us-east">Production US East (123456789012)</option>
+                              <option value="prod-us-west">Production US West (234567890123)</option>
+                              <option value="prod-eu">Production EU (345678901234)</option>
+                              <option value="prod-apac">Production APAC (456789012345)</option>
+                            </select>
+                          </div>
+                        )}
+                      </div>
+
+                      {dmsWizard.mode !== 'refresh' && (
+                        <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Target Database Type</label>
+                        <div className="grid grid-cols-5 gap-2">
+                          {[
+                            { type: 'postgresql', label: 'PostgreSQL', icon: 'database', color: 'blue' },
+                            { type: 'mongodb', label: 'MongoDB', icon: 'database', color: 'emerald' },
+                            { type: 'documentdb', label: 'DocumentDB', icon: 'database', color: 'teal' },
+                            { type: 'dynamodb', label: 'DynamoDB', icon: 'layers', color: 'amber' },
+                            { type: 'dsql', label: 'DSQL', icon: 'database', color: 'violet' }
+                          ].map(db => (
+                            <button
+                              key={db.type}
+                              onClick={() => setDmsWizard({...dmsWizard, target: {...dmsWizard.target, type: db.type}})}
+                              className={`p-2 rounded-lg border text-center ${dmsWizard.target.type === db.type ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600'}`}
+                            >
+                              <Icon name={db.icon} size={18} className={`mx-auto mb-1 ${dmsWizard.target.type === db.type ? 'text-emerald-400' : 'text-gray-400'}`} />
+                              <div className={`text-xs font-medium ${dmsWizard.target.type === db.type ? 'text-emerald-300' : 'text-gray-300'}`}>{db.label}</div>
+                            </button>
+                          ))}
+                        </div>
+                        {dmsWizard.target.type && dmsWizard.target.type !== dmsWizard.source?.type && (
+                          <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs text-amber-200 flex items-center gap-2">
+                            <Icon name="alert-triangle" size={12} />
+                            Schema transformation required: {dmsWizard.source?.type.toUpperCase()} → {dmsWizard.target.type.toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      )}
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Target Region</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: 'us-east-1', label: 'US East 1', desc: 'N. Virginia' },
+                            { value: 'us-east-2', label: 'US East 2', desc: 'Ohio' }
+                          ].map(r => (
+                            <button
+                              key={r.value}
+                              onClick={() => setDmsWizard({...dmsWizard, target: {...dmsWizard.target, region: r.value}})}
+                              className={`p-3 rounded-lg border text-left ${dmsWizard.target.region === r.value ? 'border-emerald-500 bg-emerald-500/10' : 'border-gray-700 hover:border-gray-600'}`}
+                            >
+                              <div className={`text-sm font-medium ${dmsWizard.target.region === r.value ? 'text-emerald-300' : 'text-gray-300'}`}>{r.label}</div>
+                              <div className="text-xs text-gray-500">{r.desc}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Target Database Name</label>
+                        <input
+                          type="text"
+                          value={dmsWizard.target.name || ''}
+                          onChange={e => setDmsWizard({...dmsWizard, target: {...dmsWizard.target, name: e.target.value}})}
+                          placeholder={`${dmsWizard.source?.name}-${dmsWizard.target.environment || 'dev'}`}
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Migration Options</label>
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer hover:border-gray-600">
+                            <input
+                              type="radio"
+                              name="migrationType"
+                              checked={dmsWizard.options.migrationType === 'full-load'}
+                              onChange={() => setDmsWizard({...dmsWizard, options: {...dmsWizard.options, migrationType: 'full-load'}})}
+                              className="text-emerald-500"
+                            />
+                            <div>
+                              <div className="text-sm font-medium">Full Load</div>
+                              <div className="text-xs text-gray-400">Complete snapshot migration - best for refresh scenarios</div>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-3 p-3 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer hover:border-gray-600">
+                            <input
+                              type="radio"
+                              name="migrationType"
+                              checked={dmsWizard.options.migrationType === 'cdc'}
+                              onChange={() => setDmsWizard({...dmsWizard, options: {...dmsWizard.options, migrationType: 'cdc'}})}
+                              className="text-emerald-500"
+                            />
+                            <div>
+                              <div className="text-sm font-medium">Full Load + CDC</div>
+                              <div className="text-xs text-gray-400">Initial load plus ongoing replication of changes</div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="includeSchema"
+                          checked={dmsWizard.options.includeSchema}
+                          onChange={e => setDmsWizard({...dmsWizard, options: {...dmsWizard.options, includeSchema: e.target.checked}})}
+                          className="rounded border-gray-600 bg-gray-800 text-emerald-500"
+                        />
+                        <label htmlFor="includeSchema" className="text-sm text-gray-300">Include schema migration</label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3: Review & Migrate */}
+                  {dmsWizard.step === 3 && (
+                    <div className="space-y-4">
+                      <div className="text-sm font-medium text-gray-300 mb-2">Migration Summary</div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+                          <div className="text-xs text-gray-500 uppercase mb-2">Source (Production)</div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${dmsWizard.source?.type === 'postgresql' ? 'bg-blue-500/20 text-blue-400' : dmsWizard.source?.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : dmsWizard.source?.type === 'documentdb' ? 'bg-teal-500/20 text-teal-400' : dmsWizard.source?.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                              <Icon name="database" size={16} />
+                            </div>
+                            <div className="font-medium">{dmsWizard.source?.name}</div>
+                          </div>
+                          <div className="text-xs text-gray-400 space-y-1">
+                            <div>Type: {dmsWizard.source?.type.toUpperCase()}</div>
+                            <div>Region: {dmsWizard.source?.region}</div>
+                            <div>Size: {dmsWizard.source?.storage || dmsWizard.source?.size}</div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                          <div className="text-xs text-emerald-400 uppercase mb-2">Target ({dmsWizard.target.environment})</div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${dmsWizard.target.type === 'postgresql' ? 'bg-blue-500/20 text-blue-400' : dmsWizard.target.type === 'mongodb' ? 'bg-emerald-500/20 text-emerald-400' : dmsWizard.target.type === 'documentdb' ? 'bg-teal-500/20 text-teal-400' : dmsWizard.target.type === 'dynamodb' ? 'bg-amber-500/20 text-amber-400' : 'bg-violet-500/20 text-violet-400'}`}>
+                              <Icon name={dmsWizard.target.type === 'dynamodb' ? 'layers' : 'database'} size={16} />
+                            </div>
+                            <div className="font-medium">{dmsWizard.target.name || `${dmsWizard.source?.name}-${dmsWizard.target.environment}`}</div>
+                          </div>
+                          <div className="text-xs text-gray-400 space-y-1">
+                            <div>Type: {dmsWizard.target.type?.toUpperCase()}</div>
+                            <div>Region: {dmsWizard.target.region}</div>
+                            <div>Environment: {dmsWizard.target.environment?.toUpperCase()}</div>
+                          </div>
+                          {dmsWizard.target.type !== dmsWizard.source?.type && (
+                            <div className="mt-2 pt-2 border-t border-emerald-500/30 text-xs text-amber-300">
+                              <Icon name="shuffle" size={12} className="inline mr-1" />
+                              Cross-platform migration
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-center py-2">
+                        <Icon name="arrow-right" size={24} className="text-emerald-400" />
+                      </div>
+
+                      <div className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+                        <div className="text-xs text-gray-500 uppercase mb-2">Migration Configuration</div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="text-gray-400">Migration Type:</div>
+                          <div className="text-white">{dmsWizard.options.migrationType === 'full-load' ? 'Full Load' : 'Full Load + CDC'}</div>
+                          <div className="text-gray-400">Include Schema:</div>
+                          <div className="text-white">{dmsWizard.options.includeSchema ? 'Yes' : 'No'}</div>
+                          <div className="text-gray-400">Estimated Duration:</div>
+                          <div className="text-white">~15-30 minutes</div>
+                          <div className="text-gray-400">DMS Instance:</div>
+                          <div className="text-white">dms.r5.large (auto-provisioned)</div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-start gap-3">
+                        <Icon name="alert-triangle" size={16} className="text-amber-400 mt-0.5" />
+                        <div className="text-sm text-amber-200">
+                          This will overwrite any existing data in the target database. The migration task will be created via AWS DMS Terraform module.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="px-6 py-4 border-t border-gray-700 flex justify-between">
+                  <button
+                    onClick={() => dmsWizard.step > 1 ? setDmsWizard({...dmsWizard, step: dmsWizard.step - 1}) : setDmsWizard(null)}
+                    className="px-4 py-2 text-sm text-gray-400 hover:text-gray-200"
+                  >
+                    {dmsWizard.step > 1 ? 'Back' : 'Cancel'}
+                  </button>
+                  {dmsWizard.step < 3 ? (
+                    <button
+                      onClick={() => setDmsWizard({...dmsWizard, step: dmsWizard.step + 1})}
+                      disabled={dmsWizard.step === 1 && !dmsWizard.source || dmsWizard.step === 2 && (!dmsWizard.target.environment || !dmsWizard.target.region || !dmsWizard.target.type)}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-700 disabled:text-gray-500 text-sm font-medium rounded-lg flex items-center gap-2"
+                    >
+                      Continue
+                      <Icon name="arrow-right" size={14} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        showNotification(`Migration task created: ${dmsWizard.source?.name} → ${dmsWizard.target.name || dmsWizard.source?.name + '-' + dmsWizard.target.environment}. DMS replication starting...`, 'success');
+                        setDmsWizard(null);
+                      }}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-lg flex items-center gap-2"
+                    >
+                      <Icon name="play" size={14} />
+                      Start Migration
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -7393,6 +8471,9 @@ import React, { useState } from 'react';
                     else if (activeNav === 'bro') { setNewNetworkData({ name: '', type: 'vpc', cidr: '', region: 'us-east-1', owner: '', description: '' }); setShowNewNetworkResource(true); }
                   }} className={`flex items-center gap-1.5 bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-600 hover:bg-${navItems.find(n => n.id === activeNav)?.color || 'violet'}-500 px-3 py-1.5 rounded-lg text-sm font-medium`}><Icon name="plus" size={16} />New</button>
                 )}
+                {activeNav === 'uncle' && (
+                  <button onClick={() => setDmsWizard({ step: 1, source: null, target: { type: '', region: '', environment: '' }, options: { migrationType: 'full-load', includeSchema: true, tableMappings: 'all' } })} className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg text-sm font-medium"><Icon name="refresh-cw" size={16} />Migrate</button>
+                )}
                 {activeNav === 'dad' && (
                   <button onClick={() => { setShowSetupWizard(true); setSetupWizardStep(0); setSetupWizardType(null); setSetupWizardData({ service: null, hostname: '', tlsMode: 'SIMPLE', externalHost: '', port: 443, protocol: 'HTTPS', mtls: true, authPolicy: true, jwtAuth: false, rateLimit: false, circuitBreaker: true, retries: true, retryAttempts: 3, timeout: false, timeoutSeconds: 30, loadBalancer: 'ROUND_ROBIN', remoteNamespace: '' }); }} className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg text-sm font-medium"><Icon name="zap" size={16} />Setup Wizard</button>
                 )}
@@ -8342,15 +9423,21 @@ spec:
                         <div><label className="text-sm text-gray-400 mb-1 block">ami *</label><input type="text" value={newMomData.ami} onChange={e => setNewMomData({...newMomData, ami: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="ami-0abcdef1234567890" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">instance_type *</label><select value={newMomData.instanceType} onChange={e => setNewMomData({...newMomData, instanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="t3.micro">t3.micro</option><option value="t3.small">t3.small</option><option value="t3.medium">t3.medium</option><option value="t3.large">t3.large</option><option value="t3.xlarge">t3.xlarge</option><option value="m5.large">m5.large</option><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="c5.large">c5.large</option><option value="r5.large">r5.large</option><option value="r5.xlarge">r5.xlarge</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">subnet_id</label><input type="text" value={newMomData.subnetId} onChange={e => setNewMomData({...newMomData, subnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="subnet-xxx" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">availability_zone</label><input type="text" value={newMomData.availabilityZone} onChange={e => setNewMomData({...newMomData, availabilityZone: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="us-east-1a" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">key_name</label><input type="text" value={newMomData.keyName} onChange={e => setNewMomData({...newMomData, keyName: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="my-keypair" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">vpc_security_group_ids</label><input type="text" value={newMomData.securityGroups} onChange={e => setNewMomData({...newMomData, securityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="sg-xxx, sg-yyy" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">iam_instance_profile</label><input type="text" value={newMomData.iamInstanceProfile} onChange={e => setNewMomData({...newMomData, iamInstanceProfile: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" placeholder="my-instance-profile" /></div>
+                        <div className="flex items-center gap-4 pt-5">
+                          <label className="flex items-center gap-2 text-sm text-gray-400"><input type="checkbox" checked={newMomData.associatePublicIp} onChange={e => setNewMomData({...newMomData, associatePublicIp: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" />associate_public_ip</label>
+                          <label className="flex items-center gap-2 text-sm text-gray-400"><input type="checkbox" checked={newMomData.monitoring} onChange={e => setNewMomData({...newMomData, monitoring: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-cyan-500" />monitoring</label>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-400 mt-2">ebs_block_device</div>
+                      <div className="text-sm text-gray-400 mt-2">root_block_device</div>
                       <div className="grid grid-cols-2 gap-3">
                         <div><label className="text-sm text-gray-400 mb-1 block">volume_size (GB)</label><input type="number" value={newMomData.volumeSize} onChange={e => setNewMomData({...newMomData, volumeSize: parseInt(e.target.value) || 100})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">volume_type</label><select value={newMomData.volumeType} onChange={e => setNewMomData({...newMomData, volumeType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="gp3">gp3</option><option value="gp2">gp2</option><option value="io1">io1</option><option value="io2">io2</option><option value="st1">st1</option></select></div>
                       </div>
+                      <div><label className="text-sm text-gray-400 mb-1 block">user_data (base64 encoded)</label><textarea value={newMomData.userData} onChange={e => setNewMomData({...newMomData, userData: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono text-xs resize-none" placeholder="#!/bin/bash&#10;yum update -y" /></div>
                     </div>
                   )}
                   {/* Lambda Configuration - aws_lambda_function */}
@@ -8358,13 +9445,22 @@ spec:
                     <div className="space-y-3">
                       <div className="text-xs text-amber-400 font-medium mb-2">aws_lambda_function configuration</div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div><label className="text-sm text-gray-400 mb-1 block">runtime *</label><select value={newMomData.runtime} onChange={e => setNewMomData({...newMomData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="java21">java21</option><option value="go1.x">go1.x</option><option value="dotnet6">dotnet6</option></select></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">handler *</label><input type="text" value={newMomData.handler} onChange={e => setNewMomData({...newMomData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono" placeholder="main.handler" /></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">memory_size (MB)</label><select value={newMomData.memory} onChange={e => setNewMomData({...newMomData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option><option value="10240">10240</option></select></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">timeout (seconds)</label><input type="number" value={newMomData.timeout} onChange={e => setNewMomData({...newMomData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500" /></div>
-                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role (IAM ARN) *</label><input type="text" value={newMomData.role} onChange={e => setNewMomData({...newMomData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono text-xs" placeholder="arn:aws:iam::123456789:role/lambda-role" /></div>
-                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers (comma-separated ARNs)</label><input type="text" value={newMomData.layers} onChange={e => setNewMomData({...newMomData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 font-mono text-xs" placeholder="arn:aws:lambda:us-east-1:123456789:layer:my-layer:1" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">runtime *</label><select value={newMomData.runtime} onChange={e => setNewMomData({...newMomData, runtime: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"><option value="python3.11">python3.11</option><option value="python3.12">python3.12</option><option value="nodejs18.x">nodejs18.x</option><option value="nodejs20.x">nodejs20.x</option><option value="java17">java17</option><option value="java21">java21</option><option value="go1.x">go1.x</option><option value="dotnet6">dotnet6</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">handler *</label><input type="text" value={newMomData.handler} onChange={e => setNewMomData({...newMomData, handler: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono" placeholder="main.handler" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">architectures</label><select value={newMomData.architecture} onChange={e => setNewMomData({...newMomData, architecture: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"><option value="x86_64">x86_64</option><option value="arm64">arm64</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">timeout (seconds)</label><input type="number" value={newMomData.timeout} onChange={e => setNewMomData({...newMomData, timeout: parseInt(e.target.value) || 30})} min="1" max="900" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">memory_size (MB)</label><select value={newMomData.memory} onChange={e => setNewMomData({...newMomData, memory: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"><option value="128">128</option><option value="256">256</option><option value="512">512</option><option value="1024">1024</option><option value="2048">2048</option><option value="4096">4096</option><option value="8192">8192</option><option value="10240">10240</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">s3_bucket</label><input type="text" value={newMomData.s3Bucket} onChange={e => setNewMomData({...newMomData, s3Bucket: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="my-lambda-bucket" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">s3_key</label><input type="text" value={newMomData.s3Key} onChange={e => setNewMomData({...newMomData, s3Key: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500" placeholder="functions/my-function.zip" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role (IAM ARN) *</label><input type="text" value={newMomData.role} onChange={e => setNewMomData({...newMomData, role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono text-xs" placeholder="arn:aws:iam::123456789:role/lambda-role" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">layers (comma-separated ARNs)</label><input type="text" value={newMomData.layers} onChange={e => setNewMomData({...newMomData, layers: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono text-xs" placeholder="arn:aws:lambda:us-east-1:123456789:layer:my-layer:1" /></div>
                       </div>
+                      <div className="text-sm text-gray-400 mt-2">vpc_config (optional)</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">subnet_ids</label><input type="text" value={newMomData.vpcSubnets} onChange={e => setNewMomData({...newMomData, vpcSubnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono" placeholder="subnet-xxx, subnet-yyy" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">security_group_ids</label><input type="text" value={newMomData.vpcSecurityGroups} onChange={e => setNewMomData({...newMomData, vpcSecurityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono" placeholder="sg-xxx, sg-yyy" /></div>
+                      </div>
+                      <div><label className="text-sm text-gray-400 mb-1 block">environment variables (KEY=value, one per line)</label><textarea value={newMomData.envVars} onChange={e => setNewMomData({...newMomData, envVars: e.target.value})} rows={2} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 font-mono text-xs resize-none" placeholder="LOG_LEVEL=INFO&#10;TABLE_NAME=my-table" /></div>
                     </div>
                   )}
                   {/* ECS Configuration - aws_ecs_service */}
@@ -8374,13 +9470,19 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div><label className="text-sm text-gray-400 mb-1 block">cluster *</label><input type="text" value={newMomData.cluster} onChange={e => setNewMomData({...newMomData, cluster: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" placeholder="prod-cluster" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">launch_type *</label><select value={newMomData.launchType} onChange={e => setNewMomData({...newMomData, launchType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="FARGATE">FARGATE</option><option value="EC2">EC2</option></select></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={newMomData.desiredCount} onChange={e => setNewMomData({...newMomData, desiredCount: parseInt(e.target.value) || 1})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">desired_count</label><input type="number" value={newMomData.desiredCount} onChange={e => setNewMomData({...newMomData, desiredCount: parseInt(e.target.value) || 1})} min="0" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">container_port *</label><input type="number" value={newMomData.containerPort} onChange={e => setNewMomData({...newMomData, containerPort: parseInt(e.target.value) || 8080})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">cpu (units)</label><select value={newMomData.cpu} onChange={e => setNewMomData({...newMomData, cpu: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="256">256 (0.25 vCPU)</option><option value="512">512 (0.5 vCPU)</option><option value="1024">1024 (1 vCPU)</option><option value="2048">2048 (2 vCPU)</option><option value="4096">4096 (4 vCPU)</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">memory (MB)</label><select value={newMomData.memoryMb} onChange={e => setNewMomData({...newMomData, memoryMb: parseInt(e.target.value)})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="512">512 MB</option><option value="1024">1024 MB</option><option value="2048">2048 MB</option><option value="4096">4096 MB</option><option value="8192">8192 MB</option></select></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">network_mode</label><select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500"><option value="awsvpc">awsvpc</option><option value="bridge">bridge</option><option value="host">host</option></select></div>
                         <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">image (ECR URI) *</label><input type="text" value={newMomData.image} onChange={e => setNewMomData({...newMomData, image: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="123456789.dkr.ecr.us-east-1.amazonaws.com/my-app:latest" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">task_role_arn</label><input type="text" value={newMomData.taskRole} onChange={e => setNewMomData({...newMomData, taskRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="arn:aws:iam::..." /></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn</label><input type="text" value={newMomData.executionRole} onChange={e => setNewMomData({...newMomData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="arn:aws:iam::..." /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">execution_role_arn *</label><input type="text" value={newMomData.executionRole} onChange={e => setNewMomData({...newMomData, executionRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono text-xs" placeholder="arn:aws:iam::..." /></div>
+                      </div>
+                      <div className="text-sm text-gray-400 mt-2">network_configuration (awsvpc)</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div><label className="text-sm text-gray-400 mb-1 block">subnets *</label><input type="text" value={newMomData.ecsSubnets} onChange={e => setNewMomData({...newMomData, ecsSubnets: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono" placeholder="subnet-xxx, subnet-yyy" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">security_groups *</label><input type="text" value={newMomData.ecsSecurityGroups} onChange={e => setNewMomData({...newMomData, ecsSecurityGroups: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 font-mono" placeholder="sg-xxx, sg-yyy" /></div>
+                        <div className="flex items-center gap-2 pt-5"><input type="checkbox" id="assignPublicIp" checked={newMomData.assignPublicIp} onChange={e => setNewMomData({...newMomData, assignPublicIp: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-orange-500" /><label htmlFor="assignPublicIp" className="text-sm text-gray-400">assign_public_ip</label></div>
                       </div>
                     </div>
                   )}
@@ -8391,11 +9493,14 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div><label className="text-sm text-gray-400 mb-1 block">release_label *</label><select value={newMomData.releaseLabel} onChange={e => setNewMomData({...newMomData, releaseLabel: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="emr-7.0.0">emr-7.0.0</option><option value="emr-6.15.0">emr-6.15.0</option><option value="emr-6.10.0">emr-6.10.0</option><option value="emr-6.5.0">emr-6.5.0</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">applications *</label><input type="text" value={newMomData.applications} onChange={e => setNewMomData({...newMomData, applications: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" placeholder="Spark,Hive,Presto" /></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type</label><select value={newMomData.masterInstanceType} onChange={e => setNewMomData({...newMomData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option></select></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type</label><select value={newMomData.coreInstanceType} onChange={e => setNewMomData({...newMomData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="r5.4xlarge">r5.4xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">master_instance_type *</label><select value={newMomData.masterInstanceType} onChange={e => setNewMomData({...newMomData, masterInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="m5.xlarge">m5.xlarge</option><option value="m5.2xlarge">m5.2xlarge</option><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">core_instance_type *</label><select value={newMomData.coreInstanceType} onChange={e => setNewMomData({...newMomData, coreInstanceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"><option value="r5.xlarge">r5.xlarge</option><option value="r5.2xlarge">r5.2xlarge</option><option value="r5.4xlarge">r5.4xlarge</option><option value="m5.2xlarge">m5.2xlarge</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">core_instance_count</label><input type="number" value={newMomData.coreCount} onChange={e => setNewMomData({...newMomData, coreCount: parseInt(e.target.value) || 2})} min="1" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" /></div>
-                        <div><label className="text-sm text-gray-400 mb-1 block">service_role</label><input type="text" value={newMomData.serviceRole} onChange={e => setNewMomData({...newMomData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_DefaultRole" /></div>
-                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">ec2_attributes.instance_profile</label><input type="text" value={newMomData.ec2Role} onChange={e => setNewMomData({...newMomData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_EC2_DefaultRole" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">ec2_attributes.subnet_id *</label><input type="text" value={newMomData.emrSubnetId} onChange={e => setNewMomData({...newMomData, emrSubnetId: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono" placeholder="subnet-xxx" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">service_role *</label><input type="text" value={newMomData.serviceRole} onChange={e => setNewMomData({...newMomData, serviceRole: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_DefaultRole" /></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">ec2_attributes.instance_profile *</label><input type="text" value={newMomData.ec2Role} onChange={e => setNewMomData({...newMomData, ec2Role: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500 font-mono text-xs" placeholder="EMR_EC2_DefaultRole" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">log_uri</label><input type="text" value={newMomData.logUri} onChange={e => setNewMomData({...newMomData, logUri: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500" placeholder="s3://my-bucket/emr-logs/" /></div>
+                        <div className="flex items-center gap-2 pt-1"><input type="checkbox" id="terminationProtection" checked={newMomData.terminationProtection} onChange={e => setNewMomData({...newMomData, terminationProtection: e.target.checked})} className="rounded border-gray-600 bg-gray-800 text-purple-500" /><label htmlFor="terminationProtection" className="text-sm text-gray-400">termination_protection</label></div>
                       </div>
                     </div>
                   )}
@@ -8419,9 +9524,11 @@ spec:
                       <div className="grid grid-cols-2 gap-3">
                         <div><label className="text-sm text-gray-400 mb-1 block">source_type *</label><select value={newMomData.sourceType} onChange={e => setNewMomData({...newMomData, sourceType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="SQS">SQS</option><option value="DynamoDB">DynamoDB Streams</option><option value="Kinesis">Kinesis</option><option value="MSK">Amazon MSK</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">target_type *</label><select value={newMomData.targetType} onChange={e => setNewMomData({...newMomData, targetType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="EventBridge">EventBridge</option><option value="Lambda">Lambda</option><option value="Kinesis">Kinesis</option><option value="StepFunctions">Step Functions</option><option value="S3">S3</option></select></div>
-                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source ARN *</label><input type="text" value={newMomData.sourceArn} onChange={e => setNewMomData({...newMomData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:sqs:us-east-1:123456789:my-queue" /></div>
-                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target ARN *</label><input type="text" value={newMomData.targetArn} onChange={e => setNewMomData({...newMomData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:events:us-east-1:123456789:event-bus/my-bus" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">source (ARN) *</label><input type="text" value={newMomData.sourceArn} onChange={e => setNewMomData({...newMomData, sourceArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:sqs:us-east-1:123456789:my-queue" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">target (ARN) *</label><input type="text" value={newMomData.targetArn} onChange={e => setNewMomData({...newMomData, targetArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:events:us-east-1:123456789:event-bus/my-bus" /></div>
+                        <div className="col-span-2"><label className="text-sm text-gray-400 mb-1 block">role_arn *</label><input type="text" value={newMomData.pipeRoleArn} onChange={e => setNewMomData({...newMomData, pipeRoleArn: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 font-mono text-xs" placeholder="arn:aws:iam::123456789:role/pipe-role" /></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">enrichment</label><select value={newMomData.enrichmentType} onChange={e => setNewMomData({...newMomData, enrichmentType: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="None">None</option><option value="Lambda">Lambda</option><option value="API Gateway">API Gateway</option><option value="Step Functions">Step Functions</option></select></div>
+                        <div><label className="text-sm text-gray-400 mb-1 block">desired_state</label><select value={newMomData.desiredState} onChange={e => setNewMomData({...newMomData, desiredState: e.target.value})} className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"><option value="RUNNING">RUNNING</option><option value="STOPPED">STOPPED</option></select></div>
                         <div><label className="text-sm text-gray-400 mb-1 block">batch_size</label><input type="number" value={newMomData.batchSize} onChange={e => setNewMomData({...newMomData, batchSize: parseInt(e.target.value) || 10})} min="1" max="10000" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500" /></div>
                       </div>
                     </div>
